@@ -1,7 +1,7 @@
 package com.music.android.lin.player.repositories
 
 import androidx.room.withTransaction
-import com.harvest.musicplayer.MediaDatabase
+import com.music.android.lin.player.MediaDatabase
 import com.harvest.musicplayer.dao.MusicInfoDao
 import com.harvest.musicplayer.dao.PlayRecordDao
 import com.harvest.musicplayer.repositories.artistsIdList

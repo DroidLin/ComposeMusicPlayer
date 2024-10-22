@@ -1,6 +1,6 @@
 package com.music.android.lin.player.metadata
 
-import com.harvest.musicplayer.PlayRecord
+import com.music.android.lin.player.interfaces.PlayRecord
 
 /**
  * @author liuzhongao

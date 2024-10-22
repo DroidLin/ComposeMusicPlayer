@@ -5,9 +5,9 @@ import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
-import com.harvest.musicplayer.MediaController
-import com.harvest.musicplayer.MediaInfo
-import com.harvest.musicplayer.PlayInfo
+import com.music.android.lin.player.interfaces.MediaController
+import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.interfaces.PlayInfo
 import com.music.android.lin.player.notification.fetchImageBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

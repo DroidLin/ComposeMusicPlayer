@@ -1,12 +1,12 @@
-package com.harvest.musicplayer
+package com.music.android.lin.player
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.music.android.lin.player.dao.AlbumDao
-import com.harvest.musicplayer.dao.ArtistDao
 import com.harvest.musicplayer.dao.MusicInfoDao
-import com.harvest.musicplayer.dao.PlayListDao
 import com.harvest.musicplayer.dao.PlayRecordDao
+import com.music.android.lin.player.dao.AlbumDao
+import com.music.android.lin.player.dao.ArtistDao
+import com.music.android.lin.player.dao.PlayListDao
 import com.music.android.lin.player.metadata.local.LocalAlbum
 import com.music.android.lin.player.metadata.local.LocalArtist
 import com.music.android.lin.player.metadata.local.LocalMusicInfo

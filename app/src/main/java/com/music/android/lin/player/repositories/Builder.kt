@@ -1,15 +1,15 @@
 package com.harvest.musicplayer.repositories
 
+import com.music.android.lin.player.ExtensionMapImpl
 import com.music.android.lin.player.interfaces.Album
 import com.music.android.lin.player.interfaces.Artist
-import com.harvest.musicplayer.ExtensionMap
-import com.music.android.lin.player.ExtensionMapImpl
-import com.harvest.musicplayer.MediaExtras
-import com.harvest.musicplayer.MediaInfo
-import com.harvest.musicplayer.MediaType
-import com.harvest.musicplayer.PlayList
-import com.harvest.musicplayer.PlayListType
-import com.harvest.musicplayer.PlayRecord
+import com.music.android.lin.player.interfaces.ExtensionMap
+import com.music.android.lin.player.interfaces.MediaExtras
+import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.interfaces.MediaType
+import com.music.android.lin.player.interfaces.PlayList
+import com.music.android.lin.player.interfaces.PlayListType
+import com.music.android.lin.player.interfaces.PlayRecord
 import com.music.android.lin.player.metadata.AlbumImpl
 import com.music.android.lin.player.metadata.ArtistImpl
 import com.music.android.lin.player.metadata.MediaExtrasImpl

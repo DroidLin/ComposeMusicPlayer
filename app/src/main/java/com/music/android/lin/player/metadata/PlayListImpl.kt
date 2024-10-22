@@ -1,9 +1,9 @@
 package com.music.android.lin.player.metadata
 
-import com.harvest.musicplayer.ExtensionMap
-import com.harvest.musicplayer.MediaInfo
-import com.harvest.musicplayer.PlayList
-import com.harvest.musicplayer.PlayListType
+import com.music.android.lin.player.interfaces.ExtensionMap
+import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.interfaces.PlayList
+import com.music.android.lin.player.interfaces.PlayListType
 
 /**
  * @author liuzhongao

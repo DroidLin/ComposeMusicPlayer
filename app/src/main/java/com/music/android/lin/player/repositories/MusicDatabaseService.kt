@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.harvest.musicplayer.MediaDatabase
-import com.harvest.musicplayer.MediaRepository
+import com.music.android.lin.player.MediaDatabase
 import com.music.android.lin.player.interfaces.MediaRepository
 
 /**
