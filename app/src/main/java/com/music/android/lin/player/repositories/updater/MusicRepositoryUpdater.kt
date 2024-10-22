@@ -4,14 +4,12 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
-import com.harvest.musicplayer.Album
-import com.harvest.musicplayer.Artist
+import com.music.android.lin.player.interfaces.Album
+import com.music.android.lin.player.interfaces.Artist
 import com.harvest.musicplayer.MediaInfo
 import com.harvest.musicplayer.MediaRepository
 import com.harvest.musicplayer.MediaType
 import com.harvest.musicplayer.repositories.buildMediaInfo
-import com.harvest.musicplayer.repositories.updater.MusicCursorRecord
-import com.harvest.musicplayer.repositories.updater.RepositoryUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers

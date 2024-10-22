@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.harvest.musicplayer.metadata.local.LocalMusicInfo
+import com.music.android.lin.player.metadata.local.LocalMusicInfo
 import kotlinx.coroutines.flow.Flow
 
 /**

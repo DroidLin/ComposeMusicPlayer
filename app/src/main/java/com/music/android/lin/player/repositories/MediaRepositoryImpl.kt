@@ -1,37 +1,42 @@
-package com.harvest.musicplayer.repositories
+package com.music.android.lin.player.repositories
 
 import androidx.room.withTransaction
-import com.harvest.musicplayer.Album
-import com.harvest.musicplayer.Artist
 import com.harvest.musicplayer.MediaDatabase
-import com.harvest.musicplayer.MediaInfo
-import com.harvest.musicplayer.MediaRepository
-import com.harvest.musicplayer.MediaType
-import com.harvest.musicplayer.PlayList
-import com.harvest.musicplayer.PlayListType
-import com.harvest.musicplayer.PlayRecord
-import com.harvest.musicplayer.PlayRecord.PlayRecordResourceType.Companion.playRecordResourceType
-import com.harvest.musicplayer.RecentPlayItem
-import com.harvest.musicplayer.dao.AlbumDao
-import com.harvest.musicplayer.dao.ArtistDao
 import com.harvest.musicplayer.dao.MusicInfoDao
-import com.harvest.musicplayer.dao.PlayListDao
 import com.harvest.musicplayer.dao.PlayRecordDao
-import com.harvest.musicplayer.metadata.MediaExtrasImpl.Companion.toJson
-import com.harvest.musicplayer.metadata.MediaInfoRecentPlayItem
-import com.harvest.musicplayer.metadata.local.LocalAlbum
-import com.harvest.musicplayer.metadata.local.LocalArtist
-import com.harvest.musicplayer.metadata.local.LocalMusicInfo
-import com.harvest.musicplayer.metadata.local.LocalPlayList
-import com.harvest.musicplayer.metadata.local.LocalPlayRecord
-import com.harvest.statistic.interfaces.IStatistic
-import kotlinx.coroutines.Dispatchers
+import com.harvest.musicplayer.repositories.artistsIdList
+import com.harvest.musicplayer.repositories.buildAlbum
+import com.harvest.musicplayer.repositories.buildArtist
+import com.harvest.musicplayer.repositories.buildMediaExtras
+import com.harvest.musicplayer.repositories.buildMediaInfo
+import com.harvest.musicplayer.repositories.buildPlayList
+import com.harvest.musicplayer.repositories.buildPlayRecord
+import com.harvest.musicplayer.repositories.extensionsMap
+import com.harvest.musicplayer.repositories.musicInfoIdList
+import com.music.android.lin.player.dao.AlbumDao
+import com.music.android.lin.player.dao.ArtistDao
+import com.music.android.lin.player.dao.PlayListDao
+import com.music.android.lin.player.interfaces.Album
+import com.music.android.lin.player.interfaces.Artist
+import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.interfaces.MediaRepository
+import com.music.android.lin.player.interfaces.MediaType
+import com.music.android.lin.player.interfaces.PlayList
+import com.music.android.lin.player.interfaces.PlayListType
+import com.music.android.lin.player.interfaces.PlayRecord
+import com.music.android.lin.player.interfaces.PlayRecord.PlayRecordResourceType.Companion.playRecordResourceType
+import com.music.android.lin.player.interfaces.RecentPlayItem
+import com.music.android.lin.player.metadata.MediaExtrasImpl.Companion.toJson
+import com.music.android.lin.player.metadata.MediaInfoRecentPlayItem
+import com.music.android.lin.player.metadata.local.LocalAlbum
+import com.music.android.lin.player.metadata.local.LocalArtist
+import com.music.android.lin.player.metadata.local.LocalMusicInfo
+import com.music.android.lin.player.metadata.local.LocalPlayList
+import com.music.android.lin.player.metadata.local.LocalPlayRecord
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 /**
@@ -40,7 +45,6 @@ import kotlinx.coroutines.flow.map
  */
 internal class MediaRepositoryImpl constructor(
     private val mediaDatabase: MediaDatabase,
-    private val iStatistic: IStatistic,
 ) : MediaRepository {
 
     private val playListDao: PlayListDao get() = this.mediaDatabase.playlistDao

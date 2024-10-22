@@ -2,16 +2,10 @@ package com.harvest.musicplayer.repositories
 
 import com.harvest.musicplayer.ExtensionMap
 import com.music.android.lin.player.ExtensionMapImpl
-import com.harvest.musicplayer.metadata.local.LocalMusicInfo
-import com.harvest.musicplayer.metadata.local.LocalPlayList
+import com.music.android.lin.player.metadata.local.LocalMusicInfo
+import com.music.android.lin.player.metadata.local.LocalPlayList
 import org.json.JSONArray
 import org.json.JSONObject
-
-/**
- * @author liuzhongao
- * @since 2023/10/6 11:14
- */
-
 
 internal fun JSONObject.toMap(): Map<String, Any> {
     return HashMap<String, Any>().also { hashMap ->

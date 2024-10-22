@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.service.metadata
+package com.music.android.lin.player.service.metadata
 
 import com.harvest.musicplayer.MediaInfo
 import com.harvest.musicplayer.PlayList

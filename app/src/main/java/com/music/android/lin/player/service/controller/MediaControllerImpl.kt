@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.service.controller
+package com.music.android.lin.player.service.controller
 
 import android.content.Context
 import android.net.Uri
@@ -6,25 +6,23 @@ import android.os.Binder
 import android.os.Handler
 import android.os.Looper
 import android.view.Surface
-import com.harvest.musicplayer.MediaController
-import com.harvest.musicplayer.MediaDatabaseEntryPoint
-import com.harvest.musicplayer.MediaInfo
-import com.harvest.musicplayer.PlayInfo
-import com.harvest.musicplayer.PlayList
-import com.harvest.musicplayer.PlayMode
-import com.harvest.musicplayer.R
-import com.harvest.musicplayer.service.isUriAvailable
-import com.harvest.musicplayer.service.metadata.MediaConfiguration
-import com.harvest.musicplayer.service.player.MusicPlayerWrapper
-import com.harvest.musicplayer.service.state.IMutablePlayerCenter
-import com.harvest.musicplayer.service.strategy.PlayStrategyWrapper
-import com.harvest.musicplayer.utils.isStoragePermissionGranted
-import dagger.hilt.android.EntryPointAccessors
+import com.music.android.lin.R
+import com.music.android.lin.player.interfaces.MediaController
+import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.interfaces.MediaRepository
+import com.music.android.lin.player.interfaces.PlayInfo
+import com.music.android.lin.player.interfaces.PlayList
+import com.music.android.lin.player.interfaces.PlayMode
+import com.music.android.lin.player.service.isUriAvailable
+import com.music.android.lin.player.service.metadata.MediaConfiguration
+import com.music.android.lin.player.service.player.MusicPlayerWrapper
+import com.music.android.lin.player.service.state.IMutablePlayerCenter
+import com.music.android.lin.player.service.strategy.PlayStrategyWrapper
+import com.music.android.lin.player.utils.isStoragePermissionGranted
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.lang.ref.WeakReference
+import org.koin.core.context.GlobalContext
 
 /**
  * @author liuzhongao
@@ -36,7 +34,7 @@ internal class MediaControllerImpl constructor(
     private val playInfoGetter: () -> PlayInfo
 ) : Binder(), MediaController {
 
-    private val mediaRepository = EntryPointAccessors.fromApplication<MediaDatabaseEntryPoint>(this.context).mediaRepository
+    private val mediaRepository = GlobalContext.get().get<MediaRepository>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val mainHandler = Handler(Looper.getMainLooper())
     private val playStrategy = PlayStrategyWrapper(this.mutablePlayerCenter)

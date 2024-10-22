@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.metadata
+package com.music.android.lin.player.metadata
 
 import com.harvest.musicplayer.MediaExtras
 import org.json.JSONObject

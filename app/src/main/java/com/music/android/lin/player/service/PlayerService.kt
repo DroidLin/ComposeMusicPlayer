@@ -1,23 +1,22 @@
-package com.harvest.musicplayer.service
+package com.music.android.lin.player.service
 
+import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import com.harvest.common.services.KServiceFacade
-import com.harvest.musicplayer.MediaInfo
-import com.harvest.musicplayer.MediaPlayerEvent
-import com.harvest.musicplayer.PlayInfo
-import com.harvest.musicplayer.PlayList
-import com.harvest.musicplayer.PlayMode
-import com.harvest.musicplayer.PlaybackState
-import com.harvest.musicplayer.PlayerEvent
-import com.harvest.musicplayer.audiofocus.PlayerAudioFocusManager
-import com.harvest.musicplayer.notification.PlayNotificationManager
-import com.harvest.musicplayer.notification.android.PlayMediaSession
-import com.harvest.musicplayer.service.controller.MediaControllerImpl
-import com.harvest.musicplayer.service.controller.MusicPlayerListenerWrapper
-import com.harvest.musicplayer.service.metadata.MediaConfiguration
-import com.harvest.musicplayer.service.state.IMutablePlayerCenter
-import com.harvest.statistic.interfaces.IStatistic
+import com.music.android.lin.player.audiofocus.PlayerAudioFocusManager
+import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.interfaces.MediaPlayerEvent
+import com.music.android.lin.player.interfaces.PlayInfo
+import com.music.android.lin.player.interfaces.PlayList
+import com.music.android.lin.player.interfaces.PlayMode
+import com.music.android.lin.player.interfaces.PlaybackState
+import com.music.android.lin.player.interfaces.PlayerEvent
+import com.music.android.lin.player.notification.PlayNotificationManager
+import com.music.android.lin.player.notification.android.PlayMediaSession
+import com.music.android.lin.player.service.controller.MediaControllerImpl
+import com.music.android.lin.player.service.controller.MusicPlayerListenerWrapper
+import com.music.android.lin.player.service.metadata.MediaConfiguration
+import com.music.android.lin.player.service.state.IMutablePlayerCenter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -36,7 +35,7 @@ import kotlinx.coroutines.launch
  * @author liuzhongao
  * @since 2023/10/8 8:41 PM
  */
-class PlayerService : AbstractPlayerService() {
+class PlayerService : Service() {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private val musicPlayerListenerWrapper = MusicPlayerListenerWrapper()
@@ -44,7 +43,6 @@ class PlayerService : AbstractPlayerService() {
     private val playInfo: PlayInfo get() = this.servicePlayerInfoMutableFlow.value
 
     private val servicePlayerEventChannel = Channel<MediaPlayerEvent>()
-    private val iStatisticService: IStatistic get() = KServiceFacade[IStatistic::class.java]
 
     private val serviceMutablePlayerCenter = object : IMutablePlayerCenter {
         override val previousPlaybackState: PlaybackState
@@ -63,11 +61,6 @@ class PlayerService : AbstractPlayerService() {
         }
 
         override fun emitPlayEvent(mediaPlayerEvent: MediaPlayerEvent) {
-            this@PlayerService.iStatisticService.logInfo(
-                "PlayService",
-                "kind", "sendPlayEvent",
-                "event", mediaPlayerEvent
-            )
             this@PlayerService.coroutineScope.launch {
                 this@PlayerService.servicePlayerEventChannel.send(element = mediaPlayerEvent)
             }

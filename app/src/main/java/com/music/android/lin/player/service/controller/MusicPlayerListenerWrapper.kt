@@ -1,11 +1,11 @@
-package com.harvest.musicplayer.service.controller
+package com.music.android.lin.player.service.controller
 
 import com.harvest.musicplayer.MediaInfo
 import com.harvest.musicplayer.PlayList
 import com.harvest.musicplayer.PlayMode
 import com.harvest.musicplayer.PlaybackState
 import com.harvest.musicplayer.PlayerEvent
-import com.harvest.musicplayer.service.MusicPlayer
+import com.music.android.lin.player.service.MusicPlayer
 
 /**
  * @author liuzhongao

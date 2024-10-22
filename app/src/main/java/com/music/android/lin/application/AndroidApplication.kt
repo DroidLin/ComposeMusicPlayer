@@ -1,11 +1,13 @@
-package com.music.android.lin
+package com.music.android.lin.application
 
 import android.app.Application
 import android.content.Context
+import com.music.android.lin.AppIdentifier
+import com.music.android.lin.AppKoin
 import java.lang.ref.WeakReference
 
 val applicationContext: Context
-    get() = requireNotNull(AndroidApplication.context)
+    get() = AppKoin.koin.get(AppIdentifier.ApplicationContext)
 
 internal class AndroidApplication : Application() {
 
@@ -14,10 +16,15 @@ internal class AndroidApplication : Application() {
         context = this
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        AppKoin.init(this)
+    }
+
     companion object {
         private var applicationReference: WeakReference<Context>? = null
         internal var context: Context?
-            set(value) { this.applicationReference = WeakReference(value) }
-            get() = this.applicationReference?.get()
+            set(value) { applicationReference = WeakReference(value) }
+            get() = applicationReference?.get()
     }
 }

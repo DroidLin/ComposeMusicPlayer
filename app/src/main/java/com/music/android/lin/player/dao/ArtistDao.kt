@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.dao
+package com.music.android.lin.player.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.harvest.musicplayer.metadata.local.LocalArtist
+import com.music.android.lin.player.metadata.local.LocalArtist
 
 /**
  * @author liuzhongao

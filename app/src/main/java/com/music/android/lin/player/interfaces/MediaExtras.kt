@@ -1,4 +1,4 @@
-package com.harvest.musicplayer
+package com.music.android.lin.player.interfaces
 
 import android.media.MediaFormat
 import androidx.annotation.IntDef

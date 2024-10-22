@@ -1,8 +1,12 @@
 package com.music.android.lin.player.notification
 
+import android.content.Context
 import android.graphics.Bitmap
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import coil3.SingletonImageLoader
+import coil3.request.ImageRequest
+import coil3.toBitmap
+import com.music.android.lin.AppIdentifier
+import com.music.android.lin.AppKoin
 
 /**
  * @author liuzhongao
@@ -10,9 +14,11 @@ import kotlinx.coroutines.withContext
  */
 
 suspend fun fetchImageBitmap(imageResourceUrl: String): Bitmap? {
-    val futureTask = Glide.with(ApplicationWrapper)
-        .asBitmap()
-        .load(imageResourceUrl)
-        .submit()
-    return withContext(Dispatchers.IO) { futureTask.get() }
+    val context: Context = AppKoin.koin.get(AppIdentifier.ApplicationContext)
+    val imageLoader = SingletonImageLoader.get(context)
+    val imageRequest = ImageRequest.Builder(context)
+        .data(imageResourceUrl)
+        .build()
+    val result = imageLoader.execute(imageRequest)
+    return result.image?.toBitmap()
 }

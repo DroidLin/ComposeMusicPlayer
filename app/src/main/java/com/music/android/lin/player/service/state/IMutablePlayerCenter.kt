@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.service.state
+package com.music.android.lin.player.service.state
 
 import com.harvest.musicplayer.MediaInfo
 import com.harvest.musicplayer.MediaPlayerEvent

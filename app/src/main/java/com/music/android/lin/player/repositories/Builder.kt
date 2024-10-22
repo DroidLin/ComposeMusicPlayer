@@ -1,7 +1,7 @@
 package com.harvest.musicplayer.repositories
 
-import com.harvest.musicplayer.Album
-import com.harvest.musicplayer.Artist
+import com.music.android.lin.player.interfaces.Album
+import com.music.android.lin.player.interfaces.Artist
 import com.harvest.musicplayer.ExtensionMap
 import com.music.android.lin.player.ExtensionMapImpl
 import com.harvest.musicplayer.MediaExtras
@@ -10,12 +10,12 @@ import com.harvest.musicplayer.MediaType
 import com.harvest.musicplayer.PlayList
 import com.harvest.musicplayer.PlayListType
 import com.harvest.musicplayer.PlayRecord
-import com.harvest.musicplayer.metadata.AlbumImpl
-import com.harvest.musicplayer.metadata.ArtistImpl
-import com.harvest.musicplayer.metadata.MediaExtrasImpl
-import com.harvest.musicplayer.metadata.MediaInfoImpl
-import com.harvest.musicplayer.metadata.PlayListImpl
-import com.harvest.musicplayer.metadata.PlayRecordImpl
+import com.music.android.lin.player.metadata.AlbumImpl
+import com.music.android.lin.player.metadata.ArtistImpl
+import com.music.android.lin.player.metadata.MediaExtrasImpl
+import com.music.android.lin.player.metadata.MediaInfoImpl
+import com.music.android.lin.player.metadata.PlayListImpl
+import com.music.android.lin.player.metadata.PlayRecordImpl
 import org.json.JSONObject
 
 /**

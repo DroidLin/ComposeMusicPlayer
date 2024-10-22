@@ -2,7 +2,7 @@ package com.harvest.musicplayer
 
 import com.harvest.common.services.ComponentInstaller
 import com.harvest.common.services.IComponent
-import com.harvest.musicplayer.service.MediaServiceImpl
+import com.music.android.lin.player.service.MediaServiceImpl
 
 /**
  * @author liuzhongao

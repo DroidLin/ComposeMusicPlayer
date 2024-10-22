@@ -11,6 +11,8 @@ composeBom = "2024.04.01"
 
 roomDatabase = "2.6.1"
 kspSymbol = "1.9.0-1.0.13"
+koin = "4.0.0"
+coil = "3.0.0-rc01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,7 +31,18 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
 jetpack-room = { group = "androidx.room", name = "room-runtime", version.ref = "roomDatabase" }
+jetpack-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomDatabase" }
 jetpack-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "roomDatabase" }
+
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-coroutines = { group = "io.insert-koin", name = "koin-core-coroutines", version.ref = "koin" }
+koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-android-compat = { group = "io.insert-koin", name = "koin-android-compat", version.ref = "koin" }
+
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,11 +1,9 @@
 package com.music.android.lin.player.repositories.updater
 
-import com.harvest.musicplayer.MediaStoreUpdateOptions
-import com.harvest.musicplayer.repositories.updater.FileScannerRepositoryUpdater
-import com.harvest.musicplayer.repositories.updater.RepositoryUpdater
 import com.harvest.musicplayer.repositories.updater.RepositoryUpdaterWrapper
 import com.harvest.musicplayer.repositories.updater.VideoRepositoryUpdater
-import com.music.android.lin.applicationContext
+import com.music.android.lin.application.applicationContext
+import com.music.android.lin.player.interfaces.MediaStoreUpdateOptions
 
 /**
  * @author liuzhongao

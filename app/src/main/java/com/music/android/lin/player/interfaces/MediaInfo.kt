@@ -1,5 +1,7 @@
-package com.harvest.musicplayer
+package com.music.android.lin.player.interfaces
 
+import com.music.android.lin.player.interfaces.Album
+import com.music.android.lin.player.interfaces.Artist
 import java.io.Serializable
 
 /**

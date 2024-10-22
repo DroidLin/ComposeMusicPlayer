@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">MusicPlayer</string>
+
+
+    <string name="string_play_service_notification_channel_name">音乐播放</string>
+    <string name="string_play_service_notification_channel_description">播放通知专用的通知渠道</string>
+
+    <string name="string_play_service_foreground_notification_default_empty_title">音乐播放前台服务运行中</string>
+    <string name="string_play_service_foreground_notification_default_empty_description">关闭该服务会导致音乐播放功能不可用</string>
+
+    <string name="string_file_permission_not_granted">文件读写权限未授权，无法播放.</string>
 </resources>

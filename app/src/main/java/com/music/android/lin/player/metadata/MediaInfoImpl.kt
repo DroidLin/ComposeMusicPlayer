@@ -1,7 +1,7 @@
-package com.harvest.musicplayer.metadata
+package com.music.android.lin.player.metadata
 
-import com.harvest.musicplayer.Album
-import com.harvest.musicplayer.Artist
+import com.music.android.lin.player.interfaces.Album
+import com.music.android.lin.player.interfaces.Artist
 import com.harvest.musicplayer.MediaExtras
 import com.harvest.musicplayer.MediaInfo
 import com.harvest.musicplayer.MediaType

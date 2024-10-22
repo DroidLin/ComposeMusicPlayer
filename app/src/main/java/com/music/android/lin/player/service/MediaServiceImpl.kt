@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.service
+package com.music.android.lin.player.service
 
 import android.content.ComponentName
 import android.content.Context
@@ -6,10 +6,11 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import com.harvest.musicplayer.MediaController
-import com.harvest.musicplayer.MediaService
-import com.harvest.musicplayer.MusicServicePlaybackState
-import com.harvest.musicplayer.service.controller.MediaControllerWrapper
+import com.harvest.musicplayer.service.MediaServiceControllerCallbackCollector
+import com.music.android.lin.player.interfaces.MediaController
+import com.music.android.lin.player.interfaces.MediaService
+import com.music.android.lin.player.interfaces.MusicServicePlaybackState
+import com.music.android.lin.player.service.controller.MediaControllerWrapper
 import kotlinx.coroutines.flow.StateFlow
 
 /**

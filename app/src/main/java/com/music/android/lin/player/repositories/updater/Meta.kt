@@ -1,12 +1,4 @@
-package com.harvest.musicplayer.repositories.updater
-
-import com.harvest.musicplayer.MediaExtras
-
-/**
- * @author liuzhongao
- * @since 2023/12/10 6:26 PM
- */
-
+package com.music.android.lin.player.repositories.updater
 
 data class MusicCursorRecord(
     val musicInfoId: String,

@@ -1,8 +1,8 @@
-package com.harvest.musicplayer.metadata
+package com.music.android.lin.player.metadata
 
-import com.harvest.musicplayer.MediaInfo
-import com.harvest.musicplayer.PlayRecord
-import com.harvest.musicplayer.RecentPlayItem
+import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.interfaces.PlayRecord
+import com.music.android.lin.player.interfaces.RecentPlayItem
 
 /**
  * @author liuzhongao

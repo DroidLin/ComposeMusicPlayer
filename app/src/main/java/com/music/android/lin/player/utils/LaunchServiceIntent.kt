@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.utils
+package com.music.android.lin.player.utils
 
 import android.content.Intent
 

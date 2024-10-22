@@ -1,4 +1,4 @@
-package com.harvest.musicplayer
+package com.music.android.lin.player.interfaces
 
 import android.content.Context
 import kotlinx.coroutines.flow.StateFlow

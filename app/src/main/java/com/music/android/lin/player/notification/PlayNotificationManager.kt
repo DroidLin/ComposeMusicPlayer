@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.notification
+package com.music.android.lin.player.notification
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -18,13 +18,10 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
-import com.harvest.common.services.KServiceFacade
-import com.harvest.musicplayer.MediaController
-import com.harvest.musicplayer.MediaInfo
-import com.harvest.musicplayer.PlayInfo
-import com.harvest.musicplayer.R
-import com.harvest.statistic.interfaces.IStatistic
-import com.music.android.lin.player.notification.fetchImageBitmap
+import com.music.android.lin.R
+import com.music.android.lin.player.interfaces.MediaController
+import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.interfaces.PlayInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -35,7 +32,6 @@ import kotlinx.coroutines.withContext
 internal class PlayNotificationManager constructor(
     private val context: Context,
     private val mediaController: MediaController,
-    private val iStatistic: IStatistic = KServiceFacade[IStatistic::class.java]
 ) {
     private val notificationManagerCompat = NotificationManagerCompat.from(this.context)
 
@@ -70,11 +66,12 @@ internal class PlayNotificationManager constructor(
     private val notificationControllerBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val action = intent?.action ?: return
-            val verificationId = intent.getStringExtra(KEY_BROADCAST_NOTIFICATION_INTENT_VERIFICATION) ?: return
+            val verificationId = intent.getStringExtra(
+                KEY_BROADCAST_NOTIFICATION_INTENT_VERIFICATION
+            ) ?: return
             val isIdValid = verificationId.startsWith(this@PlayNotificationManager.context.packageName) &&
                     verificationId.endsWith(MEDIA_NOTIFICATION_ID.toString())
             if (!isIdValid) {
-                this@PlayNotificationManager.iStatistic.logInfo(tag = TAG, "kind", "invalidVerificationId", "verificationId", verificationId)
                 return
             }
             when (action) {
@@ -135,7 +132,6 @@ internal class PlayNotificationManager constructor(
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            this.iStatistic.logDev(tag = TAG, message = "skip operation with notification permission not granted.")
             return
         }
         val musicInfo = playInfo.mediaInfo
@@ -267,7 +263,7 @@ internal class PlayNotificationManager constructor(
 
     private fun withActionAndEncryptCategory(action: String): Intent {
         return withActionIntent(action = action) {
-            putExtra(KEY_BROADCAST_NOTIFICATION_INTENT_VERIFICATION, "${context.packageName}.${MEDIA_NOTIFICATION_ID}")
+            putExtra(KEY_BROADCAST_NOTIFICATION_INTENT_VERIFICATION, "${context.packageName}.$MEDIA_NOTIFICATION_ID")
         }
     }
 

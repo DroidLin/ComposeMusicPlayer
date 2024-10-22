@@ -69,5 +69,14 @@ dependencies {
 
     // developer
     implementation(libs.jetpack.room)
+    implementation(libs.jetpack.room.ktx)
     implementation(libs.jetpack.room.paging)
+
+    implementation(libs.koin.core)
+    implementation(libs.koin.coroutines)
+    implementation(libs.koin.compose)
+
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
 }

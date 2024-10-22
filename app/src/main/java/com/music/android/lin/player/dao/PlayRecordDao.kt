@@ -3,7 +3,7 @@ package com.harvest.musicplayer.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.harvest.musicplayer.metadata.local.LocalPlayRecord
+import com.music.android.lin.player.metadata.local.LocalPlayRecord
 import kotlinx.coroutines.flow.Flow
 
 /**

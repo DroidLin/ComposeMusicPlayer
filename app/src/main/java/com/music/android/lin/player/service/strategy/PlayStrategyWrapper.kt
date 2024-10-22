@@ -1,10 +1,10 @@
-package com.harvest.musicplayer.service.strategy
+package com.music.android.lin.player.service.strategy
 
 import com.harvest.musicplayer.MediaInfo
 import com.harvest.musicplayer.PlayList
 import com.harvest.musicplayer.PlayMode
 import com.harvest.musicplayer.service.PlayStrategy
-import com.harvest.musicplayer.service.state.IMutablePlayerCenter
+import com.music.android.lin.player.service.state.IMutablePlayerCenter
 
 /**
  * @author liuzhongao

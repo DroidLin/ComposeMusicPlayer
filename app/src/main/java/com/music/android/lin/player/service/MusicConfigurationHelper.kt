@@ -1,9 +1,9 @@
-package com.harvest.musicplayer.service
+package com.music.android.lin.player.service
 
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import com.harvest.musicplayer.service.metadata.MediaConfiguration
+import com.music.android.lin.player.service.metadata.MediaConfiguration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

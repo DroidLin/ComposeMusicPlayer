@@ -6,7 +6,6 @@ import android.media.ThumbnailUtils
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
-import com.harvest.common.services.KServiceFacade
 import com.harvest.musicplayer.MediaExtras
 import com.harvest.musicplayer.MediaInfo
 import com.harvest.musicplayer.MediaRepository
@@ -14,7 +13,8 @@ import com.harvest.musicplayer.MediaType
 import com.harvest.musicplayer.repositories.buildAlbum
 import com.harvest.musicplayer.repositories.buildArtist
 import com.harvest.musicplayer.repositories.buildMediaInfo
-import com.harvest.statistic.interfaces.IStatistic
+import com.music.android.lin.player.repositories.updater.RepositoryUpdater
+import com.music.android.lin.player.repositories.updater.VideoCursorRecord
 import com.music.android.lin.player.repositories.updater.decodeMediaExtras
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -29,7 +29,6 @@ import java.io.FileOutputStream
 internal class VideoRepositoryUpdater(
     private val context: Context,
     private val filterDuration: Long,
-    private val iStatistic: IStatistic = KServiceFacade[IStatistic::class.java]
 ) : RepositoryUpdater {
 
     private val coverCacheDir: File

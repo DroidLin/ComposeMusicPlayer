@@ -2,8 +2,8 @@ package com.harvest.musicplayer
 
 import android.content.Context
 import com.harvest.common.services.KServiceFacade
-import com.harvest.musicplayer.repositories.MusicDatabaseModule
-import com.harvest.musicplayer.service.controller.PlayerServiceControllerImpl
+import com.music.android.lin.player.repositories.MusicDatabaseService
+import com.music.android.lin.player.service.controller.PlayerServiceControllerImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,8 +21,8 @@ object MusicPlayerHiltModule {
 
     @Provides
     @Singleton
-    fun provideMusicDatabaseModule(@ApplicationContext context: Context): MusicDatabaseModule =
-        MusicDatabaseModule(context, "key_anonymous_user")
+    fun provideMusicDatabaseModule(@ApplicationContext context: Context): MusicDatabaseService =
+        MusicDatabaseService(context, "key_anonymous_user")
 
     @Provides
     fun provideMusicService(): MediaService = KServiceFacade[MediaService::class.java]
@@ -33,12 +33,12 @@ object MusicPlayerHiltModule {
     }
 
     @Provides
-    fun providePlayerServiceController(musicDatabaseModule: MusicDatabaseModule): PlayerServiceController {
-        return PlayerServiceControllerImpl(musicDatabaseModule.mediaRepository)
+    fun providePlayerServiceController(musicDatabaseService: MusicDatabaseService): PlayerServiceController {
+        return PlayerServiceControllerImpl(musicDatabaseService.mediaRepository)
     }
 
     @Provides
-    fun provideMusicRepository(musicDatabaseModule: MusicDatabaseModule): MediaRepository {
-        return musicDatabaseModule.mediaRepository
+    fun provideMusicRepository(musicDatabaseService: MusicDatabaseService): MediaRepository {
+        return musicDatabaseService.mediaRepository
     }
 }

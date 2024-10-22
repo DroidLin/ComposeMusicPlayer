@@ -1,16 +1,14 @@
-package com.harvest.musicplayer.notification.android
+package com.music.android.lin.player.notification.android
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
-import com.harvest.common.services.KServiceFacade
 import com.harvest.musicplayer.MediaController
 import com.harvest.musicplayer.MediaInfo
 import com.harvest.musicplayer.PlayInfo
 import com.music.android.lin.player.notification.fetchImageBitmap
-import com.harvest.statistic.interfaces.IStatistic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -51,7 +49,6 @@ internal class PlayMediaSession(
 
         override fun onStop() {
             this@PlayMediaSession.mediaController.stop()
-            KServiceFacade[IStatistic::class.java].logError("PlayMediaSession", "receive stop event from media session")
         }
 
         override fun onSeekTo(pos: Long) {

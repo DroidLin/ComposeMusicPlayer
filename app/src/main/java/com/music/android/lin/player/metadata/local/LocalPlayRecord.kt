@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.metadata.local
+package com.music.android.lin.player.metadata.local
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

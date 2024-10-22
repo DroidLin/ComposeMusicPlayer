@@ -1,42 +1,38 @@
-package com.harvest.musicplayer.repositories
+package com.music.android.lin.player.repositories
 
 import android.content.Context
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.harvest.common.services.KServiceFacade
 import com.harvest.musicplayer.MediaDatabase
 import com.harvest.musicplayer.MediaRepository
-import com.harvest.statistic.interfaces.IStatistic
+import com.music.android.lin.player.interfaces.MediaRepository
 
 /**
  * @author liuzhongao
  * @since 2023/10/13 15:13
  */
-class MusicDatabaseModule(
+class MusicDatabaseService(
     private val applicationContext: Context,
-    private val accountKey: String
-) {
+    private val accessToken: String
+) : DatabaseService {
 
     private val mediaDatabase: MediaDatabase by lazy {
         Room.databaseBuilder(
             context = this.applicationContext,
             klass = MediaDatabase::class.java,
-            name = "music_database_${accountKey}"
+            name = "music_database_${accessToken}"
         )
             .allowMainThreadQueries()
             .addMigrations(MigrateFromOneToTwo, MigrateFromTwoToThree, MigrateFromThreeToFour, MigrateFrom4To5, MigrateFrom5To6)
             .build()
     }
 
-    val mediaRepository: MediaRepository by lazy {
-        MediaRepositoryImpl(
-            mediaDatabase = this.mediaDatabase,
-            iStatistic = KServiceFacade[IStatistic::class.java]
-        )
+    override val mediaRepository: MediaRepository by lazy {
+        MediaRepositoryImpl(mediaDatabase = this.mediaDatabase)
     }
 
-    fun release() {
+    override fun release() {
         this.mediaDatabase.close()
     }
 }

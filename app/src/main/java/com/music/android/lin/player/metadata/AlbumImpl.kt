@@ -1,6 +1,6 @@
-package com.harvest.musicplayer.metadata
+package com.music.android.lin.player.metadata
 
-import com.harvest.musicplayer.Album
+import com.music.android.lin.player.interfaces.Album
 
 /**
  * @author liuzhongao

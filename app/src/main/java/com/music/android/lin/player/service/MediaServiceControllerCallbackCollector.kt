@@ -2,18 +2,16 @@ package com.harvest.musicplayer.service
 
 import android.os.Binder
 import android.os.Handler
-import android.os.IBinder
 import android.os.Looper
-import com.harvest.musicplayer.MediaDatabaseEntryPoint
 import com.harvest.musicplayer.MediaInfo
 import com.harvest.musicplayer.MediaPlayerEvent
-import com.harvest.musicplayer.MusicPlayerHiltModule
 import com.harvest.musicplayer.MusicServicePlaybackState
 import com.harvest.musicplayer.PlayInfo
 import com.harvest.musicplayer.PlayList
 import com.harvest.musicplayer.PlayMode
 import com.harvest.musicplayer.PlaybackState
 import com.harvest.musicplayer.PlayerEvent
+import com.music.android.lin.player.service.MusicPlayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel

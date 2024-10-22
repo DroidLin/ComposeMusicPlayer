@@ -1,11 +1,11 @@
-package com.harvest.musicplayer.service.controller
+package com.music.android.lin.player.service.controller
 
 import android.view.Surface
-import com.harvest.musicplayer.MediaController
-import com.harvest.musicplayer.MediaInfo
-import com.harvest.musicplayer.PlayInfo
-import com.harvest.musicplayer.PlayList
-import com.harvest.musicplayer.PlayMode
+import com.music.android.lin.player.interfaces.MediaController
+import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.interfaces.PlayInfo
+import com.music.android.lin.player.interfaces.PlayList
+import com.music.android.lin.player.interfaces.PlayMode
 
 /**
  * @author liuzhongao

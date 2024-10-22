@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.service.player
+package com.music.android.lin.player.service.player
 
 import android.media.AudioAttributes
 import android.media.AudioManager
@@ -8,11 +8,9 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.Surface
-import com.harvest.common.services.KServiceFacade
 import com.harvest.musicplayer.MediaPlayerEvent
 import com.harvest.musicplayer.PlayerType
-import com.harvest.musicplayer.service.state.IMutablePlayerCenter
-import com.harvest.statistic.interfaces.IStatistic
+import com.music.android.lin.player.service.state.IMutablePlayerCenter
 
 /**
  * @author liuzhongao
@@ -23,7 +21,6 @@ internal class SystemMediaPlayer(mutablePlayerCenter: IMutablePlayerCenter) :
 
     private val mainHandler = Handler(Looper.getMainLooper())
     private val _player = MediaPlayer()
-    private val iStatisticService: IStatistic get() = KServiceFacade[IStatistic::class.java]
 
     override val playerType: PlayerType get() = PlayerType.System
     override val currentMusicInfoDuration: Long get() = _player.duration.toLong()
@@ -34,22 +31,10 @@ internal class SystemMediaPlayer(mutablePlayerCenter: IMutablePlayerCenter) :
     }
 
     private val onErrorListener = MediaPlayer.OnErrorListener { mp, what, extra ->
-        this.iStatisticService.logInfo(
-            "SystemMediaPlayer",
-            "kind", "playerOnError",
-            "what", what,
-            "extra", extra
-        )
         true
     }
 
     private val onInfoListener = MediaPlayer.OnInfoListener { mp, what, extra ->
-        this.iStatisticService.logInfo(
-            "SystemMediaPlayer",
-            "kind", "playerOnInfo",
-            "what", what,
-            "extra", extra
-        )
         when (what) {
             MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
                 this.trySendPlayEvent(mediaPlayerEvent = MediaPlayerEvent.BufferingStart)

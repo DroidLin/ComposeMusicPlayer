@@ -9,16 +9,17 @@ import android.provider.MediaStore
 import androidx.core.database.getIntOrNull
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
-import com.harvest.musicplayer.Album
-import com.harvest.musicplayer.Artist
-import com.harvest.musicplayer.MediaExtras
-import com.harvest.musicplayer.metadata.MutableMediaExtras
 import com.harvest.musicplayer.repositories.buildAlbum
 import com.harvest.musicplayer.repositories.buildArtist
-import com.music.android.lin.applicationContext
+import com.music.android.lin.application.applicationContext
+import com.music.android.lin.player.interfaces.Album
+import com.music.android.lin.player.interfaces.Artist
+import com.music.android.lin.player.interfaces.MediaExtras
+import com.music.android.lin.player.metadata.MutableMediaExtras
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 
 /**
  * @author liuzhongao
@@ -54,10 +55,12 @@ private suspend fun decodeAlbumInfo(cursor: Cursor): Album {
     val albumPublishDate = cursor.getLongOrNull(cursor.getColumnIndex(MediaStore.Audio.AlbumColumns.FIRST_YEAR)) ?: 0
     val songNumber = cursor.getIntOrNull(cursor.getColumnIndex(MediaStore.Audio.AlbumColumns.NUMBER_OF_SONGS)) ?: 0
     val coverUrl = decodeAlbumCoverAndTransform(albumId = albumId) { bitmapBytes ->
-        writeToFile(
-            file = File(coverCacheDir, "album_${albumId}.dat"),
-            bytes = bitmapBytes
-        )
+        val file = File(coverCacheDir, "album_${albumId}.data")
+        FileOutputStream(file).use {
+            it.write(bitmapBytes)
+            it.flush()
+        }
+        Uri.fromFile(file)
     }
     return buildAlbum(
         id = albumId,

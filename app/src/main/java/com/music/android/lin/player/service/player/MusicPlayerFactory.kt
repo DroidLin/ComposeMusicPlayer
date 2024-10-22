@@ -1,7 +1,7 @@
-package com.harvest.musicplayer.service.player
+package com.music.android.lin.player.service.player
 
 import com.harvest.musicplayer.PlayerType
-import com.harvest.musicplayer.service.state.IMutablePlayerCenter
+import com.music.android.lin.player.service.state.IMutablePlayerCenter
 
 /**
  * @author liuzhongao
