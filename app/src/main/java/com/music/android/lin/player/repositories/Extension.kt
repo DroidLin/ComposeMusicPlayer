@@ -1,7 +1,7 @@
-package com.harvest.musicplayer.repositories
+package com.music.android.lin.player.repositories
 
-import com.harvest.musicplayer.ExtensionMap
 import com.music.android.lin.player.ExtensionMapImpl
+import com.music.android.lin.player.interfaces.ExtensionMap
 import com.music.android.lin.player.metadata.local.LocalMusicInfo
 import com.music.android.lin.player.metadata.local.LocalPlayList
 import org.json.JSONArray

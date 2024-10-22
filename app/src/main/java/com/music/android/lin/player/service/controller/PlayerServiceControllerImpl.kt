@@ -1,8 +1,8 @@
 package com.music.android.lin.player.service.controller
 
-import com.harvest.musicplayer.MediaRepository
-import com.harvest.musicplayer.MediaStoreUpdateOptions
-import com.harvest.musicplayer.PlayerServiceController
+import com.music.android.lin.player.interfaces.MediaRepository
+import com.music.android.lin.player.interfaces.MediaStoreUpdateOptions
+import com.music.android.lin.player.interfaces.PlayerServiceController
 import com.music.android.lin.player.repositories.updater.RepositoryUpdaterFactory
 
 /**

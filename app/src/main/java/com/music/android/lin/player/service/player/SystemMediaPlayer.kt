@@ -8,8 +8,8 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.Surface
-import com.harvest.musicplayer.MediaPlayerEvent
-import com.harvest.musicplayer.PlayerType
+import com.music.android.lin.player.interfaces.MediaPlayerEvent
+import com.music.android.lin.player.interfaces.PlayerType
 import com.music.android.lin.player.service.state.IMutablePlayerCenter
 
 /**

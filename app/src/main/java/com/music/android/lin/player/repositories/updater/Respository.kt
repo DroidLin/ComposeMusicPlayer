@@ -11,7 +11,7 @@ import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import com.harvest.musicplayer.repositories.buildAlbum
 import com.harvest.musicplayer.repositories.buildArtist
-import com.music.android.lin.application.applicationContext
+import com.music.android.lin.AppKoin
 import com.music.android.lin.player.interfaces.Album
 import com.music.android.lin.player.interfaces.Artist
 import com.music.android.lin.player.interfaces.MediaExtras
@@ -26,7 +26,7 @@ import java.io.FileOutputStream
  * @since 2023/12/10 6:13 PM
  */
 
-private val context: Context get() = applicationContext
+private val context: Context get() = AppKoin.applicationContext
 
 private const val MUSIC_INFO_COVER = "music_info_cover"
 private const val ALBUM_COVER_BASE_CONTENT_URI = "content://media/external/audio/albumart"

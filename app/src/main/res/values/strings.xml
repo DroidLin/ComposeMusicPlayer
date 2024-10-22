@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MusicPlayer</string>
+    <string name="app_name">CoCo</string>
 
 
     <string name="string_play_service_notification_channel_name">音乐播放</string>

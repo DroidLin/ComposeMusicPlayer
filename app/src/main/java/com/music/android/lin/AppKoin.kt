@@ -16,6 +16,9 @@ object AppKoin {
 
     val koin: Koin get() = GlobalContext.get()
 
+    val applicationContext: Context
+        get() = this.koin.get(AppIdentifier.ApplicationContext)
+
     fun init(context: Context) {
         startKoin {
             modules(playerModule)

@@ -2,7 +2,7 @@ package com.music.android.lin.player.repositories.updater
 
 import com.harvest.musicplayer.repositories.updater.RepositoryUpdaterWrapper
 import com.harvest.musicplayer.repositories.updater.VideoRepositoryUpdater
-import com.music.android.lin.application.applicationContext
+import com.music.android.lin.AppKoin
 import com.music.android.lin.player.interfaces.MediaStoreUpdateOptions
 
 /**
@@ -14,7 +14,7 @@ internal object RepositoryUpdaterFactory {
     @JvmStatic
     fun create(mediaStoreUpdateOptions: MediaStoreUpdateOptions): RepositoryUpdater {
         val repositoryUpdaterWrapper = RepositoryUpdaterWrapper()
-
+        val applicationContext = AppKoin.applicationContext
         val videoContentProviderOptions = mediaStoreUpdateOptions.videoContentProviderOptions
         if (videoContentProviderOptions != null) {
             repositoryUpdaterWrapper += VideoRepositoryUpdater(

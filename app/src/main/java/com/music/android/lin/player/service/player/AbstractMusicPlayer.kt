@@ -1,9 +1,9 @@
 package com.music.android.lin.player.service.player
 
-import com.harvest.musicplayer.MediaPlayerEvent
-import com.harvest.musicplayer.PlayInfo
-import com.harvest.musicplayer.PlaybackState
-import com.harvest.musicplayer.PlayerType
+import com.music.android.lin.player.interfaces.MediaPlayerEvent
+import com.music.android.lin.player.interfaces.PlayInfo
+import com.music.android.lin.player.interfaces.PlaybackState
+import com.music.android.lin.player.interfaces.PlayerType
 import com.music.android.lin.player.service.MusicPlayer
 import com.music.android.lin.player.service.state.IMutablePlayerCenter
 

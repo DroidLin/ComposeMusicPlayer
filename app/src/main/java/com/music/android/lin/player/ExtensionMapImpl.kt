@@ -1,6 +1,6 @@
 package com.music.android.lin.player
 
-import com.harvest.musicplayer.repositories.toMap
+import com.music.android.lin.player.repositories.toMap
 import com.music.android.lin.player.interfaces.ExtensionMap
 import org.json.JSONObject
 

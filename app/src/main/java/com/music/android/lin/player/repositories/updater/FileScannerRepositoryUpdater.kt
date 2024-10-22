@@ -1,6 +1,6 @@
 package com.music.android.lin.player.repositories.updater
 
-import com.harvest.musicplayer.MediaRepository
+import com.music.android.lin.player.interfaces.MediaRepository
 import java.io.File
 
 /**

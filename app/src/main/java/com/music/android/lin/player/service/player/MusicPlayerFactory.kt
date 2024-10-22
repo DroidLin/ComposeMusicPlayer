@@ -1,6 +1,6 @@
 package com.music.android.lin.player.service.player
 
-import com.harvest.musicplayer.PlayerType
+import com.music.android.lin.player.interfaces.PlayerType
 import com.music.android.lin.player.service.state.IMutablePlayerCenter
 
 /**

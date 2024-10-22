@@ -1,11 +1,11 @@
 package com.music.android.lin.player.service.state
 
-import com.harvest.musicplayer.MediaInfo
-import com.harvest.musicplayer.MediaPlayerEvent
-import com.harvest.musicplayer.PlayInfo
-import com.harvest.musicplayer.PlayList
-import com.harvest.musicplayer.PlayMode
-import com.harvest.musicplayer.PlaybackState
+import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.interfaces.MediaPlayerEvent
+import com.music.android.lin.player.interfaces.PlayInfo
+import com.music.android.lin.player.interfaces.PlayList
+import com.music.android.lin.player.interfaces.PlayMode
+import com.music.android.lin.player.interfaces.PlaybackState
 
 /**
  * @author liuzhongao

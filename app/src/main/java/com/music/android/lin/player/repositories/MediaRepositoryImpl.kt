@@ -4,15 +4,12 @@ import androidx.room.withTransaction
 import com.music.android.lin.player.MediaDatabase
 import com.harvest.musicplayer.dao.MusicInfoDao
 import com.harvest.musicplayer.dao.PlayRecordDao
-import com.harvest.musicplayer.repositories.artistsIdList
 import com.harvest.musicplayer.repositories.buildAlbum
 import com.harvest.musicplayer.repositories.buildArtist
 import com.harvest.musicplayer.repositories.buildMediaExtras
 import com.harvest.musicplayer.repositories.buildMediaInfo
 import com.harvest.musicplayer.repositories.buildPlayList
 import com.harvest.musicplayer.repositories.buildPlayRecord
-import com.harvest.musicplayer.repositories.extensionsMap
-import com.harvest.musicplayer.repositories.musicInfoIdList
 import com.music.android.lin.player.dao.AlbumDao
 import com.music.android.lin.player.dao.ArtistDao
 import com.music.android.lin.player.dao.PlayListDao
