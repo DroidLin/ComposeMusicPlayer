@@ -1,0 +1,18 @@
+package com.harvest.musicplayer.repositories.updater
+
+import com.harvest.musicplayer.MediaRepository
+import java.io.File
+
+/**
+ * @author liuzhongao
+ * @since 2023/10/16 2:19 PM
+ */
+internal class FileScannerRepositoryUpdater(
+    private val includeFileDirectories: List<File>,
+    private val filterDuration: Long,
+) : RepositoryUpdater {
+
+    override suspend fun updateRepository(mediaRepository: MediaRepository) {
+
+    }
+}
