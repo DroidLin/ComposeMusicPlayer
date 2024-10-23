@@ -1,7 +1,7 @@
 package com.music.android.lin.application
 
 import android.app.Application
-import com.music.android.lin.AppKoin
+import com.music.android.lin.modules.AppKoin
 
 internal class AndroidApplication : Application() {
 

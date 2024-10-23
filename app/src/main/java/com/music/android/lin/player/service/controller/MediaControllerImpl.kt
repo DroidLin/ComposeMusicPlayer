@@ -8,11 +8,11 @@ import android.os.Looper
 import android.view.Surface
 import com.music.android.lin.R
 import com.music.android.lin.player.interfaces.MediaController
-import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.interfaces.MediaRepository
-import com.music.android.lin.player.interfaces.PlayInfo
-import com.music.android.lin.player.interfaces.PlayList
-import com.music.android.lin.player.interfaces.PlayMode
+import com.music.android.lin.player.metadata.PlayInfo
+import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.PlayMode
 import com.music.android.lin.player.service.isUriAvailable
 import com.music.android.lin.player.service.metadata.MediaConfiguration
 import com.music.android.lin.player.service.player.MusicPlayerWrapper

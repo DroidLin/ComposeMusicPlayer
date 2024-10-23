@@ -11,10 +11,11 @@ import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import com.harvest.musicplayer.repositories.buildAlbum
 import com.harvest.musicplayer.repositories.buildArtist
-import com.music.android.lin.AppKoin
-import com.music.android.lin.player.interfaces.Album
-import com.music.android.lin.player.interfaces.Artist
-import com.music.android.lin.player.interfaces.MediaExtras
+import com.music.android.lin.modules.AppKoin
+import com.music.android.lin.modules.applicationContext
+import com.music.android.lin.player.metadata.Album
+import com.music.android.lin.player.metadata.Artist
+import com.music.android.lin.player.metadata.MediaExtras
 import com.music.android.lin.player.metadata.MutableMediaExtras
 import java.io.ByteArrayOutputStream
 import java.io.File

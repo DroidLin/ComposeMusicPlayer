@@ -5,11 +5,11 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
 import com.harvest.musicplayer.repositories.buildMediaInfo
-import com.music.android.lin.player.interfaces.Album
-import com.music.android.lin.player.interfaces.Artist
-import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.metadata.Album
+import com.music.android.lin.player.metadata.Artist
+import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.interfaces.MediaRepository
-import com.music.android.lin.player.interfaces.MediaType
+import com.music.android.lin.player.metadata.MediaType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers

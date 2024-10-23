@@ -1,9 +1,9 @@
 package com.music.android.lin.player.service.metadata
 
-import com.music.android.lin.player.interfaces.MediaInfo
-import com.music.android.lin.player.interfaces.PlayList
-import com.music.android.lin.player.interfaces.PlayMode
-import com.music.android.lin.player.interfaces.PlayerType
+import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.PlayMode
+import com.music.android.lin.player.metadata.PlayerType
 import java.io.Serializable
 
 /**

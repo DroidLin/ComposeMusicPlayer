@@ -1,11 +1,5 @@
 package com.music.android.lin.player.metadata
 
-import com.music.android.lin.player.interfaces.Album
-import com.music.android.lin.player.interfaces.Artist
-import com.music.android.lin.player.interfaces.MediaExtras
-import com.music.android.lin.player.interfaces.MediaInfo
-import com.music.android.lin.player.interfaces.MediaType
-
 /**
  * @author liuzhongao
  * @since 2023/10/6 14:15

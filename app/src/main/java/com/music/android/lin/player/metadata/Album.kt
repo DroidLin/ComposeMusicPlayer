@@ -1,4 +1,4 @@
-package com.music.android.lin.player.interfaces
+package com.music.android.lin.player.metadata
 
 import java.io.Serializable
 

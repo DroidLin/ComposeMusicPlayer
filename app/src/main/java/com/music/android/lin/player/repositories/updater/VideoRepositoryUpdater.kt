@@ -9,10 +9,10 @@ import androidx.core.database.getStringOrNull
 import com.harvest.musicplayer.repositories.buildAlbum
 import com.harvest.musicplayer.repositories.buildArtist
 import com.harvest.musicplayer.repositories.buildMediaInfo
-import com.music.android.lin.player.interfaces.MediaExtras
-import com.music.android.lin.player.interfaces.MediaInfo
+import com.music.android.lin.player.metadata.MediaExtras
+import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.interfaces.MediaRepository
-import com.music.android.lin.player.interfaces.MediaType
+import com.music.android.lin.player.metadata.MediaType
 import com.music.android.lin.player.repositories.updater.RepositoryUpdater
 import com.music.android.lin.player.repositories.updater.VideoCursorRecord
 import com.music.android.lin.player.repositories.updater.decodeMediaExtras

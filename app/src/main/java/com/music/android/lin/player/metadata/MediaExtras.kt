@@ -1,8 +1,7 @@
-package com.music.android.lin.player.interfaces
+package com.music.android.lin.player.metadata
 
 import android.media.MediaFormat
 import androidx.annotation.IntDef
-import java.io.Serial
 import java.io.Serializable
 
 /**

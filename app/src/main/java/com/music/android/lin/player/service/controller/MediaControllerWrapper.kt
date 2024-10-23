@@ -2,10 +2,10 @@ package com.music.android.lin.player.service.controller
 
 import android.view.Surface
 import com.music.android.lin.player.interfaces.MediaController
-import com.music.android.lin.player.interfaces.MediaInfo
-import com.music.android.lin.player.interfaces.PlayInfo
-import com.music.android.lin.player.interfaces.PlayList
-import com.music.android.lin.player.interfaces.PlayMode
+import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.PlayInfo
+import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.PlayMode
 
 /**
  * @author liuzhongao

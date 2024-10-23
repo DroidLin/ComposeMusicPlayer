@@ -1,7 +1,5 @@
 package com.music.android.lin.player.metadata
 
-import com.music.android.lin.player.interfaces.Artist
-
 /**
  * @author liuzhongao
  * @since 2023/10/6 14:22

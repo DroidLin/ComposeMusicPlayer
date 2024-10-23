@@ -1,5 +1,6 @@
-package com.music.android.lin.player.interfaces
+package com.music.android.lin.player.metadata
 
+import com.music.android.lin.player.interfaces.ExtensionMap
 import java.io.Serializable
 
 /**

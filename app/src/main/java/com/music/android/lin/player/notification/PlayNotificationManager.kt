@@ -20,8 +20,8 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
 import com.music.android.lin.R
 import com.music.android.lin.player.interfaces.MediaController
-import com.music.android.lin.player.interfaces.MediaInfo
-import com.music.android.lin.player.interfaces.PlayInfo
+import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.PlayInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

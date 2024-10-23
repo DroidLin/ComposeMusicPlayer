@@ -1,5 +1,11 @@
 package com.music.android.lin.player.interfaces
 
+import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.PlayMode
+import com.music.android.lin.player.metadata.PlaybackState
+import com.music.android.lin.player.metadata.PlayerType
+
 /**
  * @author liuzhongao
  * @since 2023/10/11 15:10

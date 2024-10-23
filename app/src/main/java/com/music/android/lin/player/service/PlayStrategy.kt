@@ -1,7 +1,7 @@
 package com.harvest.musicplayer.service
 
-import com.music.android.lin.player.interfaces.MediaInfo
-import com.music.android.lin.player.interfaces.PlayList
+import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.PlayList
 
 /**
  * @author liuzhongao

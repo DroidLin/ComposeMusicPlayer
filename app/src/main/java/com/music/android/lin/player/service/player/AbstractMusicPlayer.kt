@@ -1,10 +1,9 @@
 package com.music.android.lin.player.service.player
 
-import com.music.android.lin.player.interfaces.MediaPlayerEvent
-import com.music.android.lin.player.interfaces.PlayInfo
-import com.music.android.lin.player.interfaces.PlaybackState
-import com.music.android.lin.player.interfaces.PlayerType
-import com.music.android.lin.player.service.MusicPlayer
+import com.music.android.lin.player.metadata.MediaPlayerEvent
+import com.music.android.lin.player.metadata.PlayInfo
+import com.music.android.lin.player.metadata.PlaybackState
+import com.music.android.lin.player.metadata.PlayerType
 import com.music.android.lin.player.service.state.IMutablePlayerCenter
 
 /**

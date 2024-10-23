@@ -15,4 +15,7 @@ object PlayerIdentifier {
      */
     @JvmField
     val PlayerDatabaseAccessToken = named("PlayerAccessToken")
+
+    @JvmField
+    val PlayerLogger= named("player_logger")
 }

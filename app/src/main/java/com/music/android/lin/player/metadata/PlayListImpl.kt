@@ -1,9 +1,6 @@
 package com.music.android.lin.player.metadata
 
 import com.music.android.lin.player.interfaces.ExtensionMap
-import com.music.android.lin.player.interfaces.MediaInfo
-import com.music.android.lin.player.interfaces.PlayList
-import com.music.android.lin.player.interfaces.PlayListType
 
 /**
  * @author liuzhongao

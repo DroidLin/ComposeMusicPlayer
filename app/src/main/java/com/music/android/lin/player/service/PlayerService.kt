@@ -2,20 +2,22 @@ package com.music.android.lin.player.service
 
 import android.app.Service
 import android.content.Intent
+import android.os.HandlerThread
 import android.os.IBinder
 import com.music.android.lin.player.audiofocus.PlayerAudioFocusManager
-import com.music.android.lin.player.interfaces.MediaInfo
-import com.music.android.lin.player.interfaces.MediaPlayerEvent
-import com.music.android.lin.player.interfaces.PlayInfo
-import com.music.android.lin.player.interfaces.PlayList
-import com.music.android.lin.player.interfaces.PlayMode
-import com.music.android.lin.player.interfaces.PlaybackState
-import com.music.android.lin.player.interfaces.PlayerEvent
+import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.MediaPlayerEvent
+import com.music.android.lin.player.metadata.PlayInfo
+import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.PlayMode
+import com.music.android.lin.player.metadata.PlaybackState
+import com.music.android.lin.player.metadata.PlayerEvent
 import com.music.android.lin.player.notification.PlayNotificationManager
 import com.music.android.lin.player.notification.android.PlayMediaSession
 import com.music.android.lin.player.service.controller.MediaControllerImpl
 import com.music.android.lin.player.service.controller.MusicPlayerListenerWrapper
 import com.music.android.lin.player.service.metadata.MediaConfiguration
+import com.music.android.lin.player.service.player.MusicPlayer
 import com.music.android.lin.player.service.state.IMutablePlayerCenter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +38,12 @@ import kotlinx.coroutines.launch
  * @since 2023/10/8 8:41 PM
  */
 class PlayerService : Service() {
+
+    private val handlerThread = object : HandlerThread("PlayerThread") {
+        override fun onLooperPrepared() {
+
+        }
+    }
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private val musicPlayerListenerWrapper = MusicPlayerListenerWrapper()

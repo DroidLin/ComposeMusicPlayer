@@ -5,8 +5,8 @@ import android.graphics.Bitmap
 import coil3.SingletonImageLoader
 import coil3.request.ImageRequest
 import coil3.toBitmap
-import com.music.android.lin.AppIdentifier
-import com.music.android.lin.AppKoin
+import com.music.android.lin.modules.AppKoin
+import com.music.android.lin.modules.applicationContext
 
 /**
  * @author liuzhongao
@@ -14,7 +14,7 @@ import com.music.android.lin.AppKoin
  */
 
 suspend fun fetchImageBitmap(imageResourceUrl: String): Bitmap? {
-    val context: Context = AppKoin.koin.get(AppIdentifier.ApplicationContext)
+    val context: Context = AppKoin.applicationContext
     val imageLoader = SingletonImageLoader.get(context)
     val imageRequest = ImageRequest.Builder(context)
         .data(imageResourceUrl)

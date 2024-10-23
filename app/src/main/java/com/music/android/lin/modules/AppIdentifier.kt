@@ -1,4 +1,4 @@
-package com.music.android.lin
+package com.music.android.lin.modules
 
 import org.koin.core.qualifier.named
 

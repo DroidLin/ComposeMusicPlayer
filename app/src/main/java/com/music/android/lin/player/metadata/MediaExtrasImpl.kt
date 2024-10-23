@@ -1,6 +1,5 @@
 package com.music.android.lin.player.metadata
 
-import com.music.android.lin.player.interfaces.MediaExtras
 import org.json.JSONObject
 
 /**

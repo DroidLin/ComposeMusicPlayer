@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.google.dev.ksp)
 }
 
 android {
@@ -67,16 +68,25 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // developer
+    // developers
+
+    // room
     implementation(libs.jetpack.room)
     implementation(libs.jetpack.room.ktx)
     implementation(libs.jetpack.room.paging)
+    ksp(libs.jetpack.room.compiler)
 
+    // koin
     implementation(libs.koin.core)
     implementation(libs.koin.coroutines)
     implementation(libs.koin.compose)
 
+    // coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
+    // exoplayer3
+    implementation(libs.exoplayer3)
+    implementation(libs.exoplayer3.dash)
+    implementation(libs.exoplayer3.ui)
 }

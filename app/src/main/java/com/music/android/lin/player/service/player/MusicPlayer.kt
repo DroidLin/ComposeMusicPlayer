@@ -1,12 +1,12 @@
-package com.music.android.lin.player.service
+package com.music.android.lin.player.service.player
 
 import android.net.Uri
 import android.view.Surface
-import com.music.android.lin.player.interfaces.MediaInfo
-import com.music.android.lin.player.interfaces.PlayList
-import com.music.android.lin.player.interfaces.PlayMode
-import com.music.android.lin.player.interfaces.PlaybackState
-import com.music.android.lin.player.interfaces.PlayerEvent
+import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.PlayMode
+import com.music.android.lin.player.metadata.PlaybackState
+import com.music.android.lin.player.metadata.PlayerEvent
 
 /**
  * @author liuzhongao

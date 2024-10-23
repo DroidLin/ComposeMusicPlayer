@@ -1,7 +1,5 @@
 package com.music.android.lin.player.metadata
 
-import com.music.android.lin.player.interfaces.MediaExtras
-
 /**
  * @author liuzhongao
  * @since 2024/4/11 00:08

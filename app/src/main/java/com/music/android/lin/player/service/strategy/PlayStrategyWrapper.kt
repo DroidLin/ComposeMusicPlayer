@@ -1,9 +1,9 @@
 package com.music.android.lin.player.service.strategy
 
 import com.harvest.musicplayer.service.PlayStrategy
-import com.music.android.lin.player.interfaces.MediaInfo
-import com.music.android.lin.player.interfaces.PlayList
-import com.music.android.lin.player.interfaces.PlayMode
+import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.PlayMode
 import com.music.android.lin.player.service.state.IMutablePlayerCenter
 
 /**

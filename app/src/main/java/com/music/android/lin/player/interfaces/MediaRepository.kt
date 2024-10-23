@@ -1,6 +1,11 @@
 package com.music.android.lin.player.interfaces
 
-import com.music.android.lin.player.interfaces.Album
+import com.music.android.lin.player.metadata.Album
+import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.MediaType
+import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.PlayRecord
+import com.music.android.lin.player.metadata.RecentPlayItem
 import kotlinx.coroutines.flow.Flow
 
 /**
