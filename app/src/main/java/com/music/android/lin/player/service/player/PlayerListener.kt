@@ -1,6 +1,7 @@
 package com.music.android.lin.player.service.player
 
 import com.music.android.lin.player.metadata.PlayMode
+import com.music.android.lin.player.service.player.datasource.DataSource
 import java.util.concurrent.CopyOnWriteArrayList
 
 internal class PlayerListener : Player.Listener {
@@ -23,11 +24,11 @@ internal class PlayerListener : Player.Listener {
         dispatchListener { onPlayingChange(isPlaying) }
     }
 
-    override fun onMediaBegin(dataSource: Player.DataSource) {
+    override fun onMediaBegin(dataSource: DataSource) {
         dispatchListener { onMediaBegin(dataSource) }
     }
 
-    override fun onMediaEnd(dataSource: Player.DataSource) {
+    override fun onMediaEnd(dataSource: DataSource) {
         dispatchListener { onMediaEnd(dataSource) }
     }
 

@@ -6,12 +6,11 @@ import android.media.ThumbnailUtils
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
-import com.harvest.musicplayer.repositories.buildAlbum
-import com.harvest.musicplayer.repositories.buildArtist
-import com.harvest.musicplayer.repositories.buildMediaInfo
 import com.music.android.lin.player.metadata.MediaExtras
 import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.interfaces.MediaRepository
+import com.music.android.lin.player.metadata.Album
+import com.music.android.lin.player.metadata.Artist
 import com.music.android.lin.player.metadata.MediaType
 import com.music.android.lin.player.repositories.updater.RepositoryUpdater
 import com.music.android.lin.player.repositories.updater.VideoCursorRecord
@@ -73,19 +72,19 @@ internal class VideoRepositoryUpdater(
                         }.onFailure { it.printStackTrace() }.getOrNull()
                     }
                     val mediaExtras = async { decodeMediaExtras(videoCursorRecord.sourceUri) }
-                    buildMediaInfo(
+                    MediaInfo(
                         id = videoCursorRecord.id,
                         mediaTitle = videoCursorRecord.title,
                         mediaDescription = videoCursorRecord.description,
                         artists = listOf(
-                            buildArtist(
+                            Artist(
                                 id = "video_artist_${videoCursorRecord.id}",
                                 name = videoCursorRecord.artistName ?: "",
                                 description = "",
                                 numberOfAlbum = 1
                             )
                         ),
-                        album = buildAlbum(
+                        album = Album(
                             id = "video_album_${videoCursorRecord.id}",
                             albumName = videoCursorRecord.albumName ?: "",
                             albumDescription = "",

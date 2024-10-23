@@ -9,8 +9,6 @@ import android.provider.MediaStore
 import androidx.core.database.getIntOrNull
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
-import com.harvest.musicplayer.repositories.buildAlbum
-import com.harvest.musicplayer.repositories.buildArtist
 import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.modules.applicationContext
 import com.music.android.lin.player.metadata.Album
@@ -63,7 +61,7 @@ private suspend fun decodeAlbumInfo(cursor: Cursor): Album {
         }
         Uri.fromFile(file)
     }
-    return buildAlbum(
+    return Album(
         id = albumId,
         albumName = albumName,
         albumDescription = "",
@@ -118,7 +116,7 @@ private fun decodeArtistInfo(cursor: Cursor): Artist {
     val artistName = cursor.getStringOrNull(cursor.getColumnIndex(MediaStore.Audio.ArtistColumns.ARTIST)) ?: ""
     val numberOfAlbum = cursor.getIntOrNull(cursor.getColumnIndex(MediaStore.Audio.ArtistColumns.NUMBER_OF_ALBUMS)) ?: 0
     val artistDescription = ""
-    return buildArtist(
+    return Artist(
         id = artistId,
         name = artistName,
         description = artistDescription,

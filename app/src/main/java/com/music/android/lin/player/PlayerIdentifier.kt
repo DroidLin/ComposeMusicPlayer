@@ -18,4 +18,7 @@ object PlayerIdentifier {
 
     @JvmField
     val PlayerLogger= named("player_logger")
+
+    @JvmField
+    val ExoPlayer3 = named("exo_player3")
 }

@@ -43,3 +43,46 @@ interface MediaInfo : Serializable {
         override val mediaExtras: MediaExtras get() = MediaExtras
     }
 }
+
+fun MediaInfo(
+    id: String,
+    mediaTitle: String,
+    mediaDescription: String,
+    artists: List<Artist>,
+    album: Album,
+    coverUri: String?,
+    sourceUri: String?,
+    updateTimeStamp: Long,
+    mediaType: MediaType,
+    mediaExtras: MediaExtras
+): MediaInfo {
+    return MediaInfoImpl(
+        id = id,
+        mediaTitle = mediaTitle,
+        mediaDescription = mediaDescription,
+        artists = artists,
+        album = album,
+        coverUri = coverUri,
+        sourceUri = sourceUri,
+        updateTimeStamp = updateTimeStamp,
+        mediaType = mediaType,
+        mediaExtras = mediaExtras
+    )
+}
+
+private data class MediaInfoImpl(
+    override val id: String,
+    override val mediaTitle: String,
+    override val mediaDescription: String,
+    override val artists: List<Artist>,
+    override val album: Album,
+    override val coverUri: String?,
+    override val sourceUri: String?,
+    override val updateTimeStamp: Long,
+    override val mediaType: MediaType,
+    override val mediaExtras: MediaExtras
+) : MediaInfo {
+    companion object {
+        private const val serialVersionUID: Long = -8145443343434315122L
+    }
+}

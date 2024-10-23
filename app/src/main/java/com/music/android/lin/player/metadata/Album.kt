@@ -30,3 +30,27 @@ interface Album : Serializable {
         override val coverUrl: String get() = ""
     }
 }
+
+fun Album(
+    id: String,
+    albumName: String,
+    albumDescription: String,
+    publishDate: Long,
+    mediaNumber: Int,
+    coverUrl: String
+) : Album {
+    return AlbumImpl(id, albumName, albumDescription, publishDate, mediaNumber, coverUrl)
+}
+
+private data class AlbumImpl(
+    override val id: String,
+    override val albumName: String,
+    override val albumDescription: String,
+    override val publishDate: Long,
+    override val mediaNumber: Int,
+    override val coverUrl: String
+) : Album {
+    companion object {
+        private const val serialVersionUID: Long = 5812140679130939661L
+    }
+}

@@ -1,13 +1,15 @@
 package com.music.android.lin.player.service.player
 
-import android.net.Uri
 import com.music.android.lin.player.metadata.PlayMode
+import com.music.android.lin.player.service.player.datasource.DataSource
 
 sealed interface Player {
 
     val playingProgress: Long
 
     val mediaDuration: Long
+
+    val isPlaying: Boolean
 
     fun addListener(listener: Listener)
 
@@ -24,11 +26,6 @@ sealed interface Player {
     fun stop()
 
     fun release()
-
-    interface DataSource {
-
-        fun tryGetResourceUri(): Uri?
-    }
 
     interface Listener {
 

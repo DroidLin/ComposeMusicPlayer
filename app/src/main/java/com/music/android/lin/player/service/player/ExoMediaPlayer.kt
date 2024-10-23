@@ -1,17 +1,17 @@
 package com.music.android.lin.player.service.player
 
+import android.annotation.SuppressLint
 import android.os.Handler
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.modules.applicationContext
+import com.music.android.lin.player.service.player.datasource.DataSource
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@UnstableApi
 internal class ExoMediaPlayer(
     private val handler: Handler,
     private val logger: Logger,
@@ -31,6 +31,7 @@ internal class ExoMediaPlayer(
         }
     }
 
+    @SuppressLint("UnsafeOptInUsageError")
     private val exoPlayer = ExoPlayer.Builder(AppKoin.applicationContext)
         .setName("custom_exo_player")
         .setLooper(this.handler.looper)
@@ -38,7 +39,7 @@ internal class ExoMediaPlayer(
         .build()
 
     @Volatile
-    private var _currentDataSource: Player.DataSource? = null
+    private var _currentDataSource: DataSource? = null
 
     override val playingProgress: Long
         get() = this.exoPlayer.currentPosition
@@ -46,11 +47,11 @@ internal class ExoMediaPlayer(
     override val mediaDuration: Long
         get() = this.exoPlayer.duration
 
+    override val isPlaying: Boolean
+        get() = this.exoPlayer.isPlaying
+
     init {
         this.exoPlayer.addListener(this.playerListener)
-        this.exoPlayer.playWhenReady = true
-
-        this.exoPlayer.bufferedPosition
     }
 
     override fun addListener(listener: Player.Listener) {
@@ -61,7 +62,7 @@ internal class ExoMediaPlayer(
         this.playingListener.removeListener(listener)
     }
 
-    override fun setDataSource(dataSource: Player.DataSource) {
+    override fun setDataSource(dataSource: DataSource) {
         val currentRunningDataSource = this._currentDataSource
         val runningMediaItem = this.exoPlayer.currentMediaItem
         if (runningMediaItem != null && currentRunningDataSource != null) {
@@ -82,9 +83,7 @@ internal class ExoMediaPlayer(
     }
 
     override fun playOrResume() {
-        if (this.exoPlayer.playbackState == ExoPlayer.STATE_READY) {
-            this.exoPlayer.play()
-        }
+        this.exoPlayer.play()
     }
 
     override fun pause() {

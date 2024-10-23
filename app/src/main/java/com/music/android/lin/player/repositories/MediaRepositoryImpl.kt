@@ -1,35 +1,32 @@
 package com.music.android.lin.player.repositories
 
 import androidx.room.withTransaction
-import com.music.android.lin.player.MediaDatabase
 import com.harvest.musicplayer.dao.MusicInfoDao
 import com.harvest.musicplayer.dao.PlayRecordDao
-import com.harvest.musicplayer.repositories.buildAlbum
-import com.harvest.musicplayer.repositories.buildArtist
-import com.harvest.musicplayer.repositories.buildMediaExtras
-import com.harvest.musicplayer.repositories.buildMediaInfo
-import com.harvest.musicplayer.repositories.buildPlayList
-import com.harvest.musicplayer.repositories.buildPlayRecord
+import com.music.android.lin.player.MediaDatabase
 import com.music.android.lin.player.dao.AlbumDao
 import com.music.android.lin.player.dao.ArtistDao
 import com.music.android.lin.player.dao.PlayListDao
+import com.music.android.lin.player.interfaces.MediaRepository
 import com.music.android.lin.player.metadata.Album
 import com.music.android.lin.player.metadata.Artist
+import com.music.android.lin.player.metadata.MediaExtras
 import com.music.android.lin.player.metadata.MediaInfo
-import com.music.android.lin.player.interfaces.MediaRepository
+import com.music.android.lin.player.metadata.MediaInfoRecentPlayItem
 import com.music.android.lin.player.metadata.MediaType
 import com.music.android.lin.player.metadata.PlayList
 import com.music.android.lin.player.metadata.PlayListType
 import com.music.android.lin.player.metadata.PlayRecord
 import com.music.android.lin.player.metadata.PlayRecord.PlayRecordResourceType.Companion.playRecordResourceType
 import com.music.android.lin.player.metadata.RecentPlayItem
-import com.music.android.lin.player.metadata.MediaExtrasImpl.Companion.toJson
-import com.music.android.lin.player.metadata.MediaInfoRecentPlayItem
 import com.music.android.lin.player.metadata.local.LocalAlbum
 import com.music.android.lin.player.metadata.local.LocalArtist
 import com.music.android.lin.player.metadata.local.LocalMusicInfo
 import com.music.android.lin.player.metadata.local.LocalPlayList
 import com.music.android.lin.player.metadata.local.LocalPlayRecord
+import com.music.android.lin.player.metadata.toImmutable
+import com.music.android.lin.player.metadata.toJson
+import com.music.android.lin.player.metadata.toMutable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -130,7 +127,7 @@ internal class MediaRepositoryImpl constructor(
     private suspend fun LocalPlayList.toPlayList(): PlayList {
         val localPlayList = this
         return coroutineScope {
-            buildPlayList(
+            PlayList(
                 id = localPlayList.id,
                 type = PlayListType.fromCode(localPlayList.typeCode),
                 name = localPlayList.name,
@@ -148,7 +145,7 @@ internal class MediaRepositoryImpl constructor(
     }
 
     private suspend fun LocalMusicInfo.toMediaInfo(): MediaInfo {
-        return buildMediaInfo(
+        return MediaInfo(
             id = this.id,
             mediaTitle = this.songTitle,
             mediaDescription = this.songDescription,
@@ -161,12 +158,12 @@ internal class MediaRepositoryImpl constructor(
             sourceUri = this.songSource?.takeIf { it.isNotEmpty() && it != "null" },
             updateTimeStamp = this.updateTimeStamp,
             mediaType = MediaType.fromCode(code = this.mediaType),
-            mediaExtras = buildMediaExtras(this.mediaExtras)
+            mediaExtras = MediaExtras(this.mediaExtras)
         )
     }
 
     private fun LocalArtist.toArtist(): Artist {
-        return buildArtist(
+        return Artist(
             id = this.id,
             name = this.name,
             description = this.description,
@@ -175,7 +172,7 @@ internal class MediaRepositoryImpl constructor(
     }
 
     private fun LocalAlbum.toAlbum(): Album {
-        return buildAlbum(
+        return Album(
             id = this.id,
             albumName = this.albumName,
             albumDescription = this.albumDescription,
@@ -224,9 +221,10 @@ internal class MediaRepositoryImpl constructor(
     ) {
         val mediaInfo = this.musicInfoDao.getMusicInfoList(ids = musicInfoIdList)
             .map { it.toMediaInfo() }.distinctBy { it.id }
-        playList.mediaInfoList.clear()
-        playList.mediaInfoList.addAll(mediaInfo)
-        this.updatePlayList(playList)
+        val mutablePlayList = playList.toMutable()
+        mutablePlayList.mediaInfoList.clear()
+        mutablePlayList.mediaInfoList.addAll(mediaInfo)
+        this.updatePlayList(mutablePlayList.toImmutable())
     }
 
     override suspend fun addMusicInfoToPlayList(playListId: String, musicInfoIdList: List<String>) {
@@ -273,8 +271,9 @@ internal class MediaRepositoryImpl constructor(
         playList: PlayList,
         musicInfoIdList: List<String>
     ) {
-        playList.mediaInfoList.removeAll { it.id in musicInfoIdList }
-        this.insertPlayList(playList)
+        val mutablePlayList = playList.toMutable()
+        mutablePlayList.mediaInfoList.removeAll { it.id in musicInfoIdList }
+        this.insertPlayList(mutablePlayList.toImmutable())
     }
 
     override suspend fun deleteMediaInfo(mediaInfo: MediaInfo) {
@@ -301,8 +300,13 @@ internal class MediaRepositoryImpl constructor(
     }
 
     override suspend fun deleteMediaInfo(playList: PlayList, id: String) {
-        playList.mediaInfoList.removeAll { it.id == id }
-        this.insertPlayList(playList)
+        this.insertPlayList(
+            playList.toMutable()
+                .also { mutablePlayList ->
+                    mutablePlayList.mediaInfoList.removeAll { it.id == id }
+                }
+                .toImmutable()
+        )
     }
 
     override suspend fun recordPlayRecord(mediaInfoId: String, resourceType: MediaType) {
@@ -361,7 +365,7 @@ internal class MediaRepositoryImpl constructor(
     }
 
     private fun LocalPlayRecord.toPlayRecord(): PlayRecord {
-        return buildPlayRecord(
+        return PlayRecord(
             id = this.id,
             mediaResourceId = this.resourceId,
             mediaResourceType = PlayRecord.PlayRecordResourceType.fromCode(this.resourceType),

@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
-import com.harvest.musicplayer.repositories.buildMediaInfo
 import com.music.android.lin.player.metadata.Album
 import com.music.android.lin.player.metadata.Artist
 import com.music.android.lin.player.metadata.MediaInfo
@@ -47,7 +46,7 @@ internal class MusicRepositoryUpdater(
             val musicInfoArtist = musicInfoArtistsDeferred.await()
             val musicInfoAlbum = musicInfoAlbumDeferred.await()
             val coverUri = musicInfoAlbum.coverUrl
-            buildMediaInfo(
+            MediaInfo(
                 id = cursor.musicInfoId,
                 mediaTitle = cursor.musicInfoTitle,
                 mediaDescription = cursor.musicInfoDescription,

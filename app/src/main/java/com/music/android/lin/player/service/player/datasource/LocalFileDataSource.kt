@@ -1,4 +1,4 @@
-package com.music.android.lin.player.service.datasource
+package com.music.android.lin.player.service.player.datasource
 
 import android.net.Uri
 import com.music.android.lin.player.metadata.MediaInfo
@@ -8,7 +8,7 @@ import com.music.android.lin.player.service.player.Player
  * @author liuzhongao
  * @since 2024/10/23 17:33
  */
-internal class LocalFileDataSource(val mediaInfo: MediaInfo) : Player.DataSource {
+internal class LocalFileDataSource(val mediaInfo: MediaInfo) : DataSource {
     override fun tryGetResourceUri(): Uri? {
         val resourceUri = this.mediaInfo.sourceUri
         if (resourceUri.isNullOrEmpty()) {

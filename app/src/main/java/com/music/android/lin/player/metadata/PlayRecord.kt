@@ -40,3 +40,19 @@ interface PlayRecord {
         }
     }
 }
+
+fun PlayRecord(
+    id: Long = 0,
+    recordTimeStamp: Long,
+    mediaResourceId: String,
+    mediaResourceType: PlayRecord.PlayRecordResourceType
+): PlayRecord {
+    return PlayRecordImpl(id, recordTimeStamp, mediaResourceId, mediaResourceType)
+}
+
+private data class PlayRecordImpl(
+    override val id: Long = 0,
+    override val recordTimeStamp: Long,
+    override val mediaResourceId: String,
+    override val mediaResourceType: PlayRecord.PlayRecordResourceType
+) : PlayRecord

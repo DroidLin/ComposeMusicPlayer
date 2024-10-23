@@ -1,6 +1,7 @@
 package com.music.android.lin.modules
 
 import android.content.Context
+import com.music.android.lin.player.PlayerModule
 import org.koin.core.Koin
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
@@ -18,7 +19,7 @@ object AppKoin {
     fun init(context: Context) {
         startKoin {
             modules(
-                playerModule,
+                PlayerModule,
                 module {
                     single(AppIdentifier.ApplicationContext) { context } bind Context::class
                 }
