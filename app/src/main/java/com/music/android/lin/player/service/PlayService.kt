@@ -10,8 +10,13 @@ import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.player.IMediaServiceInterface
 import com.music.android.lin.player.PlayerIdentifier
 import com.music.android.lin.player.PlayerModule
+import com.music.android.lin.player.audiofocus.PlayerAudioFocusManager
 import com.music.android.lin.player.metadata.PlayMessage
+import com.music.android.lin.player.notification.PlayNotificationManager
+import com.music.android.lin.player.notification.PlayMediaSession
 import com.music.android.lin.player.service.controller.IPlayerService
+import com.music.android.lin.player.service.player.datasource.DataSource
+import com.music.android.lin.player.service.player.datasource.LocalFileDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -36,18 +41,35 @@ internal class PlayService : Service() {
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val handlerThread = object : HandlerThread("player_thread") {
         override fun onLooperPrepared() {
-            val playerService: IPlayerService = AppKoin.koin.get {
-                parametersOf(
-                    Handler(this.looper),
-                    this@PlayService.coroutineScope
-                )
-            }
+            val parametersHolder = parametersOf(
+                Handler(this.looper),
+                this@PlayService.coroutineScope,
+                DataSource.Factory {
+                    LocalFileDataSource(it)
+                }
+            )
+            val playerService: IPlayerService = AppKoin.koin.get { parametersHolder }
+
             val playMessage = PlayMessage.ofCommand(PlayCommand.PLAYER_INIT)
             playerService.dispatchMessage(playMessage)
 
+            val notificationManager: PlayNotificationManager = AppKoin.koin.get { parametersHolder }
+            val playMediaSession: PlayMediaSession = AppKoin.koin.get { parametersHolder }
+            val audioFocusManager: PlayerAudioFocusManager = AppKoin.koin.get { parametersHolder }
+
+            val mediaSessionToken = playMediaSession.mediaSessionToken
+            notificationManager.setMediaSessionToken(mediaSessionToken)
+
             this@PlayService.playerService = playerService
+            this@PlayService.notificationManager = notificationManager
+            this@PlayService.playMediaSession = playMediaSession
+            this@PlayService.audioFocusManager = audioFocusManager
         }
     }
+
+    private var notificationManager: PlayNotificationManager? = null
+    private var playMediaSession: PlayMediaSession? = null
+    private var audioFocusManager: PlayerAudioFocusManager? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -83,6 +105,11 @@ internal class PlayService : Service() {
         this.handlerThread.quitSafely()
         this.playerService?.release()
         this.playerService = null
+        this.notificationManager?.release()
+        this.notificationManager = null
+        this.audioFocusManager?.release()
+        this.audioFocusManager = null
+        this.playMediaSession = null
         AppKoin.koin.unloadModules(listOf(PlayerModule, innerModule))
     }
 }

@@ -4,14 +4,14 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.harvest.musicplayer.dao.MusicInfoDao
 import com.harvest.musicplayer.dao.PlayRecordDao
-import com.music.android.lin.player.dao.AlbumDao
-import com.music.android.lin.player.dao.ArtistDao
-import com.music.android.lin.player.dao.PlayListDao
-import com.music.android.lin.player.metadata.local.LocalAlbum
-import com.music.android.lin.player.metadata.local.LocalArtist
-import com.music.android.lin.player.metadata.local.LocalMusicInfo
-import com.music.android.lin.player.metadata.local.LocalPlayList
-import com.music.android.lin.player.metadata.local.LocalPlayRecord
+import com.music.android.lin.player.database.dao.AlbumDao
+import com.music.android.lin.player.database.dao.ArtistDao
+import com.music.android.lin.player.database.dao.PlayListDao
+import com.music.android.lin.player.database.metadata.LocalAlbum
+import com.music.android.lin.player.database.metadata.LocalArtist
+import com.music.android.lin.player.database.metadata.LocalMusicInfo
+import com.music.android.lin.player.database.metadata.LocalPlayList
+import com.music.android.lin.player.database.metadata.LocalPlayRecord
 
 /**
  * @author liuzhongao

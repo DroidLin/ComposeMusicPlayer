@@ -7,7 +7,7 @@ interface DataSource {
 
     fun tryGetResourceUri(): Uri?
 
-    interface Factory {
+    fun interface Factory {
 
         fun create(mediaInfo: MediaInfo): DataSource?
     }

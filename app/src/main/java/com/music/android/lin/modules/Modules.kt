@@ -1,5 +1,6 @@
 package com.music.android.lin.modules
 
+import com.music.android.lin.application.ui.vm.AppFrameworkViewModel
 import com.music.android.lin.player.PlayerIdentifier
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
@@ -23,4 +24,12 @@ fun installAccessTokenComponent(accessToken: String) {
 fun uninstallAccessTokenComponent() {
     val accessTokenModule = accessTokenModule ?: return
     unloadKoinModules(accessTokenModule)
+}
+
+val viewModelModule = module {
+    factory {
+        AppFrameworkViewModel(
+            applicationContext = get(AppIdentifier.ApplicationContext)
+        )
+    }
 }

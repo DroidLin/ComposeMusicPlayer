@@ -3,7 +3,7 @@ package com.music.android.lin.player
 import com.music.android.lin.modules.AppIdentifier
 import com.music.android.lin.player.audiofocus.PlayerAudioFocusManager
 import com.music.android.lin.player.notification.PlayNotificationManager
-import com.music.android.lin.player.notification.android.PlayMediaSession
+import com.music.android.lin.player.notification.PlayMediaSession
 import com.music.android.lin.player.repositories.DatabaseService
 import com.music.android.lin.player.repositories.MusicDatabaseService
 import com.music.android.lin.player.service.controller.BizPlayerControl
@@ -28,13 +28,19 @@ internal val PlayerModule = module {
         Logger.getLogger("PlayerLogger")
     }
     single<Player>(PlayerIdentifier.ExoPlayer3) {
-        ExoMediaPlayer(get(), get(PlayerIdentifier.PlayerLogger))
+        ExoMediaPlayer(
+            handler = get(),
+            logger = get(PlayerIdentifier.PlayerLogger)
+        )
     }
     single<MediaPlayingList> {
         MediaPlayingList()
     }
     single<PlayerControl> {
-        MediaPlayerProxy(get(), get())
+        MediaPlayerProxy(
+            playerService = get(),
+            playerControl = get(PlayerIdentifier.PlayerControl)
+        )
     }
     single<PlayerControl>(PlayerIdentifier.PlayerControl) {
         BizPlayerControl(
@@ -49,19 +55,28 @@ internal val PlayerModule = module {
             playerControl = get(PlayerIdentifier.PlayerControl),
             coroutineScope = get(),
             context = get(AppIdentifier.ApplicationContext),
-            notificationManager = get(),
-            playMediaSession = get(),
-            audioFocusManager = get(),
             handler = get()
         )
     }
     single {
-        PlayerAudioFocusManager(get(AppIdentifier.ApplicationContext), get(), get())
+        PlayerAudioFocusManager(
+            context = get(AppIdentifier.ApplicationContext),
+            playerControl = get(),
+            coroutineScope = get()
+        )
     }
     single {
-        PlayNotificationManager(get(), get())
+        PlayNotificationManager(
+            service = get(PlayerIdentifier.PlayService),
+            playerControl = get(),
+            coroutineScope = get()
+        )
     }
     single<PlayMediaSession> {
-        PlayMediaSession(get(), get(), get())
+        PlayMediaSession(
+            context = get(AppIdentifier.ApplicationContext),
+            playerControl = get(),
+            coroutineScope = get()
+        )
     }
 }

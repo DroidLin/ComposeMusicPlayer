@@ -1,6 +1,6 @@
 package com.music.android.lin.player.repositories
 
-import com.music.android.lin.player.interfaces.MediaRepository
+import com.music.android.lin.player.database.MediaRepository
 
 /**
  * @author: liuzhongao

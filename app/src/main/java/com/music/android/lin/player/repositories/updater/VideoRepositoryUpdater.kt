@@ -8,7 +8,7 @@ import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
 import com.music.android.lin.player.metadata.MediaExtras
 import com.music.android.lin.player.metadata.MediaInfo
-import com.music.android.lin.player.interfaces.MediaRepository
+import com.music.android.lin.player.database.MediaRepository
 import com.music.android.lin.player.metadata.Album
 import com.music.android.lin.player.metadata.Artist
 import com.music.android.lin.player.metadata.MediaType

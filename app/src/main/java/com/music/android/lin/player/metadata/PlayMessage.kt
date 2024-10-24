@@ -32,6 +32,10 @@ class PlayMessage() : Parcelable {
     private val innerParameters = HashMap<String, Any?>()
 
     constructor(parcel: Parcel) : this() {
+        this.readFromParcel(parcel)
+    }
+
+    fun readFromParcel(parcel: Parcel) {
         val hashMap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             parcel.readHashMap(
                 PlayMessage::class.java.classLoader,
@@ -41,11 +45,12 @@ class PlayMessage() : Parcelable {
         } else {
             parcel.readHashMap(PlayMessage::class.java.classLoader) as Map<String, Any?>
         }
+        this.innerParameters.clear()
         this.innerParameters.putAll(hashMap)
     }
 
     operator fun set(key: String, value: Any?) {
-        if (value !is Serializable || value !is Parcelable) {
+        if (value !is Serializable && value !is Parcelable) {
             throw IllegalArgumentException("illegal value: ${value}.")
         }
         this.innerParameters[key] = value

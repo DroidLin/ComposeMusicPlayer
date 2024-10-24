@@ -7,13 +7,16 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.6"
 activityCompose = "1.9.3"
-composeBom = "2024.04.01"
+composeBom = "2024.10.00"
 
 roomDatabase = "2.6.1"
 kspSymbol = "1.9.0-1.0.13"
 koin = "4.0.0"
 coil = "3.0.0-rc01"
 exoplayer3 = "1.4.1"
+splashScreen = "1.0.1"
+navigation = "2.8.3"
+datastore = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -35,6 +38,8 @@ jetpack-room = { group = "androidx.room", name = "room-runtime", version.ref = "
 jetpack-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomDatabase" }
 jetpack-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomDatabase" }
 jetpack-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "roomDatabase" }
+jetpack-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+jetpack-datastore-preference = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-coroutines = { group = "io.insert-koin", name = "koin-core-coroutines", version.ref = "koin" }
@@ -49,6 +54,8 @@ coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp"
 exoplayer3 = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "exoplayer3" }
 exoplayer3-dash = { group = "androidx.media3", name = "media3-exoplayer-dash", version.ref = "exoplayer3" }
 exoplayer3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "exoplayer3" }
+
+splash-screen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

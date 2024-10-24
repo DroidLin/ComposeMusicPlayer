@@ -3,21 +3,15 @@ package com.music.android.lin.player.service.controller
 import android.content.Context
 import android.os.Handler
 import android.os.Message
-import com.music.android.lin.player.audiofocus.PlayerAudioFocusManager
 import com.music.android.lin.player.metadata.PlayList
 import com.music.android.lin.player.metadata.PlayMessage
 import com.music.android.lin.player.metadata.PlayMode
 import com.music.android.lin.player.metadata.command
 import com.music.android.lin.player.metadata.data
-import com.music.android.lin.player.notification.PlayNotificationManager
-import com.music.android.lin.player.notification.android.PlayMediaSession
 import com.music.android.lin.player.service.PlayCommand
 import com.music.android.lin.player.service.metadata.PlayHistory
 import com.music.android.lin.player.service.readObject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
@@ -37,9 +31,6 @@ internal class PlayerServiceHost(
     override val playerControl: PlayerControl,
     private val coroutineScope: CoroutineScope,
     private val context: Context,
-    private val notificationManager: PlayNotificationManager,
-    private val playMediaSession: PlayMediaSession,
-    private val audioFocusManager: PlayerAudioFocusManager,
     handler: Handler
 ) : IPlayerService {
 
@@ -48,11 +39,6 @@ internal class PlayerServiceHost(
             val playMessage = msg.obj as? PlayMessage
             this@PlayerServiceHost.handleMessage(playMessage)
         }
-    }
-
-    init {
-        val mediaSessionToken = this.playMediaSession.mediaSessionToken
-        this.notificationManager.setMediaSessionToken(mediaSessionToken)
     }
 
     override fun dispatchMessage(playMessage: PlayMessage) {
@@ -67,7 +53,10 @@ internal class PlayerServiceHost(
             PlayCommand.PLAYER_INIT -> {
                 val directory = File(this.context.filesDir, "player")
                 val playHistory = if (directory.exists() || directory.mkdirs()) {
-                    readObject<PlayHistory>(File(directory, "playHistory.data"))
+                    val playHistoryFile = File(directory, "playHistory.data")
+                    if (playHistoryFile.exists()) {
+                        readObject<PlayHistory>(playHistoryFile)
+                    } else null
                 } else null
                 if (playHistory != null) {
                     this.playerControl.setResource(
@@ -99,8 +88,6 @@ internal class PlayerServiceHost(
 
     override fun release() {
         this.playerControl.release()
-        this.notificationManager.release()
-        this.audioFocusManager.release()
     }
 
 }

@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.coroutines)
     implementation(libs.koin.compose)
+    implementation(libs.koin.androidx.compose)
 
     // coil
     implementation(libs.coil.compose)
@@ -90,4 +91,13 @@ dependencies {
     implementation(libs.exoplayer3)
     implementation(libs.exoplayer3.dash)
     implementation(libs.exoplayer3.ui)
+
+    // splash screen
+    implementation(libs.splash.screen)
+
+    // navigation
+    implementation(libs.jetpack.navigation)
+
+    // datastore
+    implementation(libs.jetpack.datastore.preference)
 }

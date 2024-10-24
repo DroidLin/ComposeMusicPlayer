@@ -18,7 +18,6 @@ internal class BizPlayerControl(
     private val mediaList: MediaPlayingList,
     private val dataSourceFactory: DataSource.Factory,
     private val logger: Logger,
-    private val coroutineScope: CoroutineScope
 ) : PlayerControl {
 
     override val information: Flow<PlayInformation> = combine(

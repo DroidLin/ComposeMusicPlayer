@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.music.android.lin.player.MediaDatabase
-import com.music.android.lin.player.interfaces.MediaRepository
+import com.music.android.lin.player.database.MediaRepository
 
 /**
  * @author liuzhongao
@@ -28,7 +28,7 @@ class MusicDatabaseService(
     }
 
     override val mediaRepository: MediaRepository by lazy {
-        MediaRepositoryImpl(mediaDatabase = this.mediaDatabase)
+        MediaRepository(mediaDatabase = this.mediaDatabase)
     }
 
     override fun release() {

@@ -20,9 +20,13 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
 import com.music.android.lin.R
 import com.music.android.lin.player.metadata.MediaInfo
-import com.music.android.lin.player.metadata.PlayInfo
 import com.music.android.lin.player.service.controller.PlayerControl
+import com.music.android.lin.player.utils.collectWithScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 
 /**
@@ -31,7 +35,8 @@ import kotlinx.coroutines.withContext
  */
 internal class PlayNotificationManager constructor(
     private val service: Service,
-    private val playerControl: PlayerControl
+    private val playerControl: PlayerControl,
+    private val coroutineScope: CoroutineScope,
 ) {
     private val context: Context get() = this.service
 
@@ -68,11 +73,9 @@ internal class PlayNotificationManager constructor(
     private val notificationControllerBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val action = intent?.action ?: return
-            val verificationId = intent.getStringExtra(
-                KEY_BROADCAST_NOTIFICATION_INTENT_VERIFICATION
-            ) ?: return
-            val isIdValid = verificationId.startsWith(this@PlayNotificationManager.context.packageName) &&
-                    verificationId.endsWith(MEDIA_NOTIFICATION_ID.toString())
+            val verificationId = intent.getStringExtra(KEY_BROADCAST_NOTIFICATION_INTENT_VERIFICATION) ?: return
+            val isIdValid = verificationId.startsWith(this@PlayNotificationManager.context.packageName)
+                    && verificationId.endsWith(MEDIA_NOTIFICATION_ID.toString())
             if (!isIdValid) {
                 return
             }
@@ -87,8 +90,22 @@ internal class PlayNotificationManager constructor(
 
     private var mediaSessionToken: MediaSession.Token? = null
 
+    init {
+        initialize(this.service)
+        this.playerControl.information
+            .map { information ->
+                NotificationMetadata(
+                    mediaInfo = information.mediaInfo,
+                    isPlaying = information.playerMetadata.isPlaying
+                )
+            }
+            .distinctUntilChanged()
+            .onEach(::updateMediaNotification)
+            .collectWithScope(this.coroutineScope)
+    }
+
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    fun initialize(service: Service) {
+    private fun initialize(service: Service) {
         val notificationChannelCompat = NotificationChannelCompat.Builder(
             NOTIFICATION_CHANNEL_ID,
             NotificationManagerCompat.IMPORTANCE_LOW
@@ -127,7 +144,7 @@ internal class PlayNotificationManager constructor(
     }
 
     @SuppressLint("MissingPermission")
-    suspend fun updateMediaNotification(playInfo: PlayInfo) {
+    private suspend fun updateMediaNotification(metadata: NotificationMetadata) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ActivityCompat.checkSelfPermission(
                 this@PlayNotificationManager.context,
@@ -136,11 +153,11 @@ internal class PlayNotificationManager constructor(
         ) {
             return
         }
-        val musicInfo = playInfo.mediaInfo
+        val musicInfo = metadata.mediaInfo
         if (musicInfo != null) {
             val notification = buildMediaNotification(
                 mediaInfo = musicInfo,
-                isPlaying = playInfo.isPlaying
+                isPlaying = metadata.isPlaying
             )
             this.notificationManagerCompat.notify(MEDIA_NOTIFICATION_ID, notification)
         } else {
@@ -272,6 +289,11 @@ internal class PlayNotificationManager constructor(
     private fun withActionIntent(action: String, block: Intent.() -> Unit): Intent {
         return Intent(action).apply(block)
     }
+
+    private data class NotificationMetadata(
+        val isPlaying: Boolean,
+        val mediaInfo: MediaInfo?
+    )
 
     companion object {
         private const val TAG = "PlayNotificationManager"

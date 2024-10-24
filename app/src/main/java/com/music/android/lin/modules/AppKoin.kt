@@ -27,7 +27,8 @@ object AppKoin {
                     single<CoroutineScope>(AppIdentifier.GlobalCoroutineScope) {
                         CoroutineScope(Dispatchers.Default + SupervisorJob())
                     }
-                }
+                },
+                viewModelModule
             )
         }
         installAccessTokenComponent("anonymous_user")
