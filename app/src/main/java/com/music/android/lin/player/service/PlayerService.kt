@@ -39,12 +39,6 @@ import kotlinx.coroutines.launch
  */
 class PlayerService : Service() {
 
-    private val handlerThread = object : HandlerThread("PlayerThread") {
-        override fun onLooperPrepared() {
-
-        }
-    }
-
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private val musicPlayerListenerWrapper = MusicPlayerListenerWrapper()
     private val servicePlayerInfoMutableFlow = MutableStateFlow(value = PlayInfo())
@@ -83,7 +77,6 @@ class PlayerService : Service() {
         }
     }
 
-    private val musicConfigurationHelper by lazy { MusicConfigurationHelper(context = this) }
     private val musicController by lazy {
         MediaControllerImpl(
             context = this,
@@ -91,43 +84,14 @@ class PlayerService : Service() {
             playInfoGetter = this::playInfo
         )
     }
-    private val playNotificationManager by lazy {
-        PlayNotificationManager(context = this, mediaController = this.musicController)
-    }
-    private val playMediaSession by lazy {
-        PlayMediaSession(context = this, mediaController = this.musicController)
-    }
-    private val playAudioFocusManager by lazy {
-        PlayerAudioFocusManager(context = this, mediaController = this.musicController)
-    }
 
     override fun onCreate() {
         super.onCreate()
-        this.coroutineScope.launch {
-            val mediaConfig = this@PlayerService.musicConfigurationHelper.getConfiguration()
-            this@PlayerService.musicController.init(mediaConfig)
-        }
 
-        this.playNotificationManager.initialize(service = this)
-        this.playNotificationManager.setMediaSessionToken(token = this.playMediaSession.mediaSessionToken)
         this.musicPlayerListenerWrapper.addListener(listener = this.handleNextMediaListener)
-        this.musicConfigurationHelper.setConfigurationCollector {
-            val playInfo = this.playInfo
-            MediaConfiguration(
-                playList = playInfo.playList,
-                mediaInfo = playInfo.mediaInfo,
-                playingProgress = playInfo.currentProgress,
-                playingDuration = playInfo.currentDuration,
-                playMode = playInfo.playMode,
-                playerType = playInfo.playerType
-            )
-        }
         this.coroutineScope.consumeState(
             playInfo = this.servicePlayerInfoMutableFlow,
             playerEventChannel = this.servicePlayerEventChannel,
-            playNotificationManager = this.playNotificationManager,
-            playMediaSession = this.playMediaSession,
-            playAudioFocusManager = this.playAudioFocusManager,
             musicPlayerListenerWrapper = this.musicPlayerListenerWrapper
         )
     }
@@ -144,31 +108,15 @@ class PlayerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         this.coroutineScope.cancel()
-        this.playNotificationManager.release()
         this.musicController.release()
-        this.playAudioFocusManager.release()
     }
 }
 
 private fun CoroutineScope.consumeState(
     playInfo: StateFlow<PlayInfo>,
     playerEventChannel: Channel<MediaPlayerEvent>,
-    playNotificationManager: PlayNotificationManager,
-    playMediaSession: PlayMediaSession,
-    playAudioFocusManager: PlayerAudioFocusManager,
     musicPlayerListenerWrapper: MusicPlayerListenerWrapper,
 ) {
-    launch {
-        playInfo.collect { playInfo ->
-            playNotificationManager.updateMediaNotification(playInfo = playInfo)
-            playMediaSession.updateMediaSessionInfo(playInfo = playInfo)
-        }
-    }
-    launch {
-        playInfo.map { it.playbackState == PlaybackState.Playing }
-            .distinctUntilChanged()
-            .collect(playAudioFocusManager::onPlaybackStateChanged)
-    }
     launch {
         playerEventChannel.receiveAsFlow()
             .collect(musicPlayerListenerWrapper::onEvent)

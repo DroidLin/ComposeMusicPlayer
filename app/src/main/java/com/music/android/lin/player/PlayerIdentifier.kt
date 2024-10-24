@@ -21,4 +21,10 @@ object PlayerIdentifier {
 
     @JvmField
     val ExoPlayer3 = named("exo_player3")
+
+    @JvmField
+    val PlayService = named("play_service")
+
+    @JvmField
+    val PlayerControl = named("player_control")
 }

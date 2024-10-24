@@ -5,11 +5,18 @@ import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
-import com.music.android.lin.player.interfaces.MediaController
 import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.metadata.PlayInfo
 import com.music.android.lin.player.notification.fetchImageBitmap
+import com.music.android.lin.player.service.controller.PlayerControl
+import com.music.android.lin.player.service.metadata.PlayInformation
+import com.music.android.lin.player.service.metadata.PlayerMetadata
+import com.music.android.lin.player.utils.collectWithScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 
 /**
@@ -18,7 +25,8 @@ import kotlinx.coroutines.withContext
  */
 internal class PlayMediaSession(
     private val context: Context,
-    private val mediaController: MediaController,
+    private val playerControl: PlayerControl,
+    private val coroutineScope: CoroutineScope
 ) {
 
     private val mediaSessionActions = PlaybackState.ACTION_PLAY or
@@ -32,27 +40,27 @@ internal class PlayMediaSession(
     private val mediaSessionCallback = object : MediaSession.Callback() {
 
         override fun onPause() {
-            this@PlayMediaSession.mediaController.pause()
+            this@PlayMediaSession.playerControl.pause()
         }
 
         override fun onPlay() {
-            this@PlayMediaSession.mediaController.play()
+            this@PlayMediaSession.playerControl.playOrResume()
         }
 
         override fun onSkipToNext() {
-            this@PlayMediaSession.mediaController.skipToNext(fromUser = true)
+            this@PlayMediaSession.playerControl.skipToNext()
         }
 
         override fun onSkipToPrevious() {
-            this@PlayMediaSession.mediaController.skipToPrevious(fromUser = true)
+            this@PlayMediaSession.playerControl.skipToPrevious()
         }
 
         override fun onStop() {
-            this@PlayMediaSession.mediaController.stop()
+            this@PlayMediaSession.playerControl.stop()
         }
 
         override fun onSeekTo(pos: Long) {
-            this@PlayMediaSession.mediaController.seekToPosition(position = pos)
+            this@PlayMediaSession.playerControl.seekToPosition(position = pos)
         }
     }
 
@@ -63,20 +71,34 @@ internal class PlayMediaSession(
         this.mediaSession.setCallback(this.mediaSessionCallback)
         this.mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS or MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
         this.mediaSession.isActive = true
+
+        this.playerControl.information
+            .map { information ->
+                MediaSessionMetadata(
+                    numberOfMediaInfo = information.playList?.mediaInfoList?.size ?: 0,
+                    mediaInfo = information.mediaInfo,
+                    isPlaying = information.playerMetadata.isPlaying,
+                    contentProgress = information.playerMetadata.contentProgress,
+                    contentDuration = information.playerMetadata.contentDuration
+                )
+            }
+            .distinctUntilChanged()
+            .onEach(::updateMediaSessionInfo)
+            .collectWithScope(this.coroutineScope)
     }
 
-    suspend fun updateMediaSessionInfo(playInfo: PlayInfo) {
-        val musicInfo = playInfo.mediaInfo
+    private suspend fun updateMediaSessionInfo(metadata: MediaSessionMetadata) {
+        val musicInfo = metadata.mediaInfo
         if (musicInfo != null) {
-            val numOfPlayList = playInfo.playList?.mediaInfoList?.size ?: 0
+            val numOfPlayList = metadata.numberOfMediaInfo
             this.updateMediaMetadata(
                 mediaInfo = musicInfo,
-                duration = playInfo.currentDuration,
+                duration = metadata.contentDuration,
                 numOfMusicInfoInPlayList = numOfPlayList.toLong()
             )
             this.updateMediaSessionPlaybackState(
-                isPlaying = playInfo.isPlaying,
-                playProgress = playInfo.currentProgress,
+                isPlaying = metadata.isPlaying,
+                playProgress = metadata.contentProgress,
                 playingSpeed = 1f
             )
         } else {
@@ -154,4 +176,12 @@ internal class PlayMediaSession(
             fetchImageBitmap(imageResourceUrl = imageResourceUrl)
         }.onFailure { it.printStackTrace() }.getOrNull()
     }
+
+    private data class MediaSessionMetadata(
+        val numberOfMediaInfo: Int,
+        val mediaInfo: MediaInfo?,
+        val isPlaying: Boolean,
+        val contentProgress: Long,
+        val contentDuration: Long,
+    )
 }

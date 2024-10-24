@@ -1,22 +1,42 @@
 package com.music.android.lin.player.service.controller
 
+import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.metadata.PlayList
 import com.music.android.lin.player.metadata.PlayMode
+import com.music.android.lin.player.service.metadata.PlayInformation
 import com.music.android.lin.player.service.player.Player
 import com.music.android.lin.player.service.player.datasource.DataSource
 import com.music.android.lin.player.service.playlist.MediaPlayingList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import java.util.logging.Logger
 
-/**
- * @author: liuzhongao
- * @since: 2024/10/23 22:50
- */
 internal class BizPlayerControl(
     private val player: Player,
     private val mediaList: MediaPlayingList,
     private val dataSourceFactory: DataSource.Factory,
-    private val logger: Logger
+    private val logger: Logger,
+    private val coroutineScope: CoroutineScope
 ) : PlayerControl {
+
+    override val information: Flow<PlayInformation> = combine(
+        this.player.playerMetadata,
+        this.mediaList.metadata
+    ) { playerMetadata, mediaMetadata ->
+        PlayInformation(
+            playList = mediaMetadata.playList,
+            mediaInfo = mediaMetadata.mediaInfo,
+            playMode = mediaMetadata.playMode,
+            playerMetadata = playerMetadata
+        )
+    }.distinctUntilChanged()
+
+    override fun setVolume(volumeLevel: Float) {
+        val fixedVolume = volumeLevel.coerceIn(0f, 1f)
+        this.player.setVolume(fixedVolume)
+    }
 
     override fun seekToPosition(position: Long) {
         this.player.seekToPosition(position)
@@ -39,11 +59,17 @@ internal class BizPlayerControl(
     }
 
     override fun skipToPrevious() {
-        TODO("Not yet implemented")
+        val currentMediaInfo = this.mediaList.prevMediaInfo
+        this.playResourceInner(currentMediaInfo, true)
     }
 
     override fun skipToNext() {
-        TODO("Not yet implemented")
+        val currentMediaInfo = this.mediaList.nextMediaInfo
+        this.playResourceInner(currentMediaInfo, true)
+    }
+
+    override fun release() {
+
     }
 
     override fun setResource(playList: PlayList, fromIndex: Int) {
@@ -54,15 +80,21 @@ internal class BizPlayerControl(
         this.mediaList.setResource(playList, fromIndex)
 
         val currentMediaInfo = this.mediaList.mediaInfo
-        if (currentMediaInfo != null) {
-            val dataSource = this.dataSourceFactory.create(currentMediaInfo)
-            if (dataSource != null) {
-                this.player.setDataSource(dataSource)
-                if (playWhenReady) {
-                    this.player.playOrResume()
-                } else {
-                    this.player.pause()
-                }
+        this.playResourceInner(currentMediaInfo, playWhenReady)
+    }
+
+    private fun playResourceInner(mediaInfo: MediaInfo?, playWhenReady: Boolean): Boolean {
+        if (mediaInfo == null) {
+            return false
+        }
+        val dataSource = this.dataSourceFactory.create(mediaInfo) ?: return false
+        try {
+            return this.player.setDataSource(dataSource)
+        } finally {
+            if (playWhenReady) {
+                this.player.playOrResume()
+            } else {
+                this.player.pause()
             }
         }
     }

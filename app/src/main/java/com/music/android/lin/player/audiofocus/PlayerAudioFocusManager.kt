@@ -5,7 +5,14 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
-import com.music.android.lin.player.interfaces.MediaController
+import com.music.android.lin.player.service.controller.PlayerControl
+import com.music.android.lin.player.service.player.Player
+import com.music.android.lin.player.utils.collectWithScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 /**
  * @author liuzhongao
@@ -13,29 +20,36 @@ import com.music.android.lin.player.interfaces.MediaController
  */
 internal class PlayerAudioFocusManager(
     private val context: Context,
-    private val mediaController: MediaController,
+    private val playerControl: PlayerControl,
+    private val coroutineScope: CoroutineScope
 ) {
 
     private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
         when (focusChange) {
             AudioManager.AUDIOFOCUS_GAIN -> {
-                this@PlayerAudioFocusManager.mediaController.play()
+                this@PlayerAudioFocusManager.playerControl.playOrResume()
             }
 
             AudioManager.AUDIOFOCUS_LOSS -> {
-                this@PlayerAudioFocusManager.mediaController.pause()
+                this@PlayerAudioFocusManager.playerControl.pause()
             }
         }
     }
     private val audioManager = this.context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var audioFocusRequest: AudioFocusRequest? = null
 
-    fun onPlaybackStateChanged(isPlaying: Boolean) {
-        if (isPlaying) {
-            this.tryLockAudioFocus()
-        } else {
-            this.tryReleaseAudioFocus()
-        }
+    init {
+        this.playerControl.information
+            .map { it.playerMetadata.isPlaying }
+            .distinctUntilChanged()
+            .onEach { isPlaying ->
+                if (isPlaying) {
+                    tryLockAudioFocus()
+                } else {
+                    tryReleaseAudioFocus()
+                }
+            }
+            .collectWithScope(this.coroutineScope)
     }
 
     private fun tryLockAudioFocus(): Boolean {

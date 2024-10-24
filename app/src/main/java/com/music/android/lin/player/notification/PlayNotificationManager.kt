@@ -19,9 +19,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
 import com.music.android.lin.R
-import com.music.android.lin.player.interfaces.MediaController
 import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.metadata.PlayInfo
+import com.music.android.lin.player.service.controller.PlayerControl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -30,9 +30,11 @@ import kotlinx.coroutines.withContext
  * @since 2023/10/12 17:01
  */
 internal class PlayNotificationManager constructor(
-    private val context: Context,
-    private val mediaController: MediaController,
+    private val service: Service,
+    private val playerControl: PlayerControl
 ) {
+    private val context: Context get() = this.service
+
     private val notificationManagerCompat = NotificationManagerCompat.from(this.context)
 
     private val skipToPreviousPendingIntent = PendingIntent.getBroadcast(
@@ -75,10 +77,10 @@ internal class PlayNotificationManager constructor(
                 return
             }
             when (action) {
-                ACTION_MUSIC_CONTROLLER_SKIP_TO_PREVIOUS -> this@PlayNotificationManager.mediaController.skipToPrevious()
-                ACTION_MUSIC_CONTROLLER_PAUSE -> this@PlayNotificationManager.mediaController.pause()
-                ACTION_MUSIC_CONTROLLER_PLAY -> this@PlayNotificationManager.mediaController.play()
-                ACTION_MUSIC_CONTROLLER_SKIP_TO_NEXT -> this@PlayNotificationManager.mediaController.skipToNext()
+                ACTION_MUSIC_CONTROLLER_SKIP_TO_PREVIOUS -> this@PlayNotificationManager.playerControl.skipToPrevious()
+                ACTION_MUSIC_CONTROLLER_PAUSE -> this@PlayNotificationManager.playerControl.pause()
+                ACTION_MUSIC_CONTROLLER_PLAY -> this@PlayNotificationManager.playerControl.playOrResume()
+                ACTION_MUSIC_CONTROLLER_SKIP_TO_NEXT -> this@PlayNotificationManager.playerControl.skipToNext()
             }
         }
     }

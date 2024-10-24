@@ -10,4 +10,7 @@ object AppIdentifier {
 
     @JvmField
     val ApplicationContext = named("ApplicationContext")
+
+    @JvmField
+    val GlobalCoroutineScope = named("global_coroutine_scope")
 }

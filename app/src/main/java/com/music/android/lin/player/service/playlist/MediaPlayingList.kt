@@ -3,6 +3,10 @@ package com.music.android.lin.player.service.playlist
 import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.metadata.PlayList
 import com.music.android.lin.player.metadata.PlayMode
+import com.music.android.lin.player.service.metadata.MediaListMetadata
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * @author: liuzhongao
@@ -12,6 +16,18 @@ internal class MediaPlayingList : MediaList {
 
     private var mediaList: MediaList = ListLoopMediaList()
     private var indexOfCurrentPosition: Int = -1
+        set(value) {
+            field = value
+            this.mutableMetadata.update {
+                it.copy(
+                    indexOfCurrentMediaInfo = value,
+                    mediaInfo = this.mediaInfo
+                )
+            }
+        }
+
+    private val mutableMetadata = MutableStateFlow(MediaListMetadata())
+    val metadata = this.mutableMetadata.asStateFlow()
 
     val currentPosition: Int get() = this.indexOfCurrentPosition
 
@@ -33,6 +49,7 @@ internal class MediaPlayingList : MediaList {
         get() = this.mediaList.nextMediaInfo
 
     fun setPlayMode(playMode: PlayMode) {
+        this.mutableMetadata.update { it.copy(playMode = playMode) }
         this.mediaList = when (playMode) {
             PlayMode.PlayListLoop -> ListLoopMediaList()
             PlayMode.SingleLoop -> LoopMediaList()
@@ -44,6 +61,7 @@ internal class MediaPlayingList : MediaList {
     fun setResource(playList: PlayList, indexOfCurrentPosition: Int) {
         this.playList = playList
         this.indexOfCurrentPosition = indexOfCurrentPosition
+        this.mutableMetadata.update { it.copy(playList = playList) }
     }
 
     private inner class ListLoopMediaList : MediaList by this {

@@ -1,21 +1,23 @@
 package com.music.android.lin.player.service.player
 
-import com.music.android.lin.player.metadata.PlayMode
+import androidx.annotation.FloatRange
+import com.music.android.lin.player.service.metadata.PlayerMetadata
 import com.music.android.lin.player.service.player.datasource.DataSource
+import kotlinx.coroutines.flow.Flow
 
 sealed interface Player {
 
-    val playingProgress: Long
+    val playerMetadata: Flow<PlayerMetadata>
 
-    val mediaDuration: Long
+    val contentProgress: Long
+
+    val contentDuration: Long
 
     val isPlaying: Boolean
 
-    fun addListener(listener: Listener)
+    fun setVolume(@FloatRange volume: Float)
 
-    fun removeListener(listener: Listener)
-
-    fun setDataSource(dataSource: DataSource)
+    fun setDataSource(dataSource: DataSource): Boolean
 
     fun playOrResume()
 
@@ -30,11 +32,5 @@ sealed interface Player {
     interface Listener {
 
         fun onPlayingChange(isPlaying: Boolean) {}
-
-        fun onMediaBegin(dataSource: DataSource) {}
-
-        fun onMediaEnd(dataSource: DataSource) {}
-
-        fun onPlayModeChange(playMode: PlayMode) {}
     }
 }

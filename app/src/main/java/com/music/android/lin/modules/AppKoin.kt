@@ -1,11 +1,12 @@
 package com.music.android.lin.modules
 
 import android.content.Context
-import com.music.android.lin.player.PlayerModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.core.Koin
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
-import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
@@ -19,9 +20,13 @@ object AppKoin {
     fun init(context: Context) {
         startKoin {
             modules(
-                PlayerModule,
                 module {
-                    single(AppIdentifier.ApplicationContext) { context } bind Context::class
+                    single<Context>(AppIdentifier.ApplicationContext) {
+                        context
+                    }
+                    single<CoroutineScope>(AppIdentifier.GlobalCoroutineScope) {
+                        CoroutineScope(Dispatchers.Default + SupervisorJob())
+                    }
                 }
             )
         }

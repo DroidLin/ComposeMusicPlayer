@@ -63,13 +63,23 @@ class PlayMessage() : Parcelable {
         dest.writeMap(this.innerParameters)
     }
 
-    companion object CREATOR : Parcelable.Creator<PlayMessage> {
-        override fun createFromParcel(parcel: Parcel): PlayMessage {
-            return PlayMessage(parcel)
+    companion object {
+        @JvmStatic
+        fun ofCommand(command: Int): PlayMessage {
+            val playMessage = PlayMessage()
+            playMessage.command = command
+            return playMessage
         }
 
-        override fun newArray(size: Int): Array<PlayMessage?> {
-            return arrayOfNulls(size)
+        @JvmField
+        val CREATOR = object : Parcelable.Creator<PlayMessage> {
+            override fun createFromParcel(parcel: Parcel): PlayMessage {
+                return PlayMessage(parcel)
+            }
+
+            override fun newArray(size: Int): Array<PlayMessage?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 }
