@@ -28,9 +28,4 @@ sealed interface Player {
     fun stop()
 
     fun release()
-
-    interface Listener {
-
-        fun onPlayingChange(isPlaying: Boolean) {}
-    }
 }
