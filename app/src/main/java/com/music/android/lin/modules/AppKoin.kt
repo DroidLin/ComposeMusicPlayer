@@ -1,6 +1,7 @@
 package com.music.android.lin.modules
 
 import android.content.Context
+import com.music.android.lin.player.PlayerIdentifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -27,10 +28,12 @@ object AppKoin {
                     single<CoroutineScope>(AppIdentifier.GlobalCoroutineScope) {
                         CoroutineScope(Dispatchers.Default + SupervisorJob())
                     }
+                    single(PlayerIdentifier.PlayerDatabaseAccessToken) { "anonymous_user" }
                 },
-                viewModelModule
+                viewModelModule,
+                databaseModule,
+                useCaseModule
             )
         }
-        installAccessTokenComponent("anonymous_user")
     }
 }

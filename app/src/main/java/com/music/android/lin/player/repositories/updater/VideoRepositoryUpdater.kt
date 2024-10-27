@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.repositories.updater
+package com.music.android.lin.player.repositories.updater
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -12,9 +12,6 @@ import com.music.android.lin.player.database.MediaRepository
 import com.music.android.lin.player.metadata.Album
 import com.music.android.lin.player.metadata.Artist
 import com.music.android.lin.player.metadata.MediaType
-import com.music.android.lin.player.repositories.updater.RepositoryUpdater
-import com.music.android.lin.player.repositories.updater.VideoCursorRecord
-import com.music.android.lin.player.repositories.updater.decodeMediaExtras
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

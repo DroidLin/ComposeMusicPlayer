@@ -47,6 +47,6 @@ fun AppMaterialTheme(content: @Composable () -> Unit) {
         determineAppColorScheme(context, configuration)
     }
     MaterialTheme(colorScheme = colorScheme) {
-        Surface(modifier = Modifier.fillMaxSize(), content = content)
+        Surface(modifier = Modifier, content = content)
     }
 }

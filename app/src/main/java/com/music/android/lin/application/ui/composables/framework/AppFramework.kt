@@ -1,7 +1,11 @@
 package com.music.android.lin.application.ui.composables.framework
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -27,9 +31,13 @@ fun AppFramework(content: @Composable () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
 
     AnimatedContent(
+        modifier = Modifier.fillMaxSize(),
         targetState = firstEnterGuideComplete,
         label = "firstEnterGuideAnimation",
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
+        transitionSpec = {
+            fadeIn() togetherWith fadeOut()
+        }
     ) { firstGuideComplete ->
         if (firstGuideComplete) {
             content()
@@ -37,8 +45,8 @@ fun AppFramework(content: @Composable () -> Unit) {
             AppFirstGuide(
                 modifier = Modifier
                     .fillMaxSize()
-                    .navigationBarsPadding()
-                    .padding(bottom = 100.dp),
+                    .imePadding()
+                    .navigationBarsPadding(),
                 onComplete = {
                     coroutineScope.launch {
                         viewModel.operateFirstGuideComplete()

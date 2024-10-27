@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.dev.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -100,4 +101,11 @@ dependencies {
 
     // datastore
     implementation(libs.jetpack.datastore.preference)
+
+    implementation(libs.kotlin.serialization)
+
+    // adaptive
+    implementation(libs.material3.adaptive)
+    implementation(libs.material3.adaptive.layout)
+    implementation(libs.material3.adaptive.navigation)
 }

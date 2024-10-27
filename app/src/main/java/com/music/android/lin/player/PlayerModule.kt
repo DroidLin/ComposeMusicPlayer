@@ -18,12 +18,6 @@ import org.koin.dsl.module
 import java.util.logging.Logger
 
 internal val PlayerModule = module {
-    single<DatabaseService> {
-        MusicDatabaseService(
-            applicationContext = get(AppIdentifier.ApplicationContext),
-            accessToken = get(PlayerIdentifier.PlayerDatabaseAccessToken)
-        )
-    }
     single<Logger>(PlayerIdentifier.PlayerLogger) {
         Logger.getLogger("PlayerLogger")
     }

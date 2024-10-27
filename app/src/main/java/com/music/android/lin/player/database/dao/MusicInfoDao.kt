@@ -1,4 +1,4 @@
-package com.harvest.musicplayer.dao
+package com.music.android.lin.player.database.dao
 
 import androidx.room.Dao
 import androidx.room.Delete

@@ -1,35 +1,62 @@
 package com.music.android.lin.modules
 
+import com.music.android.lin.application.ui.composables.music.vm.SingleMusicViewModel
 import com.music.android.lin.application.ui.vm.AppFrameworkViewModel
+import com.music.android.lin.application.ui.vm.AppMusicFrameworkViewModel
+import com.music.android.lin.application.ui.vm.AppNavigationViewModel
+import com.music.android.lin.application.usecase.PrepareMusicInfoUseCase
+import com.music.android.lin.application.usecase.PrepareUserPersonalInformationUseCase
 import com.music.android.lin.player.PlayerIdentifier
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.unloadKoinModules
-import org.koin.core.module.Module
-import org.koin.dsl.bind
+import com.music.android.lin.player.database.MediaRepository
+import com.music.android.lin.player.repositories.DatabaseService
+import com.music.android.lin.player.repositories.MusicDatabaseService
 import org.koin.dsl.module
-
-private var accessTokenModule: Module? = null
-
-@Synchronized
-fun installAccessTokenComponent(accessToken: String) {
-    if (accessTokenModule != null) return
-    val appComponent = module {
-        single(PlayerIdentifier.PlayerDatabaseAccessToken) { accessToken } bind String::class
-    }
-    accessTokenModule = appComponent
-    loadKoinModules(appComponent)
-}
-
-@Synchronized
-fun uninstallAccessTokenComponent() {
-    val accessTokenModule = accessTokenModule ?: return
-    unloadKoinModules(accessTokenModule)
-}
 
 val viewModelModule = module {
     factory {
         AppFrameworkViewModel(
             applicationContext = get(AppIdentifier.ApplicationContext)
+        )
+    }
+    factory {
+        AppNavigationViewModel(
+            applicationContext = get(AppIdentifier.ApplicationContext)
+        )
+    }
+    factory {
+        AppMusicFrameworkViewModel(
+            applicationContext = get(AppIdentifier.ApplicationContext)
+        )
+    }
+    factory {
+        SingleMusicViewModel(
+            prepareMusicInfoUseCase = get()
+        )
+    }
+}
+
+val databaseModule = module {
+    single<DatabaseService> {
+        MusicDatabaseService(
+            applicationContext = get(AppIdentifier.ApplicationContext),
+            accessToken = get(PlayerIdentifier.PlayerDatabaseAccessToken)
+        )
+    }
+    factory<MediaRepository> {
+        get<DatabaseService>().mediaRepository
+    }
+}
+
+val useCaseModule = module {
+    factory {
+        PrepareUserPersonalInformationUseCase(
+            applicationContext = get(AppIdentifier.ApplicationContext)
+        )
+    }
+    factory {
+        PrepareMusicInfoUseCase(
+            applicationContext = get(AppIdentifier.ApplicationContext),
+            mediaRepository = get()
         )
     }
 }

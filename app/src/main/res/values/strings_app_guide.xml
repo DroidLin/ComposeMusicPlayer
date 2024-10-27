@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_welcome">欢迎使用%s</string>
+    <string name="string_guide_confirm">下一步</string>
+
+    <string name="string_permission_acquire">权限申请</string>
+    <string name="string_permission_acquire_description">为保证app的正常运行，需要获取以下权限</string>
+
+    <string name="string_read_media_permission">读取媒体文件</string>
+    <string name="string_read_media_permission_description">该权限仅用于读取媒体文件，如歌曲、视频、媒体录音文件等.</string>
+    <string name="string_read_media_permission_denied_toast">读取媒体文件权限已禁用，请转到系统设置进行修改</string>
+
+    <string name="string_post_notifications">发送通知</string>
+    <string name="string_post_notifications_description">该权限仅用于发送媒体播放通知</string>
+    <string name="string_post_notifications_permission_denied_toast">发送通知权限已禁用，请转到系统设置进行修改</string>
+
+    <string name="string_guide_complete">完成</string>
+</resources>

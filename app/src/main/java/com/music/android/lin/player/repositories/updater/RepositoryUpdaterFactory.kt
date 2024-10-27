@@ -1,7 +1,5 @@
 package com.music.android.lin.player.repositories.updater
 
-import com.harvest.musicplayer.repositories.updater.RepositoryUpdaterWrapper
-import com.harvest.musicplayer.repositories.updater.VideoRepositoryUpdater
 import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.modules.applicationContext
 import com.music.android.lin.player.interfaces.MediaStoreUpdateOptions

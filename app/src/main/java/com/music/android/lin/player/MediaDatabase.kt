@@ -2,8 +2,8 @@ package com.music.android.lin.player
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.harvest.musicplayer.dao.MusicInfoDao
-import com.harvest.musicplayer.dao.PlayRecordDao
+import com.music.android.lin.player.database.dao.MusicInfoDao
+import com.music.android.lin.player.database.dao.PlayRecordDao
 import com.music.android.lin.player.database.dao.AlbumDao
 import com.music.android.lin.player.database.dao.ArtistDao
 import com.music.android.lin.player.database.dao.PlayListDao

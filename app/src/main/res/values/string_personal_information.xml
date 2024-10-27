@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_top_header_title">我的</string>
+
+    <string name="string_top_header_settings_icon_description">设置</string>
+</resources>

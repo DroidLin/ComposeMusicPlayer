@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_drawer_name_single_music">单曲</string>
+    <string name="string_drawer_name_album">专辑</string>
+    <string name="string_drawer_name_artist">艺术家</string>
+    <string name="string_drawer_name_playlist">歌单</string>
+    <string name="string_drawer_name_scan_music">扫描音乐</string>
+    <string name="string_drawer_name_settings">设置</string>
+    <string name="string_drawer_name_about_app">关于</string>
+
+    <string name="string_album_placeholder">专辑: %s</string>
+    <string name="string_loading_description">努力加载中…</string>
+</resources>
