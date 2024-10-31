@@ -9,6 +9,7 @@ import com.music.android.lin.application.usecase.PrepareMusicInfoUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 
 internal class SingleMusicViewModel(
@@ -22,6 +23,9 @@ internal class SingleMusicViewModel(
         .catch<DataLoadState> {
             it.printStackTrace()
             emit(DataLoadState.Failure(message = it.message ?: "", -1))
+        }
+        .onStart {
+            emit(DataLoadState.Loading)
         }
         .stateIn(this.viewModelScope, SharingStarted.WhileSubscribed(5000L), DataLoadState.Loading)
 

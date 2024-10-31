@@ -38,8 +38,9 @@ import com.music.android.lin.application.ui.composables.PageDeepLinks
 import com.music.android.lin.application.ui.composables.PageDefinition
 import com.music.android.lin.application.ui.composables.music.AlbumView
 import com.music.android.lin.application.ui.composables.music.SingleMusicView
-import com.music.android.lin.application.ui.vm.NavigationDrawerType
-import com.music.android.lin.application.ui.vm.NavigationDrawerTypes
+import com.music.android.lin.application.ui.composables.settings.AppSettingsHomeView
+import com.music.android.lin.application.ui.composables.framework.vm.NavigationDrawerType
+import com.music.android.lin.application.ui.composables.framework.vm.NavigationDrawerTypes
 import kotlinx.coroutines.launch
 
 @Composable
@@ -151,6 +152,18 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                     )
                 ) {
                     AlbumView(modifier = Modifier)
+                }
+                composable<PageDefinition.SettingsView>(
+                    deepLinks = listOf(
+                        navDeepLink<PageDefinition.SettingsView>(
+                            basePath = PageDeepLinks.PATH_SETTINGS
+                        )
+                    )
+                ) {
+                    AppSettingsHomeView(
+                        backPress = navController::popBackStack,
+                        modifier = Modifier
+                    )
                 }
             }
         }

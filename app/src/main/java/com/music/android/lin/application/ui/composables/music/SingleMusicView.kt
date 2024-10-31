@@ -4,7 +4,11 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -16,6 +20,9 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -25,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.android.lin.R
 import com.music.android.lin.application.model.DataLoadState
+import com.music.android.lin.application.ui.composables.component.LoadingProgress
 import com.music.android.lin.application.ui.composables.framework.AppMaterialTheme
 import com.music.android.lin.application.ui.composables.music.component.DataLoadView
 import com.music.android.lin.application.ui.composables.music.component.MusicItemView
@@ -45,6 +53,22 @@ fun SingleMusicView(
     val viewModel = koinViewModel<SingleMusicViewModel>()
     val musicDataLoadState = viewModel.musicInfoList.collectAsStateWithLifecycle()
 
+    ContentMusicView(
+        state = musicDataLoadState,
+        modifier = modifier
+            .navigationBarsPadding(),
+        onDrawerIconPressed = onDrawerIconPressed,
+        onMusicItemPress = viewModel::onMusicItemPressed
+    )
+}
+
+@Composable
+private fun ContentMusicView(
+    state: State<DataLoadState>,
+    modifier: Modifier = Modifier,
+    onDrawerIconPressed: () -> Unit = {},
+    onMusicItemPress: (MusicItemSnapshot, MusicItem) -> Unit = { _, _ -> },
+) {
     Column(
         modifier = modifier,
     ) {
@@ -53,7 +77,7 @@ fun SingleMusicView(
             onDrawerIconPressed = onDrawerIconPressed
         )
         DataLoadView(
-            state = musicDataLoadState,
+            state = state,
             loading = {
                 LoadingProgress(
                     modifier = Modifier
@@ -65,7 +89,7 @@ fun SingleMusicView(
                 MusicLazyColumn(
                     data = data,
                     modifier = Modifier.weight(1f),
-                    onMusicItemPress = viewModel::onMusicItemPressed
+                    onMusicItemPress = onMusicItemPress
                 )
             }
         )
@@ -73,7 +97,7 @@ fun SingleMusicView(
 }
 
 @Composable
-fun MusicLazyColumn(
+private fun MusicLazyColumn(
     data: DataLoadState.Data<MusicItemSnapshot>,
     modifier: Modifier = Modifier,
     onMusicItemPress: (MusicItemSnapshot, MusicItem) -> Unit,
@@ -102,28 +126,6 @@ fun MusicLazyColumn(
     }
 }
 
-@Composable
-private fun LoadingProgress(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(0.5f),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = stringResource(id = R.string.string_loading_description),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopHeader(
@@ -135,7 +137,6 @@ private fun TopHeader(
         title = {
             Text(
                 text = stringResource(id = R.string.string_single_music_title),
-                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
@@ -162,8 +163,11 @@ private fun SingleMusicTopHeaderPreview() {
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
-private fun LoadingProgressPreview() {
+fun ContentViewPreview(modifier: Modifier = Modifier) {
     AppMaterialTheme {
-        LoadingProgress()
+        ContentMusicView(
+            modifier = Modifier.fillMaxSize(),
+            state = remember { derivedStateOf { DataLoadState.Loading } }
+        )
     }
 }

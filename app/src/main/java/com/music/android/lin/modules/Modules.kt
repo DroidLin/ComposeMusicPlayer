@@ -1,9 +1,10 @@
 package com.music.android.lin.modules
 
+import com.music.android.lin.application.ui.composables.framework.vm.AppFrameworkViewModel
+import com.music.android.lin.application.ui.composables.framework.vm.AppMusicFrameworkViewModel
+import com.music.android.lin.application.ui.composables.framework.vm.AppNavigationViewModel
 import com.music.android.lin.application.ui.composables.music.vm.SingleMusicViewModel
-import com.music.android.lin.application.ui.vm.AppFrameworkViewModel
-import com.music.android.lin.application.ui.vm.AppMusicFrameworkViewModel
-import com.music.android.lin.application.ui.vm.AppNavigationViewModel
+import com.music.android.lin.application.ui.composables.settings.vm.AppSettingsViewModel
 import com.music.android.lin.application.usecase.PrepareMusicInfoUseCase
 import com.music.android.lin.application.usecase.PrepareUserPersonalInformationUseCase
 import com.music.android.lin.player.PlayerIdentifier
@@ -31,6 +32,11 @@ val viewModelModule = module {
     factory {
         SingleMusicViewModel(
             prepareMusicInfoUseCase = get()
+        )
+    }
+    factory {
+        AppSettingsViewModel(
+            applicationContext = get(AppIdentifier.ApplicationContext)
         )
     }
 }

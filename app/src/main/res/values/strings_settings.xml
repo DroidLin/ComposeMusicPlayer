@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_settings_title">设置</string>
+
+    <string name="string_reset_all">重置</string>
+    <string name="string_privacy_third_party_share_manifest">个人信息与第三方共享清单</string>
+    <string name="string_privacy_collection_and_usage_manifest">个人信息收集与使用清单</string>
+    <string name="string_privacy_protection">个人信息与隐私保护</string>
+    <string name="string_about_app">关于App</string>
+</resources>

@@ -32,4 +32,8 @@ internal object PageDefinition {
     @Stable
     @Serializable
     data object AlbumView
+
+    @Stable
+    @Serializable
+    data object SettingsView
 }

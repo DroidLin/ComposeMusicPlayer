@@ -16,4 +16,5 @@ object PageDeepLinks {
     const val PATH_PERSONAL_INFORMATION = "${SCHEME}://${DEEPLINK_DOMAIN}/personal-information"
     const val PATH_SINGLE_MUSIC = "${SCHEME}://${DEEPLINK_DOMAIN}/single-music"
     const val PATH_ALBUM = "${SCHEME}://${DEEPLINK_DOMAIN}/album"
+    const val PATH_SETTINGS = "${SCHEME}://${DEEPLINK_DOMAIN}/settings"
 }

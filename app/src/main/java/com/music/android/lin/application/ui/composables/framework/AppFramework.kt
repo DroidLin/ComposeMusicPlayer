@@ -7,16 +7,14 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.music.android.lin.application.ui.composables.guide.AppFirstGuide
-import com.music.android.lin.application.ui.vm.AppFrameworkViewModel
+import com.music.android.lin.application.ui.composables.framework.vm.AppFrameworkViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 

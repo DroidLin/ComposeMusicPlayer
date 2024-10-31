@@ -1,4 +1,4 @@
-package com.music.android.lin.application.ui.vm
+package com.music.android.lin.application.ui.composables.personal.vm
 
 import androidx.lifecycle.ViewModel
 
