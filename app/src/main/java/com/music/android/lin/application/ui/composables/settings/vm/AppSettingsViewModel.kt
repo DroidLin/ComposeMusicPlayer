@@ -12,6 +12,10 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import org.jetbrains.annotations.TestOnly
+
+@get:TestOnly
+internal val fakeData: List<SettingSection> get() = prepareSettingSections()
 
 internal class AppSettingsViewModel(private val applicationContext: Context) : ViewModel() {
 

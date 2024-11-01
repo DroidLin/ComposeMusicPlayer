@@ -7,4 +7,7 @@
     <string name="string_privacy_collection_and_usage_manifest">个人信息收集与使用清单</string>
     <string name="string_privacy_protection">个人信息与隐私保护</string>
     <string name="string_about_app">关于App</string>
+
+    <string name="string_sure_to_reset_all_title">确定重置吗？</string>
+    <string name="string_sure_to_reset_all_description">强烈建议您在重置前备份数据，您确定要重置吗？</string>
 </resources>

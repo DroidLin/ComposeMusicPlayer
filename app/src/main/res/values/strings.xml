@@ -9,4 +9,7 @@
     <string name="string_play_service_foreground_notification_default_empty_description">关闭该服务会导致音乐播放功能不可用</string>
 
     <string name="string_file_permission_not_granted">文件读写权限未授权，无法播放.</string>
+
+    <string name="string_confirm">确认</string>
+    <string name="string_cancel">取消</string>
 </resources>
