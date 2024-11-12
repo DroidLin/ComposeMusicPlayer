@@ -8,6 +8,7 @@ import android.os.HandlerThread
 import android.os.IBinder
 import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.player.IMediaServiceInterface
+import com.music.android.lin.player.MediaServiceInterfaceHandlerStub
 import com.music.android.lin.player.PlayerIdentifier
 import com.music.android.lin.player.PlayerModule
 import com.music.android.lin.player.audiofocus.PlayerAudioFocusManager
@@ -43,7 +44,7 @@ internal class PlayService : Service() {
         override fun onLooperPrepared() {
             val parametersHolder = parametersOf(
                 Handler(this.looper),
-                this@PlayService.coroutineScope,
+                coroutineScope,
                 DataSource.Factory {
                     LocalFileDataSource(it)
                 }
@@ -51,7 +52,7 @@ internal class PlayService : Service() {
             val playerService: IPlayerService = AppKoin.koin.get { parametersHolder }
 
             val playMessage = PlayMessage.ofCommand(PlayCommand.PLAYER_INIT)
-            playerService.dispatchMessage(playMessage)
+            playerService.asyncDispatch(playMessage)
 
             val notificationManager: PlayNotificationManager = AppKoin.koin.get { parametersHolder }
             val playMediaSession: PlayMediaSession = AppKoin.koin.get { parametersHolder }
@@ -84,20 +85,12 @@ internal class PlayService : Service() {
             intent?.getParcelableExtra(KEY_PLAY_MESSAGE)
         }
         if (playMessage != null) {
-            this.playerService?.dispatchMessage(playMessage)
+            this.playerService?.asyncDispatch(playMessage)
         }
         return super.onStartCommand(intent, flags, startId)
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return object : IMediaServiceInterface.Stub() {
-            override fun dispatchMessage(message: PlayMessage?) {
-                if (message != null) {
-                    this@PlayService.playerService?.dispatchMessage(message)
-                }
-            }
-        }
-    }
+    override fun onBind(intent: Intent?): IBinder = MediaServiceInterfaceHandlerStub(this::playerService)
 
     override fun onDestroy() {
         super.onDestroy()

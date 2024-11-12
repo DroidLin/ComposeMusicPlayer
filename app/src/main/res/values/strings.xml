@@ -10,6 +10,7 @@
 
     <string name="string_file_permission_not_granted">文件读写权限未授权，无法播放.</string>
 
+    <string name="string_loading">加载中…</string>
     <string name="string_confirm">确认</string>
     <string name="string_cancel">取消</string>
 </resources>

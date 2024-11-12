@@ -1,12 +1,19 @@
 package com.music.android.lin.player.database
 
 import androidx.room.withTransaction
-import com.music.android.lin.player.database.dao.MusicInfoDao
-import com.music.android.lin.player.database.dao.PlayRecordDao
 import com.music.android.lin.player.MediaDatabase
 import com.music.android.lin.player.database.dao.AlbumDao
 import com.music.android.lin.player.database.dao.ArtistDao
+import com.music.android.lin.player.database.dao.MusicInfoDao
 import com.music.android.lin.player.database.dao.PlayListDao
+import com.music.android.lin.player.database.dao.PlayListMediaInfoDao
+import com.music.android.lin.player.database.dao.PlayRecordDao
+import com.music.android.lin.player.database.metadata.LocalAlbum
+import com.music.android.lin.player.database.metadata.LocalArtist
+import com.music.android.lin.player.database.metadata.LocalMusicInfo
+import com.music.android.lin.player.database.metadata.LocalPlayList
+import com.music.android.lin.player.database.metadata.LocalPlayListMediaInfoRecord
+import com.music.android.lin.player.database.metadata.LocalPlayRecord
 import com.music.android.lin.player.metadata.Album
 import com.music.android.lin.player.metadata.Artist
 import com.music.android.lin.player.metadata.MediaExtras
@@ -18,17 +25,11 @@ import com.music.android.lin.player.metadata.PlayListType
 import com.music.android.lin.player.metadata.PlayRecord
 import com.music.android.lin.player.metadata.PlayRecord.PlayRecordResourceType.Companion.playRecordResourceType
 import com.music.android.lin.player.metadata.RecentPlayItem
-import com.music.android.lin.player.database.metadata.LocalAlbum
-import com.music.android.lin.player.database.metadata.LocalArtist
-import com.music.android.lin.player.database.metadata.LocalMusicInfo
-import com.music.android.lin.player.database.metadata.LocalPlayList
-import com.music.android.lin.player.database.metadata.LocalPlayRecord
 import com.music.android.lin.player.metadata.toImmutable
 import com.music.android.lin.player.metadata.toJson
 import com.music.android.lin.player.metadata.toMutable
 import com.music.android.lin.player.repositories.artistsIdList
 import com.music.android.lin.player.repositories.extensionsMap
-import com.music.android.lin.player.repositories.musicInfoIdList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -122,6 +123,7 @@ private class MediaRepositoryImpl constructor(
     private val artistDao: ArtistDao get() = this.mediaDatabase.artistDao
     private val albumDao: AlbumDao get() = this.mediaDatabase.albumDao
     private val playRecordDao: PlayRecordDao get() = this.mediaDatabase.playRecordDao
+    private val playlistMediaInfoDao: PlayListMediaInfoDao get() = this.mediaDatabase.playlistMediaInfoDao
 
     override fun observablePlayList(limit: Int): Flow<List<PlayList>> {
         return this.playListDao.fetchAllPlayList(limit).map { itemList ->
@@ -201,23 +203,23 @@ private class MediaRepositoryImpl constructor(
     }
 
     private suspend fun LocalPlayList.toPlayList(): PlayList {
-        val localPlayList = this
-        return coroutineScope {
-            PlayList(
-                id = localPlayList.id,
-                type = PlayListType.fromCode(localPlayList.typeCode),
-                name = localPlayList.name,
-                description = localPlayList.description,
-                mediaInfoList = localPlayList.musicInfoIdList.map { musicInfoId ->
-                    async {
-                        this@MediaRepositoryImpl.musicInfoDao.getMusicInfo(musicInfoId)
-                            ?.toMediaInfo()
-                    }
-                }.awaitAll().filterNotNull().toMutableList(),
-                extensions = localPlayList.extensionsMap,
-                updateTimeStamp = localPlayList.updateTimeStamp
-            )
+        val mediaInfoWithOrder = playlistMediaInfoDao.fetchMediaInfoAboutPlayList(this.id)
+        val mediaInfoList = coroutineScope {
+            mediaInfoWithOrder.map { record ->
+                async {
+                    musicInfoDao.getMusicInfo(record.mediaInfoId)?.toMediaInfo()
+                }
+            }.awaitAll().filterNotNull().toMutableList()
         }
+        return PlayList(
+            id = this.id,
+            type = PlayListType.fromCode(this.typeCode),
+            name = this.name,
+            description = this.description,
+            mediaInfoList = mediaInfoList,
+            extensions = this.extensionsMap,
+            updateTimeStamp = this.updateTimeStamp
+        )
     }
 
     private suspend fun LocalMusicInfo.toMediaInfo(): MediaInfo {
@@ -279,13 +281,19 @@ private class MediaRepositoryImpl constructor(
             .map { localPlayList -> localPlayList?.toPlayList() }
     }
 
-    private fun PlayList.toLocalPlayList(): LocalPlayList {
+    private suspend fun PlayList.toLocalPlayList(): LocalPlayList {
+        val recordList = this.mediaInfoList.map { mediaInfo ->
+            LocalPlayListMediaInfoRecord(
+                playlistId = this.id,
+                mediaInfoId = mediaInfo.id
+            )
+        }
+        playlistMediaInfoDao.insertOrUpdateList(recordList)
         return LocalPlayList(
             id = this.id,
             typeCode = this.type.code,
             name = this.name,
             description = this.description,
-            musicInfoIdStr = this.mediaInfoList.distinctBy { it.id }.joinToString(",") { it.id },
             extensionsStr = this.extensions?.toJson() ?: "",
             updateTimeStamp = System.currentTimeMillis()
         )

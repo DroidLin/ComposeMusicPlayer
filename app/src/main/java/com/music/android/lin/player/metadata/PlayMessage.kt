@@ -11,7 +11,7 @@ private const val KEY_DATA = "key_data"
 private const val KEY_SURFACE = "key_surface"
 
 var PlayMessage.command: Int?
-    set(value) {
+    private set(value) {
         this[KEY_OPERATION] = value
     }
     get() = this[KEY_OPERATION]
@@ -28,8 +28,10 @@ var PlayMessage.surface: Surface?
     }
     get() = this[KEY_SURFACE]
 
-class PlayMessage() : Parcelable {
+class PlayMessage : Parcelable {
     private val innerParameters = HashMap<String, Any?>()
+
+    private constructor()
 
     constructor(parcel: Parcel) : this() {
         this.readFromParcel(parcel)

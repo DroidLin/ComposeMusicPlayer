@@ -12,12 +12,14 @@ import kotlinx.coroutines.flow.update
  * @author: liuzhongao
  * @since: 2024/10/23 21:34
  */
-internal class MediaPlayingList : MediaList {
+class MediaPlayingList internal constructor() : MediaList {
+
+    private val mutableMetadata = MutableStateFlow(MediaListMetadata())
+    val metadata = this.mutableMetadata.asStateFlow()
 
     private var mediaList: MediaList = ListLoopMediaList()
-    private var indexOfCurrentPosition: Int = -1
+    private var indexOfCurrentPosition: Int
         set(value) {
-            field = value
             this.mutableMetadata.update {
                 it.copy(
                     indexOfCurrentMediaInfo = value,
@@ -25,11 +27,7 @@ internal class MediaPlayingList : MediaList {
                 )
             }
         }
-
-    private val mutableMetadata = MutableStateFlow(MediaListMetadata())
-    val metadata = this.mutableMetadata.asStateFlow()
-
-    val currentPosition: Int get() = this.indexOfCurrentPosition
+        get() = this.mutableMetadata.value.indexOfCurrentMediaInfo
 
     override var playList: PlayList? = null
 
@@ -64,7 +62,7 @@ internal class MediaPlayingList : MediaList {
         this.mutableMetadata.update { it.copy(playList = playList) }
     }
 
-    private inner class ListLoopMediaList : MediaList by this {
+    private inner class ListLoopMediaList : MediaListParent(this) {
         override val prevMediaInfo: MediaInfo?
             get() {
                 val playList = this.playList ?: return null
@@ -97,13 +95,18 @@ internal class MediaPlayingList : MediaList {
             }
     }
 
-    private inner class LoopMediaList : MediaList by this {
+    private inner class LoopMediaList : MediaListParent(this) {
         override val prevMediaInfo: MediaInfo? get() = this.mediaInfo
         override val nextMediaInfo: MediaInfo? get() = this.mediaInfo
     }
 
-    private inner class SingleMediaList : MediaList by this {
+    private inner class SingleMediaList : MediaListParent(this) {
         override val nextMediaInfo: MediaInfo? = null
         override val prevMediaInfo: MediaInfo? = null
+    }
+
+    internal abstract class MediaListParent(private val rawMediaList: MediaList) : MediaList {
+        final override val playList: PlayList? get() = this.rawMediaList.playList
+        override val mediaInfo: MediaInfo? get() = this.rawMediaList.mediaInfo
     }
 }

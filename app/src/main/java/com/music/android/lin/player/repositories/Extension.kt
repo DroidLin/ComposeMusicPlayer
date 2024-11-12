@@ -31,9 +31,6 @@ internal fun JSONArray.toList(): List<Any> {
     }
 }
 
-internal val LocalPlayList.musicInfoIdList: List<String>
-    get() = musicInfoIdStr.split(",").filter { it.isNotEmpty() && it.isNotBlank() }
-
 internal val LocalPlayList.extensionsMap: ExtensionMap
     get() = ExtensionMapImpl(extensionsStr = extensionsStr)
 

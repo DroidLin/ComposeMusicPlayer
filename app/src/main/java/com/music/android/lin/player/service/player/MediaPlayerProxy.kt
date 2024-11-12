@@ -74,6 +74,6 @@ class MediaPlayerProxy(
 
     private inline fun dispatchPlayerMessage(command: Int, function: PlayMessage.() -> Unit = {}) {
         val playerMessage = PlayMessage.ofCommand(command).apply(function)
-        playerService.dispatchMessage(playerMessage)
+        playerService.asyncDispatch(playerMessage)
     }
 }

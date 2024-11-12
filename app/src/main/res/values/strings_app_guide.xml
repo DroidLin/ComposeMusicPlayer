@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="string_welcome">欢迎使用%s</string>
-    <string name="string_guide_confirm">下一步</string>
+    <string name="string_guide_go_next">下一步</string>
 
     <string name="string_permission_acquire">权限申请</string>
     <string name="string_permission_acquire_description">为保证app的正常运行，需要获取以下权限</string>
@@ -13,6 +13,17 @@
     <string name="string_post_notifications">发送通知</string>
     <string name="string_post_notifications_description">该权限仅用于发送媒体播放通知</string>
     <string name="string_post_notifications_permission_denied_toast">发送通知权限已禁用，请转到系统设置进行修改</string>
+
+    <string name="string_are_you_sure_to_go_next_with_out_read_media_permission">确定要跳转下一步吗？未授予媒体读写权限，播放功能将不可用！</string>
+
+    <string name="string_scan_media_through_android_content_provider">通过Android内容提供器扫描歌曲</string>
+    <string name="string_scan_media_through_android_content_provider_description">使用系统提供的ContentProvider扫描数据，如果有更新不及时的问题，请关闭该开关进行手动扫描</string>
+
+    <string name="string_scan_local_media_content">扫描本地歌曲</string>
+    <string name="string_scan_local_media_content_description">请选择你的扫描方式</string>
+
+    <string name="string_launch_scanner">开始扫描</string>
+    <string name="string_scanner_running">扫描中…</string>
 
     <string name="string_guide_complete">完成</string>
 </resources>

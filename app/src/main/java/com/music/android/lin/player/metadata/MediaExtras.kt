@@ -76,7 +76,7 @@ fun MediaExtras(
     sampleRate: String,
     bitPerSample: String
 ): MediaExtras {
-    return MediaExtras(
+    return MediaExtrasImpl(
         duration = duration,
         writer = writer,
         mimeType = mimeType,

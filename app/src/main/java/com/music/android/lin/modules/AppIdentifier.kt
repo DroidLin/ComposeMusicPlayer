@@ -13,4 +13,7 @@ object AppIdentifier {
 
     @JvmField
     val GlobalCoroutineScope = named("global_coroutine_scope")
+
+    @JvmField
+    val AndroidScanner = named("android_media_information_scanner")
 }

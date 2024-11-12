@@ -12,7 +12,10 @@ import com.music.android.lin.player.service.PlayCommand
 import com.music.android.lin.player.service.metadata.PlayHistory
 import com.music.android.lin.player.service.readObject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.runBlocking
 import java.io.File
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * @author: liuzhongao
@@ -22,7 +25,9 @@ interface IPlayerService {
 
     val playerControl: PlayerControl
 
-    fun dispatchMessage(playMessage: PlayMessage)
+    fun syncDispatch(playMessage: PlayMessage)
+
+    fun asyncDispatch(playMessage: PlayMessage)
 
     fun release()
 }
@@ -41,10 +46,23 @@ internal class PlayerServiceHost(
         }
     }
 
-    override fun dispatchMessage(playMessage: PlayMessage) {
-        val message = this.innerHandler.obtainMessage()
+    override fun asyncDispatch(playMessage: PlayMessage) {
+        val message = innerHandler.obtainMessage()
         message.obj = playMessage
         message.sendToTarget()
+    }
+
+    override fun syncDispatch(playMessage: PlayMessage) {
+        runBlocking {
+            suspendCoroutine<Unit> { continuation ->
+                innerHandler.postAtFrontOfQueue {
+                    val message = innerHandler.obtainMessage()
+                    message.obj = playMessage
+                    innerHandler.handleMessage(message)
+                    continuation.resume(Unit)
+                }
+            }
+        }
     }
 
     private fun handleMessage(playMessage: PlayMessage?) {

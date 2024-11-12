@@ -2,15 +2,17 @@ package com.music.android.lin.player
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.music.android.lin.player.database.dao.MusicInfoDao
-import com.music.android.lin.player.database.dao.PlayRecordDao
 import com.music.android.lin.player.database.dao.AlbumDao
 import com.music.android.lin.player.database.dao.ArtistDao
+import com.music.android.lin.player.database.dao.MusicInfoDao
 import com.music.android.lin.player.database.dao.PlayListDao
+import com.music.android.lin.player.database.dao.PlayListMediaInfoDao
+import com.music.android.lin.player.database.dao.PlayRecordDao
 import com.music.android.lin.player.database.metadata.LocalAlbum
 import com.music.android.lin.player.database.metadata.LocalArtist
 import com.music.android.lin.player.database.metadata.LocalMusicInfo
 import com.music.android.lin.player.database.metadata.LocalPlayList
+import com.music.android.lin.player.database.metadata.LocalPlayListMediaInfoRecord
 import com.music.android.lin.player.database.metadata.LocalPlayRecord
 
 /**
@@ -24,8 +26,9 @@ import com.music.android.lin.player.database.metadata.LocalPlayRecord
         LocalAlbum::class,
         LocalPlayList::class,
         LocalPlayRecord::class,
+        LocalPlayListMediaInfoRecord::class
     ],
-    version = 6,
+    version = 1,
     exportSchema = false,
 )
 internal abstract class MediaDatabase : RoomDatabase() {
@@ -39,4 +42,6 @@ internal abstract class MediaDatabase : RoomDatabase() {
     abstract val albumDao: AlbumDao
 
     abstract val playRecordDao: PlayRecordDao
+
+    abstract val playlistMediaInfoDao: PlayListMediaInfoDao
 }

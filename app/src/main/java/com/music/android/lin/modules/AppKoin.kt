@@ -32,7 +32,8 @@ object AppKoin {
                 },
                 viewModelModule,
                 databaseModule,
-                useCaseModule
+                useCaseModule,
+                scannerModule
             )
         }
     }
