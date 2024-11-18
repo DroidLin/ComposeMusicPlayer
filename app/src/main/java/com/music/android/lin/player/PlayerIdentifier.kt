@@ -27,4 +27,13 @@ object PlayerIdentifier {
 
     @JvmField
     val PlayerControl = named("player_control")
+
+    @JvmField
+    val BizMediaController = named("biz_media_controller")
+
+    @JvmField
+    val ProxyMediaController = named("proxy_media_controller")
+
+    @JvmField
+    val PlayServiceHandlerThread = named("play_service_handler_thread")
 }

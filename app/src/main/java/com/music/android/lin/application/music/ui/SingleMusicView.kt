@@ -31,6 +31,7 @@ import com.music.android.lin.application.common.ui.LoadingProgress
 import com.music.android.lin.application.framework.AppMaterialTheme
 import com.music.android.lin.application.music.ui.component.DataLoadView
 import com.music.android.lin.application.music.ui.component.MusicItemView
+import com.music.android.lin.application.music.ui.vm.FakeMusicItemData
 import com.music.android.lin.application.music.ui.vm.SingleMusicViewModel
 import com.music.android.lin.application.usecase.MusicItem
 import com.music.android.lin.application.usecase.MusicItemSnapshot
@@ -162,7 +163,16 @@ private fun ContentViewPreview(modifier: Modifier = Modifier) {
     AppMaterialTheme {
         ContentMusicView(
             modifier = Modifier.fillMaxSize(),
-            state = remember { derivedStateOf { DataLoadState.Loading } }
+            state = remember {
+                derivedStateOf {
+                    DataLoadState.Data(
+                        MusicItemSnapshot(
+                            musicItemList = FakeMusicItemData,
+                            mediaInfoList = emptyList()
+                        )
+                    )
+                }
+            }
         )
     }
 }

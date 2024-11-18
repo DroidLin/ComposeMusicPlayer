@@ -43,13 +43,15 @@ suspend fun Context.fetchMediaInformation(): List<MediaInfoCursor> {
                     val duration = rawCursor.getIntByColumnName(MediaStore.Audio.AudioColumns.DURATION) ?: 0
                     val mediaExtras = metadataRetriever.decodeMediaExtras(sourceUri)
 
+                    val fileUri = Uri.fromFile(File(sourceUri))
+
                     mediaInfoCursorList += MediaInfoCursor(
                         id = id,
                         title = title,
                         composer = composer,
                         artistId = artistId,
                         albumId = albumId,
-                        sourceUri = sourceUri,
+                        sourceUri = fileUri.toString(),
                         duration = duration,
                         mediaExtras = mediaExtras
                     )

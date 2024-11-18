@@ -4,13 +4,14 @@ import com.music.android.lin.application.framework.vm.AppFrameworkViewModel
 import com.music.android.lin.application.framework.vm.AppMusicFrameworkViewModel
 import com.music.android.lin.application.framework.vm.AppNavigationViewModel
 import com.music.android.lin.application.guide.ui.vm.MediaInformationScannerViewModel
+import com.music.android.lin.application.minibar.audio.ui.vm.AudioMinibarViewModel
 import com.music.android.lin.application.music.ui.vm.SingleMusicViewModel
 import com.music.android.lin.application.settings.ui.vm.AppSettingsViewModel
 import com.music.android.lin.application.settings.usecase.SaveMediaInfoUseCase
 import com.music.android.lin.application.settings.usecase.ScanAndroidContentUseCase
+import com.music.android.lin.application.settings.usecase.scanner.MediaContentScanner
 import com.music.android.lin.application.usecase.PrepareMusicInfoUseCase
 import com.music.android.lin.application.usecase.PrepareUserPersonalInformationUseCase
-import com.music.android.lin.application.settings.usecase.scanner.MediaContentScanner
 import com.music.android.lin.player.PlayerIdentifier
 import com.music.android.lin.player.database.MediaRepository
 import com.music.android.lin.player.repositories.DatabaseService
@@ -42,12 +43,19 @@ val viewModelModule = module {
     }
     factory {
         SingleMusicViewModel(
-            prepareMusicInfoUseCase = get()
+            prepareMusicInfoUseCase = get(),
+            mediaController = get()
         )
     }
     factory {
         AppSettingsViewModel(
             applicationContext = get(AppIdentifier.ApplicationContext)
+        )
+    }
+    factory {
+        AudioMinibarViewModel(
+            mediaService = get(),
+            mediaController = get()
         )
     }
 }

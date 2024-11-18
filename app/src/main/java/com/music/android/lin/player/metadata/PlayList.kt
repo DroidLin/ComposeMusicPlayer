@@ -41,7 +41,7 @@ fun PlayList(
     type: PlayListType,
     name: String,
     description: String,
-    mediaInfoList: MutableList<MediaInfo>,
+    mediaInfoList: List<MediaInfo>,
     extensions: ExtensionMap?,
     updateTimeStamp: Long
 ): PlayList {

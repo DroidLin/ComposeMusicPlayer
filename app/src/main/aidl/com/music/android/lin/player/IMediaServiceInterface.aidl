@@ -4,7 +4,6 @@ import com.music.android.lin.player.metadata.PlayMessage;
 
 interface IMediaServiceInterface {
 
-    void dispatchSync(inout PlayMessage message);
+    void dispatch(inout PlayMessage playMessage);
 
-    void dispatchAsync(in PlayMessage message);
 }

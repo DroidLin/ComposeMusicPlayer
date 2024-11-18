@@ -1,19 +1,26 @@
 package com.music.android.lin.player
 
 import com.music.android.lin.player.metadata.PlayMessage
-import com.music.android.lin.player.service.controller.IPlayerService
+import com.music.android.lin.player.metadata.data
+import com.music.android.lin.player.service.PlayCommand
+import com.music.android.lin.player.service.controller.PlayEventLoop
+
+fun interface MessageDispatcher {
+    fun dispatch(playMessage: PlayMessage)
+}
 
 internal class MediaServiceInterfaceHandlerStub(
-    private val playerService: () -> IPlayerService?
+    private val dispatcher: MessageDispatcher,
 ) : IMediaServiceInterface.Stub() {
 
-    override fun dispatchSync(message: PlayMessage?) {
-        message ?: return
-        this.playerService()?.syncDispatch(message)
+    override fun dispatch(playMessage: PlayMessage?) {
+        playMessage ?: return
+        dispatcher.dispatch(playMessage)
     }
+}
 
-    override fun dispatchAsync(message: PlayMessage?) {
-        message ?: return
-        this.playerService()?.asyncDispatch(message)
-    }
+fun IMediaServiceInterface.attachStubHandle(mediaServiceInterface: IMediaServiceInterface) {
+    val playMessage = PlayMessage.ofCommand(PlayCommand.ATTACH_MEDIA_INTERFACE_HANDLE)
+    playMessage.data = mediaServiceInterface
+    this.dispatch(playMessage)
 }

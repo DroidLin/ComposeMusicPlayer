@@ -6,7 +6,8 @@ import android.media.MediaMetadata
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
 import com.music.android.lin.player.metadata.MediaInfo
-import com.music.android.lin.player.service.controller.PlayerControl
+import com.music.android.lin.player.service.controller.MediaController
+import com.music.android.lin.player.service.controller.PlayInfo
 import com.music.android.lin.player.utils.collectWithScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,8 @@ import kotlinx.coroutines.withContext
  */
 internal class PlayMediaSession(
     private val context: Context,
-    private val playerControl: PlayerControl,
+    private val mediaController: MediaController,
+    private val playInfo: PlayInfo,
     private val coroutineScope: CoroutineScope
 ) {
 
@@ -36,27 +38,27 @@ internal class PlayMediaSession(
     private val mediaSessionCallback = object : MediaSession.Callback() {
 
         override fun onPause() {
-            this@PlayMediaSession.playerControl.pause()
+            this@PlayMediaSession.mediaController.pause()
         }
 
         override fun onPlay() {
-            this@PlayMediaSession.playerControl.playOrResume()
+            this@PlayMediaSession.mediaController.playOrResume()
         }
 
         override fun onSkipToNext() {
-            this@PlayMediaSession.playerControl.skipToNext()
+            this@PlayMediaSession.mediaController.skipToNext()
         }
 
         override fun onSkipToPrevious() {
-            this@PlayMediaSession.playerControl.skipToPrevious()
+            this@PlayMediaSession.mediaController.skipToPrevious()
         }
 
         override fun onStop() {
-            this@PlayMediaSession.playerControl.stop()
+            this@PlayMediaSession.mediaController.stop()
         }
 
         override fun onSeekTo(pos: Long) {
-            this@PlayMediaSession.playerControl.seekToPosition(position = pos)
+            this@PlayMediaSession.mediaController.seekToPosition(position = pos)
         }
     }
 
@@ -68,7 +70,7 @@ internal class PlayMediaSession(
         this.mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS or MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
         this.mediaSession.isActive = true
 
-        this.playerControl.information
+        this.playInfo.information
             .map { information ->
                 MediaSessionMetadata(
                     numberOfMediaInfo = information.playList?.mediaInfoList?.size ?: 0,

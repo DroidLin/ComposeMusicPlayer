@@ -20,10 +20,12 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
 import com.music.android.lin.R
 import com.music.android.lin.player.metadata.MediaInfo
-import com.music.android.lin.player.service.controller.PlayerControl
+import com.music.android.lin.player.service.controller.MediaController
+import com.music.android.lin.player.service.controller.PlayInfo
 import com.music.android.lin.player.utils.collectWithScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -35,7 +37,8 @@ import kotlinx.coroutines.withContext
  */
 internal class PlayNotificationManager constructor(
     private val service: Service,
-    private val playerControl: PlayerControl,
+    private val mediaController: MediaController,
+    private val playInfo: PlayInfo,
     private val coroutineScope: CoroutineScope,
 ) {
     private val context: Context get() = this.service
@@ -80,10 +83,10 @@ internal class PlayNotificationManager constructor(
                 return
             }
             when (action) {
-                ACTION_MUSIC_CONTROLLER_SKIP_TO_PREVIOUS -> this@PlayNotificationManager.playerControl.skipToPrevious()
-                ACTION_MUSIC_CONTROLLER_PAUSE -> this@PlayNotificationManager.playerControl.pause()
-                ACTION_MUSIC_CONTROLLER_PLAY -> this@PlayNotificationManager.playerControl.playOrResume()
-                ACTION_MUSIC_CONTROLLER_SKIP_TO_NEXT -> this@PlayNotificationManager.playerControl.skipToNext()
+                ACTION_MUSIC_CONTROLLER_SKIP_TO_PREVIOUS -> this@PlayNotificationManager.mediaController.skipToPrevious()
+                ACTION_MUSIC_CONTROLLER_PAUSE -> this@PlayNotificationManager.mediaController.pause()
+                ACTION_MUSIC_CONTROLLER_PLAY -> this@PlayNotificationManager.mediaController.playOrResume()
+                ACTION_MUSIC_CONTROLLER_SKIP_TO_NEXT -> this@PlayNotificationManager.mediaController.skipToNext()
             }
         }
     }
@@ -92,13 +95,14 @@ internal class PlayNotificationManager constructor(
 
     init {
         initialize(this.service)
-        this.playerControl.information
+        this.playInfo.information
             .map { information ->
                 NotificationMetadata(
                     mediaInfo = information.mediaInfo,
                     isPlaying = information.playerMetadata.isPlaying
                 )
             }
+            .debounce(500L)
             .distinctUntilChanged()
             .onEach(::updateMediaNotification)
             .collectWithScope(this.coroutineScope)
@@ -159,9 +163,13 @@ internal class PlayNotificationManager constructor(
                 mediaInfo = musicInfo,
                 isPlaying = metadata.isPlaying
             )
-            this.notificationManagerCompat.notify(MEDIA_NOTIFICATION_ID, notification)
+            withContext(Dispatchers.Main) {
+                notificationManagerCompat.notify(MEDIA_NOTIFICATION_ID, notification)
+            }
         } else {
-            this.notificationManagerCompat.notify(MEDIA_NOTIFICATION_ID, buildEmptyNotification())
+            withContext(Dispatchers.Main) {
+                notificationManagerCompat.notify(MEDIA_NOTIFICATION_ID, buildEmptyNotification())
+            }
         }
     }
 

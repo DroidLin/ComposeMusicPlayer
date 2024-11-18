@@ -21,10 +21,7 @@ class MediaPlayingList internal constructor() : MediaList {
     private var indexOfCurrentPosition: Int
         set(value) {
             this.mutableMetadata.update {
-                it.copy(
-                    indexOfCurrentMediaInfo = value,
-                    mediaInfo = this.mediaInfo
-                )
+                it.copy(indexOfCurrentMediaInfo = value)
             }
         }
         get() = this.mutableMetadata.value.indexOfCurrentMediaInfo
@@ -59,7 +56,12 @@ class MediaPlayingList internal constructor() : MediaList {
     fun setResource(playList: PlayList, indexOfCurrentPosition: Int) {
         this.playList = playList
         this.indexOfCurrentPosition = indexOfCurrentPosition
+        this.syncCurrentMediaInfo()
         this.mutableMetadata.update { it.copy(playList = playList) }
+    }
+
+    private fun syncCurrentMediaInfo() {
+        this.mutableMetadata.update { it.copy(mediaInfo = this.mediaInfo) }
     }
 
     private inner class ListLoopMediaList : MediaListParent(this) {
@@ -76,6 +78,7 @@ class MediaPlayingList internal constructor() : MediaList {
                 }
                 newPosition %= playList.mediaInfoList.size
                 this@MediaPlayingList.indexOfCurrentPosition = newPosition
+                this@MediaPlayingList.syncCurrentMediaInfo()
                 return playList.mediaInfoList[newPosition]
             }
         override val nextMediaInfo: MediaInfo?
@@ -91,6 +94,7 @@ class MediaPlayingList internal constructor() : MediaList {
                 }
                 newPosition %= playList.mediaInfoList.size
                 this@MediaPlayingList.indexOfCurrentPosition = newPosition
+                this@MediaPlayingList.syncCurrentMediaInfo()
                 return playList.mediaInfoList[newPosition]
             }
     }

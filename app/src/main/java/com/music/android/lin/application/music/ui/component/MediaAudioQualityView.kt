@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,9 +23,13 @@ fun MediaAudioQualityView(
     ) {
         when (mediaQuality) {
             MediaQuality.HQ -> {
-                Card {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
                     Text(
-                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp),
+                        modifier = Modifier.padding(horizontal = 6.dp),
                         text = "HQ",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -33,9 +38,13 @@ fun MediaAudioQualityView(
             }
 
             MediaQuality.SQ -> {
-                Card {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
                     Text(
-                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp),
+                        modifier = Modifier.padding(horizontal = 6.dp),
                         text = "SQ",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodySmall

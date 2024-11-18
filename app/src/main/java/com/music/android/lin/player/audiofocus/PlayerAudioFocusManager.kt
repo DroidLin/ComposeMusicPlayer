@@ -5,14 +5,13 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
-import com.music.android.lin.player.service.controller.PlayerControl
-import com.music.android.lin.player.service.player.Player
+import com.music.android.lin.player.service.controller.MediaController
+import com.music.android.lin.player.service.controller.PlayInfo
 import com.music.android.lin.player.utils.collectWithScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 /**
  * @author liuzhongao
@@ -20,18 +19,19 @@ import kotlinx.coroutines.launch
  */
 internal class PlayerAudioFocusManager(
     private val context: Context,
-    private val playerControl: PlayerControl,
+    private val mediaController: MediaController,
+    private val playInfo: PlayInfo,
     private val coroutineScope: CoroutineScope
 ) {
 
     private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
         when (focusChange) {
             AudioManager.AUDIOFOCUS_GAIN -> {
-                this@PlayerAudioFocusManager.playerControl.playOrResume()
+                this@PlayerAudioFocusManager.mediaController.playOrResume()
             }
 
             AudioManager.AUDIOFOCUS_LOSS -> {
-                this@PlayerAudioFocusManager.playerControl.pause()
+                this@PlayerAudioFocusManager.mediaController.pause()
             }
         }
     }
@@ -39,7 +39,7 @@ internal class PlayerAudioFocusManager(
     private var audioFocusRequest: AudioFocusRequest? = null
 
     init {
-        this.playerControl.information
+        this.playInfo.information
             .map { it.playerMetadata.isPlaying }
             .distinctUntilChanged()
             .onEach { isPlaying ->

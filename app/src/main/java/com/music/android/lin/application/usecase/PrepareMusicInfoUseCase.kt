@@ -22,6 +22,7 @@ internal class PrepareMusicInfoUseCase(
 
     val mediaItemList = this.mediaRepository.observableMusicInfoList()
         .map { musicInfoList ->
+            val languageContext = ContextCompat.getContextForLanguage(this.applicationContext)
             val musicItemList = musicInfoList.map { mediaInfo ->
                 MusicItem(
                     mediaId = mediaInfo.id,
@@ -29,7 +30,6 @@ internal class PrepareMusicInfoUseCase(
                     musicDescription = StringBuilder().also { builder ->
                         val artist = mediaInfo.artists
                         if (artist.isEmpty()) {
-                            val languageContext = ContextCompat.getContextForLanguage(this.applicationContext)
                             val descriptions = languageContext.getString(R.string.string_album_placeholder, mediaInfo.album.albumName)
                             builder.append(descriptions)
                         } else {
@@ -46,7 +46,6 @@ internal class PrepareMusicInfoUseCase(
             )
         }
 }
-
 
 @Stable
 class MusicItemSnapshot(

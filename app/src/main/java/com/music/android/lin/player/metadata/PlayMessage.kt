@@ -1,6 +1,7 @@
 package com.music.android.lin.player.metadata
 
 import android.os.Build
+import android.os.IBinder
 import android.os.Parcel
 import android.os.Parcelable
 import android.view.Surface
@@ -52,7 +53,7 @@ class PlayMessage : Parcelable {
     }
 
     operator fun set(key: String, value: Any?) {
-        if (value !is Serializable && value !is Parcelable) {
+        if (value !is Serializable && value !is Parcelable && value !is IBinder) {
             throw IllegalArgumentException("illegal value: ${value}.")
         }
         this.innerParameters[key] = value

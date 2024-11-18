@@ -18,6 +18,7 @@ internal object PlayCommand {
     const val PLAYER_STOP = 10
     const val PLAYER_RELEASE = 11
     const val SET_PLAY_MODE = 12
-    const val SET_RESOURCE = 13
     const val PLAY_RESOURCE = 14
+    const val ATTACH_MEDIA_INTERFACE_HANDLE = 15
+    const val UPDATE_PLAY_INFORMATION = 16
 }

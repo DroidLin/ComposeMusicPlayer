@@ -12,10 +12,15 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import com.music.android.lin.application.util.LocalWindow
+import com.music.android.lin.application.util.SystemBarStyleComponent
+import com.music.android.lin.application.util.setNavigationBarStyle
+import com.music.android.lin.application.util.setStatusBarStyle
 
 /**
  * @author: liuzhongao
@@ -23,6 +28,9 @@ import androidx.compose.ui.platform.LocalContext
  */
 private val Configuration.isNightModeOn: Boolean
     get() = (uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+
+val Configuration.isNightModeOnCompat: Boolean
+    get() = (Build.VERSION.SDK_INT > Build.VERSION_CODES.S && this.isNightModeActive) || this.isNightModeOn
 
 private fun determineAppColorScheme(context: Context, configuration: Configuration): ColorScheme {
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {

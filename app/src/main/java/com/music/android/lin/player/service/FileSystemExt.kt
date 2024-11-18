@@ -1,6 +1,5 @@
 package com.music.android.lin.player.service
 
-import android.net.Uri
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -28,15 +27,4 @@ internal fun <T : Serializable> writeObject(file: File, value: T?) {
             outputStream.flush()
         }
     }.onFailure { it.printStackTrace() }
-}
-
-internal fun isUriAvailable(uri: Uri): Boolean {
-    return if (uri.scheme == "file") {
-        runCatching {
-            val filePath = uri.path ?: return@runCatching false
-            File(filePath).exists()
-        }.onFailure { it.printStackTrace() }.getOrNull() ?: false
-    } else {
-        true
-    }
 }

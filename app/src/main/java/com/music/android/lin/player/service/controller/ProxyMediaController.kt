@@ -1,22 +1,15 @@
-package com.music.android.lin.player.service.player
+package com.music.android.lin.player.service.controller
 
-import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.MessageDispatcher
+import com.music.android.lin.player.metadata.MediaResource
 import com.music.android.lin.player.metadata.PlayMessage
 import com.music.android.lin.player.metadata.PlayMode
 import com.music.android.lin.player.metadata.data
 import com.music.android.lin.player.service.PlayCommand
-import com.music.android.lin.player.service.controller.IPlayerService
-import com.music.android.lin.player.service.controller.PlayerControl
-import com.music.android.lin.player.service.player.datasource.DataSource
 
-/**
- * @author liuzhongao
- * @since 2024/10/24 17:18
- */
-class MediaPlayerProxy(
-    private val playerService: IPlayerService,
-    playerControl: PlayerControl
-) : PlayerControl by playerControl {
+class ProxyMediaController(
+    private val dispatcher: MessageDispatcher,
+) : MediaController {
 
     override fun setVolume(volumeLevel: Float) {
         dispatchPlayerMessage(PlayCommand.SET_VOLUME) {
@@ -27,18 +20,6 @@ class MediaPlayerProxy(
     override fun setPlayMode(playMode: PlayMode) {
         dispatchPlayerMessage(PlayCommand.SET_PLAY_MODE) {
             this.data = playMode
-        }
-    }
-
-    override fun playResource(playList: PlayList, fromIndex: Int, playWhenReady: Boolean) {
-        dispatchPlayerMessage(PlayCommand.PLAY_RESOURCE) {
-            this.data = arrayOf(playList, fromIndex, playWhenReady)
-        }
-    }
-
-    override fun setResource(playList: PlayList, fromIndex: Int) {
-        dispatchPlayerMessage(PlayCommand.SET_RESOURCE) {
-            data = arrayOf(playList, fromIndex)
         }
     }
 
@@ -72,8 +53,15 @@ class MediaPlayerProxy(
         dispatchPlayerMessage(PlayCommand.PLAYER_RELEASE)
     }
 
+    override fun playMediaResource(mediaResource: MediaResource) {
+        dispatchPlayerMessage(PlayCommand.PLAY_RESOURCE) {
+            data = mediaResource
+        }
+    }
+
     private inline fun dispatchPlayerMessage(command: Int, function: PlayMessage.() -> Unit = {}) {
         val playerMessage = PlayMessage.ofCommand(command).apply(function)
-        playerService.asyncDispatch(playerMessage)
+        this.dispatcher.dispatch(playerMessage)
     }
+
 }

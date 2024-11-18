@@ -1,36 +1,22 @@
 package com.music.android.lin.player.service.controller
 
+import com.music.android.lin.player.metadata.CommonMediaResourceParameter
 import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.MediaResource
 import com.music.android.lin.player.metadata.PlayList
 import com.music.android.lin.player.metadata.PlayMode
-import com.music.android.lin.player.service.metadata.PlayInformation
+import com.music.android.lin.player.metadata.PositionalMediaSourceParameter
 import com.music.android.lin.player.service.player.Player
 import com.music.android.lin.player.service.player.datasource.DataSource
 import com.music.android.lin.player.service.playlist.MediaPlayingList
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import java.util.logging.Logger
 
-internal class BizPlayerControl(
+class BizMediaController(
     private val player: Player,
     private val mediaList: MediaPlayingList,
     private val dataSourceFactory: DataSource.Factory,
     private val logger: Logger,
-) : PlayerControl {
-
-    override val information: Flow<PlayInformation> = combine(
-        this.player.playerMetadata,
-        this.mediaList.metadata
-    ) { playerMetadata, mediaMetadata ->
-        PlayInformation(
-            playList = mediaMetadata.playList,
-            mediaInfo = mediaMetadata.mediaInfo,
-            playMode = mediaMetadata.playMode,
-            playerMetadata = playerMetadata
-        )
-    }.distinctUntilChanged()
+) : MediaController {
 
     override fun setVolume(volumeLevel: Float) {
         val fixedVolume = volumeLevel.coerceIn(0f, 1f)
@@ -68,14 +54,30 @@ internal class BizPlayerControl(
     }
 
     override fun release() {
-
+        this.logger.info("deprecated release call.")
     }
 
-    override fun setResource(playList: PlayList, fromIndex: Int) {
-        this.playResource(playList, fromIndex, false)
+    override fun playMediaResource(mediaResource: MediaResource) {
+        when (mediaResource) {
+            is PositionalMediaSourceParameter -> {
+
+            }
+
+            is CommonMediaResourceParameter -> {
+                this.playResource(
+                    playList = mediaResource.playList,
+                    fromIndex = mediaResource.startPosition,
+                    playWhenReady = mediaResource.autoStart
+                )
+            }
+
+            else -> {
+                this.logger.info("unrecognized mediaResource: ${mediaResource.javaClass.name}")
+            }
+        }
     }
 
-    override fun playResource(playList: PlayList, fromIndex: Int, playWhenReady: Boolean) {
+    private fun playResource(playList: PlayList, fromIndex: Int, playWhenReady: Boolean) {
         this.mediaList.setResource(playList, fromIndex)
 
         val currentMediaInfo = this.mediaList.mediaInfo

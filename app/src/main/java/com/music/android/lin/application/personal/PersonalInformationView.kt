@@ -22,7 +22,9 @@ fun PersonalInformationView(
     modifier: Modifier = Modifier,
     onSettingsIconPressed: () -> Unit = {}
 ) {
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         PersonalTopHeader(
             modifier = Modifier,
             onSettingsIconPressed = onSettingsIconPressed
