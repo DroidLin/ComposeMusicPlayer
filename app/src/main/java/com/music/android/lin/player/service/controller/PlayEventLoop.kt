@@ -43,7 +43,6 @@ interface PlayEventLoop {
 internal class PlayEventLoopHost(
     override val playInfo: PlayInfo,
     override val mediaController: MediaController,
-    private val coroutineScope: CoroutineScope,
     private val context: Context,
     handler: Handler
 ) : PlayEventLoop {
@@ -77,20 +76,10 @@ internal class PlayEventLoopHost(
         dispatchToDispatchers(playMessage)
         innerHandler.obtainMessage().also { message ->
             message.obj = playMessage
-            if (Looper.myLooper() == innerHandler.looper) {
+            safeRunOnHandler {
                 innerHandler.handleMessage(message)
-            } else {
-                runBlocking {
-                    suspendCoroutine<Unit> { continuation ->
-                        innerHandler.post {
-                            innerHandler.handleMessage(message)
-                            continuation.resume(Unit)
-                        }
-                    }
-                }
             }
         }
-
     }
 
     private fun handleMessage(playMessage: PlayMessage?) {
@@ -127,6 +116,21 @@ internal class PlayEventLoopHost(
             PlayCommand.PLAY_RESOURCE -> {
                 val mediaResource = playMessage.data as MediaResource
                 this.mediaController.playMediaResource(mediaResource)
+            }
+        }
+    }
+
+    private fun safeRunOnHandler(block: () -> Unit) {
+        if (Looper.myLooper() == innerHandler.looper) {
+            block()
+        } else {
+            runBlocking {
+                suspendCoroutine<Unit> { continuation ->
+                    innerHandler.post {
+                        block()
+                        continuation.resume(Unit)
+                    }
+                }
             }
         }
     }

@@ -8,6 +8,8 @@ import org.koin.core.qualifier.named
  */
 object AppIdentifier {
 
+    const val applicationContext = "ApplicationContext"
+
     @JvmField
     val ApplicationContext = named("ApplicationContext")
 

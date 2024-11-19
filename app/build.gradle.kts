@@ -83,6 +83,8 @@ dependencies {
     implementation(libs.koin.coroutines)
     implementation(libs.koin.compose)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp.compiler)
 
     // coil
     implementation(libs.coil.compose)

@@ -13,9 +13,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import org.koin.core.annotation.Singleton
 import java.util.logging.Level
 import java.util.logging.Logger
 
+@Singleton
 @SuppressLint("UnsafeOptInUsageError")
 internal class ExoMediaPlayer(
     private val handler: Handler,

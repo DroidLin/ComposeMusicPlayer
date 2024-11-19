@@ -15,12 +15,13 @@ object PlayerIdentifier {
      */
     @JvmField
     val PlayerDatabaseAccessToken = named("PlayerAccessToken")
-
     @JvmField
     val PlayerLogger= named("player_logger")
+    const val playerLogger = "player_logger"
 
     @JvmField
     val ExoPlayer3 = named("exo_player3")
+    const val exoPlayer3 = "exo_player3"
 
     @JvmField
     val PlayService = named("play_service")
@@ -33,7 +34,9 @@ object PlayerIdentifier {
 
     @JvmField
     val ProxyMediaController = named("proxy_media_controller")
+    const val proxyMediaController = "proxy_media_controller"
 
     @JvmField
     val PlayServiceHandlerThread = named("play_service_handler_thread")
+    const val playServiceHandlerThread = "play_service_handler_thread"
 }

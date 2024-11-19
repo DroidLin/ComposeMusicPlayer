@@ -12,6 +12,7 @@ composeBom = "2024.10.00"
 roomDatabase = "2.6.1"
 kspSymbol = "1.9.0-1.0.13"
 koin = "4.0.0"
+koinCompiler = "2.0.0-Beta2"
 coil = "3.0.0-rc01"
 exoplayer3 = "1.4.1"
 splashScreen = "1.0.1"
@@ -49,6 +50,8 @@ koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = 
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-android-compat = { group = "io.insert-koin", name = "koin-android-compat", version.ref = "koin" }
+koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koinCompiler" }
+koin-ksp-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koinCompiler" }
 
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
