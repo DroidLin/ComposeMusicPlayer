@@ -1,8 +1,15 @@
 package com.music.android.lin.player
 
+import android.app.Service
 import android.content.Context
 import android.os.Handler
 import com.music.android.lin.modules.AppIdentifier
+import com.music.android.lin.player.audiofocus.PlayerAudioFocusManager
+import com.music.android.lin.player.notification.PlayMediaSession
+import com.music.android.lin.player.notification.PlayNotificationManager
+import com.music.android.lin.player.service.RemoteMediaServiceProxy
+import com.music.android.lin.player.service.controller.BizMediaController
+import com.music.android.lin.player.service.controller.BizPlayInfo
 import com.music.android.lin.player.service.controller.MediaController
 import com.music.android.lin.player.service.controller.PlayEventLoop
 import com.music.android.lin.player.service.controller.PlayEventLoopHost
@@ -10,11 +17,12 @@ import com.music.android.lin.player.service.controller.PlayInfo
 import com.music.android.lin.player.service.controller.ProxyMediaController
 import com.music.android.lin.player.service.player.ExoMediaPlayer
 import com.music.android.lin.player.service.player.Player
+import com.music.android.lin.player.service.player.datasource.DataSource
 import com.music.android.lin.player.service.playlist.MediaPlayingList
+import kotlinx.coroutines.CoroutineScope
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Named
-import org.koin.core.annotation.Property
 import org.koin.core.annotation.Qualifier
 import org.koin.core.annotation.Single
 import org.koin.dsl.module
@@ -32,6 +40,7 @@ class PlayModule {
     fun exoPlayer(
         @Named(PlayerIdentifier.playServiceHandlerThread)
         handler: Handler,
+        @Named(PlayerIdentifier.playerLogger)
         logger: Logger
     ): Player = ExoMediaPlayer(handler, logger)
 
@@ -41,8 +50,27 @@ class PlayModule {
         ProxyMediaController(playEventLoop::dispatchMessage)
 
     @Single
+    @Qualifier(name = PlayerIdentifier.bizMediaController)
+    internal fun bizMediaController(
+        @Named(PlayerIdentifier.exoPlayer3)
+        player: Player,
+        mediaPlayingList: MediaPlayingList,
+        dataSourceFactory: DataSource.Factory,
+        @Named(PlayerIdentifier.playerLogger)
+        logger: Logger
+    ): MediaController = BizMediaController(player, mediaPlayingList, dataSourceFactory, logger)
+
+    @Single
+    internal fun playInfo(
+        @Named(PlayerIdentifier.exoPlayer3)
+        player: Player,
+        mediaPlayingList: MediaPlayingList
+    ): PlayInfo = BizPlayInfo(player, mediaPlayingList)
+
+    @Single
     internal fun playEventLoopHost(
         playInfo: PlayInfo,
+        @Named(PlayerIdentifier.bizMediaController)
         mediaController: MediaController,
         @Named(AppIdentifier.applicationContext)
         context: Context,
@@ -50,82 +78,49 @@ class PlayModule {
         handler: Handler
     ): PlayEventLoopHost = PlayEventLoopHost(playInfo, mediaController, context, handler)
 
+    @Single
+    internal fun mediaPlayingList(): MediaPlayingList = MediaPlayingList()
+
     @Factory
     internal fun playEventLoop(host: PlayEventLoopHost): PlayEventLoop = host
-}
 
-internal val PlayerModule = module {
-//    single<Logger>(PlayerIdentifier.PlayerLogger) {
-//        Logger.getLogger("PlayerLogger")
-//    }
-//    single<Player>(PlayerIdentifier.ExoPlayer3) {
-//        ExoMediaPlayer(
-//            handler = get(PlayerIdentifier.PlayServiceHandlerThread),
-//            logger = get(PlayerIdentifier.PlayerLogger)
-//        )
-//    }
-    single<MediaPlayingList> {
-        MediaPlayingList()
-    }
-//    single<PlayInfo> {
-//        BizPlayInfo(
-//            player = get(PlayerIdentifier.ExoPlayer3),
-//            mediaList = get(),
-//        )
-//    }
-//    single<MediaController>(PlayerIdentifier.BizMediaController) {
-//        BizMediaController(
-//            player = get(PlayerIdentifier.ExoPlayer3),
-//            mediaList = get(),
-//            dataSourceFactory = get() { it },
-//            logger = get(PlayerIdentifier.PlayerLogger),
-//        )
-//    }
-//    single<MediaController>(PlayerIdentifier.ProxyMediaController) {
-//        ProxyMediaController(
-//            dispatcher = get<PlayEventLoop>()::dispatchMessage,
-//        )
-//    }
-    single<PlayEventLoop> {
-        get<PlayEventLoopHost>()
-    }
-//    single {
-//        PlayEventLoopHost(
-//            playInfo = get { it },
-//            mediaController = get(PlayerIdentifier.BizMediaController) { it },
-//            context = get(AppIdentifier.ApplicationContext),
-//            handler = get(PlayerIdentifier.PlayServiceHandlerThread) { it }
-//        )
-//    }
-//    single {
-//        PlayerAudioFocusManager(
-//            context = get(AppIdentifier.ApplicationContext),
-//            playInfo = get(),
-//            mediaController = get(PlayerIdentifier.ProxyMediaController),
-//            coroutineScope = get()
-//        )
-//    }
-//    single {
-//        PlayNotificationManager(
-//            service = get(PlayerIdentifier.PlayService),
-//            playInfo = get(),
-//            mediaController = get(PlayerIdentifier.ProxyMediaController),
-//            coroutineScope = get()
-//        )
-//    }
-//    single<PlayMediaSession> {
-//        PlayMediaSession(
-//            context = get(AppIdentifier.ApplicationContext),
-//            playInfo = get(),
-//            mediaController = get(PlayerIdentifier.ProxyMediaController),
-//            coroutineScope = get()
-//        )
-//    }
-//    single {
-//        RemoteMediaServiceProxy(
-//            handler = get(PlayerIdentifier.PlayServiceHandlerThread),
-//            playInfo = get(),
-//            coroutineScope = get()
-//        )
-//    }
+    @Single
+    internal fun playerAudioFocusManager(
+        @Named(AppIdentifier.applicationContext)
+        context: Context,
+        @Named(PlayerIdentifier.proxyMediaController)
+        mediaController: MediaController,
+        playInfo: PlayInfo,
+        coroutineScope: CoroutineScope
+    ): PlayerAudioFocusManager =
+        PlayerAudioFocusManager(context, mediaController, playInfo, coroutineScope)
+
+    @Single
+    internal fun playMediaSession(
+        @Named(AppIdentifier.applicationContext)
+        context: Context,
+        playInfo: PlayInfo,
+        @Named(PlayerIdentifier.proxyMediaController)
+        mediaController: MediaController,
+        coroutineScope: CoroutineScope
+    ): PlayMediaSession = PlayMediaSession(context, mediaController, playInfo, coroutineScope)
+
+    @Single
+    internal fun remoteMediaServiceProxy(
+        @Named(PlayerIdentifier.playServiceHandlerThread)
+        handler: Handler,
+        playInfo: PlayInfo,
+        coroutineScope: CoroutineScope
+    ): RemoteMediaServiceProxy = RemoteMediaServiceProxy(handler, playInfo, coroutineScope)
+
+    @Single
+    internal fun playNotificationManager(
+        @Named(PlayerIdentifier.playService)
+        service: Service,
+        playInfo: PlayInfo,
+        @Named(PlayerIdentifier.proxyMediaController)
+        mediaController: MediaController,
+        coroutineScope: CoroutineScope
+    ): PlayNotificationManager =
+        PlayNotificationManager(service, mediaController, playInfo, coroutineScope)
 }

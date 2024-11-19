@@ -17,7 +17,6 @@ import org.koin.core.annotation.Singleton
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@Singleton
 @SuppressLint("UnsafeOptInUsageError")
 internal class ExoMediaPlayer(
     private val handler: Handler,

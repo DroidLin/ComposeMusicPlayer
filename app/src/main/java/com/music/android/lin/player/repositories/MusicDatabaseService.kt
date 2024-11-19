@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.music.android.lin.player.MediaDatabase
 import com.music.android.lin.player.database.MediaRepository
+import org.koin.core.annotation.Factory
 
 /**
  * @author liuzhongao

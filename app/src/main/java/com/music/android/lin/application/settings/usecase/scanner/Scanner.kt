@@ -16,6 +16,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.LinkedList
+import kotlin.time.Duration.Companion.minutes
 
 private const val MEDIA_COVER_DIR = "mediaCoverCache"
 private const val ALBUM_COVER_BASE_CONTENT_URI = "content://media/external/audio/albumart"
@@ -24,10 +25,10 @@ private val Context.albumCacheDir: File
     get() = this.getExternalFilesDir(MEDIA_COVER_DIR)
         ?: this.getDir(MEDIA_COVER_DIR, Context.MODE_PRIVATE)
 
-suspend fun Context.fetchMediaInformation(): List<MediaInfoCursor> {
+suspend fun Context.fetchMediaInformation(filterDuration: Long = 2L.minutes.inWholeMilliseconds): List<MediaInfoCursor> {
     val externalMediaContentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
     val sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER
-    val selection = "${MediaStore.Audio.AudioColumns.DURATION} > 60000"
+    val selection = "${MediaStore.Audio.AudioColumns.DURATION} > $filterDuration"
     return withContext(Dispatchers.IO) {
         contentResolver.query(externalMediaContentUri, null, selection, null, sortOrder)
             ?.use { rawCursor ->

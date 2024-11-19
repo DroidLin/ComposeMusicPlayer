@@ -7,14 +7,13 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.IBinder
 import com.music.android.lin.modules.AppKoin
-import com.music.android.lin.player.IMediaServiceInterface
 import com.music.android.lin.player.MediaServiceInterfaceHandlerStub
+import com.music.android.lin.player.PlayModule
 import com.music.android.lin.player.PlayerIdentifier
-import com.music.android.lin.player.PlayerModule
 import com.music.android.lin.player.audiofocus.PlayerAudioFocusManager
 import com.music.android.lin.player.metadata.PlayMessage
-import com.music.android.lin.player.notification.PlayNotificationManager
 import com.music.android.lin.player.notification.PlayMediaSession
+import com.music.android.lin.player.notification.PlayNotificationManager
 import com.music.android.lin.player.service.controller.PlayEventLoop
 import com.music.android.lin.player.service.metadata.PlayMessageCommand
 import com.music.android.lin.player.service.player.datasource.DataSource
@@ -23,10 +22,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.Module
-import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
+import org.koin.ksp.generated.module
 import java.util.LinkedList
 
 /**
@@ -39,6 +37,7 @@ internal class PlayService : Service() {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
+    private val playerModule = PlayModule().module
     private val innerModule = module {
         factory<Service>(PlayerIdentifier.PlayService) {
             this@PlayService
@@ -110,7 +109,7 @@ internal class PlayService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        AppKoin.koin.loadModules(listOf(PlayerModule, innerModule))
+        AppKoin.koin.loadModules(listOf(playerModule, innerModule))
         this.handlerThread.start()
     }
 
@@ -150,6 +149,6 @@ internal class PlayService : Service() {
         this.audioFocusManager?.release()
         this.audioFocusManager = null
         this.playMediaSession = null
-        AppKoin.koin.unloadModules(listOf(PlayerModule, innerModule))
+        AppKoin.koin.unloadModules(listOf(playerModule, innerModule))
     }
 }

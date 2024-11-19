@@ -1,16 +1,10 @@
 package com.music.android.lin.modules
 
 import android.content.Context
-import com.music.android.lin.player.PlayerIdentifier
-import com.music.android.lin.player.service.MediaService
-import com.music.android.lin.player.service.controller.MediaController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import org.koin.core.Koin
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
-import org.koin.dsl.module
+import org.koin.ksp.generated.module
 
 /**
  * @author: liuzhongao
@@ -22,28 +16,10 @@ object AppKoin {
 
     fun init(context: Context) {
         startKoin {
-            modules(
-                module {
-                    single<Context>(AppIdentifier.ApplicationContext) {
-                        context
-                    }
-                    single<CoroutineScope>(AppIdentifier.GlobalCoroutineScope) {
-                        CoroutineScope(Dispatchers.Default + SupervisorJob())
-                    }
-                    single(PlayerIdentifier.PlayerDatabaseAccessToken) { "anonymous_user" }
-                    single<MediaService> {
-                        MediaService(context = get(AppIdentifier.ApplicationContext))
-                    }
-                    single<MediaController> {
-                        val mediaService = get<MediaService>()
-                        mediaService.mediaController
-                    }
-                },
-                viewModelModule,
-                databaseModule,
-                useCaseModule,
-                scannerModule
+            properties(
+                ApplicationModule.customProperties(context) + AppDatabaseModule.customProperties("anonymous_user")
             )
+            modules(AppModule.module)
         }
     }
 }

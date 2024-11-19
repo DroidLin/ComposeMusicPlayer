@@ -8,14 +8,15 @@ import org.koin.core.qualifier.named
  */
 object AppIdentifier {
 
-    const val applicationContext = "ApplicationContext"
-
     @JvmField
     val ApplicationContext = named("ApplicationContext")
+    const val applicationContext = "ApplicationContext"
 
     @JvmField
     val GlobalCoroutineScope = named("global_coroutine_scope")
 
     @JvmField
     val AndroidScanner = named("android_media_information_scanner")
+    const val androidScanner = "android_media_information_scanner"
+
 }

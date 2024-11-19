@@ -7,12 +7,12 @@ import com.music.android.lin.application.guide.ui.state.ScannerUiState
 import com.music.android.lin.application.guide.ui.state.ScanningState
 import com.music.android.lin.application.settings.usecase.SaveMediaInfoUseCase
 import com.music.android.lin.application.settings.usecase.ScanAndroidContentUseCase
-import com.music.android.lin.application.settings.usecase.scanner.MediaContentScanner
 import com.music.android.lin.player.metadata.MediaInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
 class MediaInformationScannerViewModel(
     private val scanAndroidContentUseCase: ScanAndroidContentUseCase,
