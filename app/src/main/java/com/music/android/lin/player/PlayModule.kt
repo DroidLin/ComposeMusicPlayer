@@ -37,10 +37,10 @@ class PlayModule {
     @Single
     @Qualifier(name = PlayerIdentifier.exoPlayer3)
     fun exoPlayer(
-        @Named(PlayerIdentifier.playServiceHandlerThread)
+        @Qualifier(name = PlayerIdentifier.playServiceHandlerThread)
         handler: Handler,
-        @Named(PlayerIdentifier.playerLogger)
-        logger: Logger
+        @Qualifier(name = PlayerIdentifier.playerLogger)
+        logger: Logger,
     ): Player = ExoMediaPlayer(handler, logger)
 
     @Single
@@ -51,17 +51,17 @@ class PlayModule {
     @Single
     @Qualifier(name = PlayerIdentifier.bizMediaController)
     internal fun bizMediaController(
-        @Named(PlayerIdentifier.exoPlayer3)
+        @Qualifier(name = PlayerIdentifier.exoPlayer3)
         player: Player,
         mediaPlayingList: MediaPlayingList,
         dataSourceFactory: DataSource.Factory,
-        @Named(PlayerIdentifier.playerLogger)
+        @Qualifier(name = PlayerIdentifier.playerLogger)
         logger: Logger
     ): MediaController = BizMediaController(player, mediaPlayingList, dataSourceFactory, logger)
 
     @Single
     internal fun playInfo(
-        @Named(PlayerIdentifier.exoPlayer3)
+        @Qualifier(name = PlayerIdentifier.exoPlayer3)
         player: Player,
         mediaPlayingList: MediaPlayingList
     ): PlayInfo = BizPlayInfo(player, mediaPlayingList)
@@ -69,13 +69,15 @@ class PlayModule {
     @Single
     internal fun playEventLoopHost(
         playInfo: PlayInfo,
-        @Named(PlayerIdentifier.bizMediaController)
+        @Qualifier(name = PlayerIdentifier.bizMediaController)
         mediaController: MediaController,
-        @Named(AppIdentifier.applicationContext)
+        @Qualifier(name = AppIdentifier.applicationContext)
         context: Context,
-        @Named(PlayerIdentifier.playServiceHandlerThread)
-        handler: Handler
-    ): PlayEventLoopHost = PlayEventLoopHost(playInfo, mediaController, context, handler)
+        @Qualifier(name = PlayerIdentifier.playServiceHandlerThread)
+        handler: Handler,
+        @Qualifier(name = PlayerIdentifier.exoPlayer3)
+        player: Player,
+    ): PlayEventLoopHost = PlayEventLoopHost(playInfo, mediaController, context, handler, player)
 
     @Single
     internal fun mediaPlayingList(): MediaPlayingList = MediaPlayingList()
@@ -85,9 +87,9 @@ class PlayModule {
 
     @Single
     internal fun playerAudioFocusManager(
-        @Named(AppIdentifier.applicationContext)
+        @Qualifier(name = AppIdentifier.applicationContext)
         context: Context,
-        @Named(PlayerIdentifier.proxyMediaController)
+        @Qualifier(name = PlayerIdentifier.proxyMediaController)
         mediaController: MediaController,
         playInfo: PlayInfo,
         coroutineScope: CoroutineScope
@@ -106,7 +108,7 @@ class PlayModule {
 
     @Single
     internal fun remoteMediaServiceProxy(
-        @Named(PlayerIdentifier.playServiceHandlerThread)
+        @Qualifier(name = PlayerIdentifier.playServiceHandlerThread)
         handler: Handler,
         playInfo: PlayInfo,
         coroutineScope: CoroutineScope
@@ -114,10 +116,10 @@ class PlayModule {
 
     @Single
     internal fun playNotificationManager(
-        @Named(PlayerIdentifier.playService)
+        @Qualifier(name = PlayerIdentifier.playService)
         service: Service,
         playInfo: PlayInfo,
-        @Named(PlayerIdentifier.proxyMediaController)
+        @Qualifier(name = PlayerIdentifier.proxyMediaController)
         mediaController: MediaController,
         coroutineScope: CoroutineScope
     ): PlayNotificationManager =

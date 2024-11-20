@@ -33,29 +33,30 @@ suspend fun Context.fetchMediaInformation(filterDuration: Long = 2L.minutes.inWh
         contentResolver.query(externalMediaContentUri, null, selection, null, sortOrder)
             ?.use { rawCursor ->
                 val mediaInfoCursorList = LinkedList<MediaInfoCursor>()
-                val metadataRetriever = MediaMetadataRetriever()
-                while (isActive && rawCursor.moveToNext()) {
-                    val id = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns._ID) ?: ""
-                    val title = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns.TITLE) ?: ""
-                    val composer = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns.COMPOSER) ?: ""
-                    val artistId = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns.ARTIST_ID) ?: ""
-                    val albumId = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns.ALBUM_ID) ?: ""
-                    val sourceUri = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns.DATA) ?: ""
-                    val duration = rawCursor.getIntByColumnName(MediaStore.Audio.AudioColumns.DURATION) ?: 0
-                    val mediaExtras = metadataRetriever.decodeMediaExtras(sourceUri)
+                MediaMetadataRetriever().use { metadataRetriever ->
+                    while (isActive && rawCursor.moveToNext()) {
+                        val id = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns._ID) ?: ""
+                        val title = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns.TITLE) ?: ""
+                        val composer = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns.COMPOSER) ?: ""
+                        val artistId = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns.ARTIST_ID) ?: ""
+                        val albumId = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns.ALBUM_ID) ?: ""
+                        val sourceUri = rawCursor.getStringByColumnName(MediaStore.Audio.AudioColumns.DATA) ?: ""
+                        val duration = rawCursor.getIntByColumnName(MediaStore.Audio.AudioColumns.DURATION) ?: 0
+                        val mediaExtras = metadataRetriever.decodeMediaExtras(sourceUri)
 
-                    val fileUri = Uri.fromFile(File(sourceUri))
+                        val fileUri = Uri.fromFile(File(sourceUri))
 
-                    mediaInfoCursorList += MediaInfoCursor(
-                        id = id,
-                        title = title,
-                        composer = composer,
-                        artistId = artistId,
-                        albumId = albumId,
-                        sourceUri = fileUri.toString(),
-                        duration = duration,
-                        mediaExtras = mediaExtras
-                    )
+                        mediaInfoCursorList += MediaInfoCursor(
+                            id = id,
+                            title = title,
+                            composer = composer,
+                            artistId = artistId,
+                            albumId = albumId,
+                            sourceUri = fileUri.toString(),
+                            duration = duration,
+                            mediaExtras = mediaExtras
+                        )
+                    }
                 }
                 mediaInfoCursorList
             } ?: emptyList()
@@ -116,27 +117,26 @@ suspend fun Context.fetchArtistInformation(artistId: String): List<MediaArtistCu
 
 private fun MediaMetadataRetriever.decodeMediaExtras(sourceUri: String?): MediaExtras {
     return kotlin.runCatching {
-        use { mediaMetadataRetriever ->
-            mediaMetadataRetriever.setDataSource(sourceUri)
-            val mediaExtras = MutableMediaExtras()
-            mediaExtras.duration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
-            mediaExtras.writer = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_WRITER) ?: ""
-            mediaExtras.mimeType = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE) ?: ""
-            mediaExtras.containsAudioSource = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO)?.toBooleanStrictOrNull() ?: false
-            mediaExtras.containsVideoSource = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO)?.toBooleanStrictOrNull() ?: false
-            mediaExtras.videoWidth = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
-            mediaExtras.videoHeight = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
-            mediaExtras.bitRate = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)?.toIntOrNull() ?: 0
-            mediaExtras.captureFrameRate = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CAPTURE_FRAMERATE)?.toFloatOrNull() ?: 0f
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                mediaExtras.colorRange = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COLOR_RANGE)?.toIntOrNull() ?: 0
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                mediaExtras.sampleRate = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_SAMPLERATE) ?: ""
-                mediaExtras.bitPerSample = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITS_PER_SAMPLE) ?: ""
-            }
-            mediaExtras
+        val mediaMetadataRetriever = this
+        mediaMetadataRetriever.setDataSource(sourceUri)
+        val mediaExtras = MutableMediaExtras()
+        mediaExtras.duration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
+        mediaExtras.writer = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_WRITER) ?: ""
+        mediaExtras.mimeType = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE) ?: ""
+        mediaExtras.containsAudioSource = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO)?.toBooleanStrictOrNull() ?: false
+        mediaExtras.containsVideoSource = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO)?.toBooleanStrictOrNull() ?: false
+        mediaExtras.videoWidth = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
+        mediaExtras.videoHeight = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
+        mediaExtras.bitRate = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)?.toIntOrNull() ?: 0
+        mediaExtras.captureFrameRate = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CAPTURE_FRAMERATE)?.toFloatOrNull() ?: 0f
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            mediaExtras.colorRange = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COLOR_RANGE)?.toIntOrNull() ?: 0
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            mediaExtras.sampleRate = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_SAMPLERATE) ?: ""
+            mediaExtras.bitPerSample = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITS_PER_SAMPLE) ?: ""
+        }
+        mediaExtras
     }.onFailure { it.printStackTrace() }.getOrNull() ?: MediaExtras
 }
 

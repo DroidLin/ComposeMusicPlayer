@@ -15,6 +15,10 @@ sealed interface Player {
 
     val isPlaying: Boolean
 
+    fun addListener(listener: Listener)
+
+    fun removeListener(listener: Listener)
+
     fun setVolume(@FloatRange volume: Float)
 
     fun setDataSource(dataSource: DataSource): Boolean
@@ -28,4 +32,9 @@ sealed interface Player {
     fun stop()
 
     fun release()
+
+    interface Listener {
+
+        fun onPlayEnd()
+    }
 }

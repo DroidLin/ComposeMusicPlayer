@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.map
 
 private val MediaInfo.mediaQuality: MediaQuality
     get() = when (this.mediaExtras.bitRate) {
-        in (0..192000) -> MediaQuality.NQ
-        in (192000..320000) -> MediaQuality.HQ
+        in (0 until 128000) -> MediaQuality.NQ
+        in (128000 until 320000) -> MediaQuality.HQ
         else -> MediaQuality.SQ
     }
 

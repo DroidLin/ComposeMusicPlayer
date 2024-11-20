@@ -7,6 +7,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.modules.applicationContext
+import com.music.android.lin.player.service.controller.MediaController
 import com.music.android.lin.player.service.metadata.PlayerMetadata
 import com.music.android.lin.player.service.player.datasource.DataSource
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +35,8 @@ internal class ExoMediaPlayer(
             val isBuffering = playbackState == androidx.media3.common.Player.STATE_BUFFERING
             if (playbackState == androidx.media3.common.Player.STATE_READY) {
                 this@ExoMediaPlayer.updatePlayerMetadata()
+            } else if (playbackState == androidx.media3.common.Player.STATE_ENDED) {
+                this@ExoMediaPlayer.notifyListener { onPlayEnd() }
             }
             this@ExoMediaPlayer.metadataFlow.update { it.copy(isBuffering = isBuffering) }
         }
@@ -51,6 +54,8 @@ internal class ExoMediaPlayer(
             .build()
     }
 
+    private val listenerList = ArrayList<Player.Listener>()
+
     private val metadataFlow = MutableStateFlow(PlayerMetadata())
 
     override val playerMetadata: Flow<PlayerMetadata> = this.metadataFlow.asStateFlow()
@@ -66,6 +71,22 @@ internal class ExoMediaPlayer(
 
     init {
         this.exoPlayer.addListener(this.playerListener)
+    }
+
+    override fun addListener(listener: Player.Listener) {
+        synchronized(this.listenerList) {
+            if (!this.listenerList.contains(listener)) {
+                this.listenerList += listener
+            }
+        }
+    }
+
+    override fun removeListener(listener: Player.Listener) {
+        synchronized(this.listenerList) {
+            if (this.listenerList.contains(listener)) {
+                this.listenerList -= listener
+            }
+        }
     }
 
     override fun setVolume(volume: Float) {
@@ -105,6 +126,12 @@ internal class ExoMediaPlayer(
     override fun release() {
         if (!this.exoPlayer.isReleased) {
             this.exoPlayer.release()
+        }
+    }
+
+    private inline fun notifyListener(function: Player.Listener.() -> Unit) {
+        synchronized(this.listenerList) {
+            this.listenerList.forEach(function)
         }
     }
 

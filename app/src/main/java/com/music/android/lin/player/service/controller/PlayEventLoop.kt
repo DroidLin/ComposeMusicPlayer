@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import com.music.android.lin.player.IMediaServiceInterface
 import com.music.android.lin.player.MessageDispatcher
 import com.music.android.lin.player.metadata.CommonMediaResourceParameter
 import com.music.android.lin.player.metadata.MediaResource
@@ -14,8 +13,8 @@ import com.music.android.lin.player.metadata.command
 import com.music.android.lin.player.metadata.data
 import com.music.android.lin.player.service.PlayCommand
 import com.music.android.lin.player.service.metadata.PlayHistory
+import com.music.android.lin.player.service.player.Player
 import com.music.android.lin.player.service.readObject
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import kotlin.coroutines.resume
@@ -44,7 +43,8 @@ internal class PlayEventLoopHost(
     override val playInfo: PlayInfo,
     override val mediaController: MediaController,
     private val context: Context,
-    handler: Handler
+    handler: Handler,
+    player: Player
 ) : PlayEventLoop {
 
     private val dispatcherList = ArrayList<MessageDispatcher>()
@@ -54,6 +54,17 @@ internal class PlayEventLoopHost(
             val playMessage = msg.obj as? PlayMessage
             this@PlayEventLoopHost.handleMessage(playMessage)
         }
+    }
+
+    private val playerListener = object : Player.Listener {
+        override fun onPlayEnd() {
+            val message = PlayMessage.ofCommand(PlayCommand.SKIP_TO_NEXT)
+            dispatchMessage(message)
+        }
+    }
+
+    init {
+        player.addListener(this.playerListener)
     }
 
     override fun addDispatcher(dispatcher: MessageDispatcher) {
