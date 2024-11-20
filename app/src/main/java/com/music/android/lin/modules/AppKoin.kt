@@ -1,9 +1,13 @@
 package com.music.android.lin.modules
 
 import android.content.Context
+import androidx.compose.runtime.Composable
+import org.koin.android.java.KoinAndroidApplication
+import org.koin.compose.KoinApplication
 import org.koin.core.Koin
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
+import org.koin.dsl.koinApplication
 import org.koin.ksp.generated.module
 
 /**

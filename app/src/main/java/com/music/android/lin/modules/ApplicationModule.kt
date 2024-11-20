@@ -22,7 +22,7 @@ class ApplicationModule {
 
     @Single
     fun mediaService(
-        @Named(AppIdentifier.applicationContext)
+        @Qualifier(name = AppIdentifier.applicationContext)
         context: Context
     ): MediaService = MediaService(context)
 

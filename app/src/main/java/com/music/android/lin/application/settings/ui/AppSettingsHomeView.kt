@@ -36,7 +36,7 @@ import com.music.android.lin.R
 import com.music.android.lin.application.common.state.DataLoadState
 import com.music.android.lin.application.common.ui.LoadingProgress
 import com.music.android.lin.application.framework.AppMaterialTheme
-import com.music.android.lin.application.music.ui.component.DataLoadView
+import com.music.android.lin.application.common.ui.component.DataLoadView
 import com.music.android.lin.application.settings.ui.component.ResetConfirmDialog
 import com.music.android.lin.application.settings.ui.component.SettingItemViewHolder
 import com.music.android.lin.application.settings.model.SettingSection
@@ -68,7 +68,11 @@ fun AppSettingsHomeView(
             }
         }
     )
-    ResetConfirmDialog(showDialog = showResetConfirmDialog)
+    ResetConfirmDialog(
+        showDialog = showResetConfirmDialog,
+        dismissRequest = { showResetConfirmDialog = false },
+        confirmResetAll = { showResetConfirmDialog = false }
+    )
 }
 
 @Composable
@@ -104,6 +108,8 @@ private fun ContentSettingsView(
     }
 }
 
+private val CornerRadius by lazy { 16.dp }
+
 @Composable
 private fun SettingsLazyColumn(
     data: DataLoadState.Data<List<SettingSection>>,
@@ -125,10 +131,10 @@ private fun SettingsLazyColumn(
                 var topCorner = Dp.Hairline
                 var bottomCorner = Dp.Hairline
                 if (index == 0) {
-                    topCorner = 10.dp
+                    topCorner = CornerRadius
                 }
                 if (index == (settingSection.sectionItems.size - 1)) {
-                    bottomCorner = 10.dp
+                    bottomCorner = CornerRadius
                 }
                 var topMargin = Dp.Hairline
                 if (index == 0 && sectionIndex != 0) {

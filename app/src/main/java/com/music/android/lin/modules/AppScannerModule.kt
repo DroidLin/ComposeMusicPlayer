@@ -13,7 +13,7 @@ class AppScannerModule {
     @Factory
     @Qualifier(name = AppIdentifier.androidScanner)
     internal fun mediaContentScanner(
-        @Named(AppIdentifier.applicationContext)
+        @Qualifier(name = AppIdentifier.applicationContext)
         context: Context
     ): MediaContentScanner = MediaContentScanner(context)
 

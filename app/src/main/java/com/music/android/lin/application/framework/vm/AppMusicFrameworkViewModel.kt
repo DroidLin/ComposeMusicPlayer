@@ -37,5 +37,7 @@ enum class NavigationDrawerType(
      get() = when (this) {
          NavigationDrawerType.SingleMusic -> PageDefinition.SingleMusicView::class.qualifiedName
          NavigationDrawerType.Album -> PageDefinition.AlbumView::class.qualifiedName
+         NavigationDrawerType.Settings -> PageDefinition.SettingsView::class.qualifiedName
+         NavigationDrawerType.About -> PageDefinition.AboutView::class.qualifiedName
          else -> null
      }

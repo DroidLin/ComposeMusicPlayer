@@ -19,13 +19,17 @@ import com.music.android.lin.application.util.applyWindowBackgroundSettings
 import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.modules.mediaService
 import com.music.android.lin.player.service.MediaService
+import org.koin.androidx.compose.KoinAndroidContext
+import org.koin.compose.KoinApplication
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.applyWindowBackgroundSettings()
+
         super.onCreate(savedInstanceState)
+
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {
             !AppKoin.mediaService.isConnected
@@ -36,9 +40,11 @@ class MainActivity : ComponentActivity() {
                 LocalWindow provides window
             ) {
                 SystemBarStyleComponent(!LocalConfiguration.current.isNightModeOnCompat)
-                AppMaterialTheme {
-                    AppFramework {
-                        AppMusicFramework(modifier = Modifier)
+                KoinAndroidContext {
+                    AppMaterialTheme {
+                        AppFramework {
+                            AppMusicFramework(modifier = Modifier)
+                        }
                     }
                 }
             }

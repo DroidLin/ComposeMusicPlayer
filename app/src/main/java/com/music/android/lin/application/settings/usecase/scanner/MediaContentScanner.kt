@@ -14,7 +14,7 @@ interface MediaContentScanner {
     suspend fun scan(): List<MediaInfo>
 }
 
-fun MediaContentScanner(@Named(AppIdentifier.applicationContext) context: Context): MediaContentScanner {
+fun MediaContentScanner(context: Context): MediaContentScanner {
     return AndroidContentProviderMediaScanner(context)
 }
 

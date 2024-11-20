@@ -1,16 +1,16 @@
 package com.music.android.lin.application.common.state
 
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 
-@Stable
+@Immutable
 sealed interface DataLoadState {
 
-    @Stable
+    @Immutable
     data object Loading: DataLoadState
 
-    @Stable
+    @Immutable
     data class Data<T>(val data: T): DataLoadState
 
-    @Stable
+    @Immutable
     data class Failure(val message: String, val errorCode: Int): DataLoadState
 }

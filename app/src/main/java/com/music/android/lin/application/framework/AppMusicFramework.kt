@@ -4,7 +4,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -34,13 +36,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import com.music.android.lin.application.PageDeepLinks
 import com.music.android.lin.application.PageDefinition
-import com.music.android.lin.application.album.ui.AlbumView
-import com.music.android.lin.application.music.ui.SingleMusicView
-import com.music.android.lin.application.settings.ui.AppSettingsHomeView
+import com.music.android.lin.application.music.album.ui.AlbumView
 import com.music.android.lin.application.framework.vm.NavigationDrawerType
 import com.music.android.lin.application.framework.vm.NavigationDrawerTypes
 import com.music.android.lin.application.framework.vm.pageDefinitionName
+import com.music.android.lin.application.minibar.ui.Minibar
+import com.music.android.lin.application.music.single.ui.SingleMusicView
 import com.music.android.lin.application.settings.ui.AboutView
+import com.music.android.lin.application.settings.ui.AppSettingsHomeView
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,6 +56,16 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
             drawerState.animateTo(DrawerValue.Closed, tween(300))
         } else if (drawerState.isClosed) {
             drawerState.animateTo(DrawerValue.Open, tween(300))
+        }
+    }
+
+    val navigateToPage: (String) -> Unit = { route: String ->
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
         }
     }
 
@@ -72,13 +85,7 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                     if (currentRoute == route::class.qualifiedName) {
                         return@launch
                     }
-                    navController.navigate(route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    navigateToPage(route)
                 }
             }
 
@@ -111,60 +118,74 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
             }
         }
     ) {
-        NavHost(
-            modifier = modifier.fillMaxSize(),
-            navController = navController,
-            startDestination = PageDefinition.SingleMusicView
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .navigationBarsPadding(),
         ) {
-            composable<PageDefinition.SingleMusicView>(
-                deepLinks = listOf(
-                    navDeepLink<PageDefinition.SingleMusicView>(
-                        basePath = PageDeepLinks.PATH_SINGLE_MUSIC
-                    )
-                )
+            NavHost(
+                modifier = Modifier.weight(1f),
+                navController = navController,
+                startDestination = PageDefinition.SingleMusicView
             ) {
-                SingleMusicView(
-                    modifier = Modifier,
-                    onDrawerIconPressed = {
-                        coroutineScope.launch {
-                            onDrawerIconPressed()
+                composable<PageDefinition.SingleMusicView>(
+                    deepLinks = listOf(
+                        navDeepLink<PageDefinition.SingleMusicView>(
+                            basePath = PageDeepLinks.PATH_SINGLE_MUSIC
+                        )
+                    )
+                ) {
+                    SingleMusicView(
+                        modifier = Modifier,
+                        onDrawerIconPressed = {
+                            coroutineScope.launch {
+                                onDrawerIconPressed()
+                            }
                         }
-                    }
-                )
-            }
-            composable<PageDefinition.AlbumView>(
-                deepLinks = listOf(
-                    navDeepLink<PageDefinition.AlbumView>(
-                        basePath = PageDeepLinks.PATH_ALBUM
                     )
-                )
-            ) {
-                AlbumView(modifier = Modifier)
-            }
-            composable<PageDefinition.SettingsView>(
-                deepLinks = listOf(
-                    navDeepLink<PageDefinition.SettingsView>(
-                        basePath = PageDeepLinks.PATH_SETTINGS
+                }
+                composable<PageDefinition.AlbumView>(
+                    deepLinks = listOf(
+                        navDeepLink<PageDefinition.AlbumView>(
+                            basePath = PageDeepLinks.PATH_ALBUM
+                        )
                     )
-                )
-            ) {
-                AppSettingsHomeView(
-                    backPress = navController::popBackStack,
-                    modifier = Modifier
-                )
-            }
-            composable<PageDefinition.AboutView>(
-                deepLinks = listOf(
-                    navDeepLink<PageDefinition.AboutView>(
-                        basePath = PageDeepLinks.PATH_ABOUT
+                ) {
+                    AlbumView(modifier = Modifier)
+                }
+                composable<PageDefinition.SettingsView>(
+                    deepLinks = listOf(
+                        navDeepLink<PageDefinition.SettingsView>(
+                            basePath = PageDeepLinks.PATH_SETTINGS
+                        )
                     )
-                )
-            ) {
-                AboutView(
-                    modifier = Modifier,
-                    backPress = navController::popBackStack
-                )
+                ) {
+                    AppSettingsHomeView(
+                        backPress = navController::popBackStack,
+                        modifier = Modifier,
+                        goToAboutView = {
+                            navigateToPage(requireNotNull(PageDefinition.AboutView::class.qualifiedName))
+                        }
+                    )
+                }
+                composable<PageDefinition.AboutView>(
+                    deepLinks = listOf(
+                        navDeepLink<PageDefinition.AboutView>(
+                            basePath = PageDeepLinks.PATH_ABOUT
+                        )
+                    )
+                ) {
+                    AboutView(
+                        modifier = Modifier,
+                        backPress = navController::popBackStack
+                    )
+                }
             }
+            Minibar(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                minibarContentPressed = {}
+            )
         }
     }
 }

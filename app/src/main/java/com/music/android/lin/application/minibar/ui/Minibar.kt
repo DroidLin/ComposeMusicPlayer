@@ -1,36 +1,42 @@
 package com.music.android.lin.application.minibar.ui
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import com.music.android.lin.R
-import com.music.android.lin.application.framework.AppMaterialTheme
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.music.android.lin.application.common.vm.PlayViewModel
+import com.music.android.lin.application.minibar.audio.ui.AudioMinibar
 import com.music.android.lin.application.minibar.ui.state.MinibarUiState
+import com.music.android.lin.application.minibar.ui.vm.MinibarViewModel
+import com.music.android.lin.player.metadata.MediaType
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun Minibar(modifier: Modifier = Modifier) {
-
+fun Minibar(
+    minibarContentPressed: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val playViewModel = koinViewModel<PlayViewModel>()
+    val minibarViewModel = koinViewModel<MinibarViewModel>()
+    val uiState = minibarViewModel.uiState.collectAsStateWithLifecycle()
+    MinibarContent(
+        uiState = uiState,
+        playButtonPressed = playViewModel::playButtonPressed,
+        playListButtonPressed = {},
+        minibarContentPressed = minibarContentPressed,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -38,103 +44,24 @@ private fun MinibarContent(
     uiState: State<MinibarUiState>,
     playButtonPressed: () -> Unit,
     playListButtonPressed: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Spacer(modifier = Modifier.width(48.dp))
-            Spacer(modifier = Modifier.width(8.dp))
-            MinibarTitle(
-                minibarTitle = remember { derivedStateOf { uiState.value.minibarTitle } },
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            MinibarButtons(
-                isPlaying = remember { derivedStateOf { uiState.value.isPlaying } },
-                playButtonPressed = playButtonPressed
-            )
-        }
-        MinibarCoverImage(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .size(48.dp),
-            imageUrl = remember { derivedStateOf { uiState.value.imageUrl } }
-        )
-    }
-}
-
-@Composable
-private fun MinibarCoverImage(
-    imageUrl: State<String?>,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.small,
-        color = MaterialTheme.colorScheme.secondaryContainer
-    ) {
-        AsyncImage(
-            model = imageUrl.value,
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-        )
-    }
-}
-
-@Composable
-private fun MinibarTitle(
-    minibarTitle: State<String>,
+    minibarContentPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Text(modifier = modifier, text = minibarTitle.value)
-}
-
-@Composable
-private fun MinibarButtons(
-    isPlaying: State<Boolean>,
-    playButtonPressed: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    IconButton(
+    val mediaType = remember { derivedStateOf { uiState.value.mediaType } }
+    AnimatedContent(
         modifier = modifier,
-        onClick = playButtonPressed
-    ) {
-        if (isPlaying.value) {
-            Icon(
-                painter = painterResource(R.drawable.ic_pause),
-                contentDescription = ""
+        targetState = mediaType.value,
+        label = "",
+        contentAlignment = Alignment.Center,
+        transitionSpec = { slideInVertically { it } togetherWith slideOutVertically { it } }
+    ) {  type ->
+        when (type) {
+            MediaType.Audio -> AudioMinibar(
+                uiState = uiState,
+                playButtonPressed = playButtonPressed,
+                playListButtonPressed = playListButtonPressed,
             )
-        } else {
-            Icon(
-                painter = painterResource(R.drawable.ic_play),
-                contentDescription = ""
-            )
+            else -> {}
         }
-    }
-}
-
-@Preview
-@Composable
-private fun MinibarContentPreview() {
-    AppMaterialTheme {
-        MinibarContent(
-            modifier = Modifier.fillMaxWidth(),
-            playButtonPressed = {},
-            playListButtonPressed = {},
-            uiState = remember {
-                derivedStateOf {
-                    MinibarUiState(
-                        imageUrl = null,
-                        minibarTitle = "Hello World.",
-                        isPlaying = false
-                    )
-                }
-            }
-        )
     }
 }

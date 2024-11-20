@@ -39,7 +39,7 @@ fun SettingCommonView(
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = stringResource(id = sectionItem.itemType.nameResId),
             color = MaterialTheme.colorScheme.onSurfaceVariant

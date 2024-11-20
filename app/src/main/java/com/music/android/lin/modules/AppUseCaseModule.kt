@@ -10,6 +10,7 @@ import com.music.android.lin.player.repositories.DatabaseService
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Named
+import org.koin.core.annotation.Qualifier
 
 @Module
 class AppUseCaseModule {
@@ -17,7 +18,7 @@ class AppUseCaseModule {
     @Factory
     internal fun prepareMusicInfoUseCase(
         mediaRepository: MediaRepository,
-        @Named(AppIdentifier.applicationContext)
+        @Qualifier(name = AppIdentifier.applicationContext)
         context: Context,
     ): PrepareMusicInfoUseCase = PrepareMusicInfoUseCase(mediaRepository, context)
 
@@ -28,7 +29,7 @@ class AppUseCaseModule {
 
     @Factory
     internal fun scanAndroidContentUseCase(
-        @Named(AppIdentifier.androidScanner)
+        @Qualifier(name = AppIdentifier.androidScanner)
         mediaContentScanner: MediaContentScanner
     ): ScanAndroidContentUseCase = ScanAndroidContentUseCase(mediaContentScanner)
 }

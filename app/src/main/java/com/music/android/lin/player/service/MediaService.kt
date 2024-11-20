@@ -8,6 +8,7 @@ import com.music.android.lin.player.service.controller.MediaController
 import com.music.android.lin.player.service.controller.ProxyMediaController
 import com.music.android.lin.player.service.metadata.PlayInformation
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface MediaService {
 
@@ -15,7 +16,7 @@ interface MediaService {
 
     val mediaController: MediaController
 
-    val information: Flow<PlayInformation>
+    val information: StateFlow<PlayInformation>
 
     fun initService()
 
@@ -39,7 +40,7 @@ private class MediaServiceProcessor(context: Context) : MediaService {
     private val mediaServiceInterface by lazy { MediaServiceInterfaceWrapper(context) }
     private val mediaServiceInformation by lazy { MediaServiceInformation() }
 
-    override val information: Flow<PlayInformation>
+    override val information: StateFlow<PlayInformation>
         get() = this.mediaServiceInformation.flow
 
     override val isConnected: Boolean

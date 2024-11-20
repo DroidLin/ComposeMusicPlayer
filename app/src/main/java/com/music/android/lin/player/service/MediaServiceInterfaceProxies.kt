@@ -199,16 +199,8 @@ internal class RemoteMediaServiceProxy(
         if (Looper.myLooper() == handler.looper) {
             handleMessage(playMessage)
         } else {
-            runBlocking {
-                suspendCoroutine<Unit> { continuation ->
-                    handler.post {
-                        try {
-                            handleMessage(playMessage)
-                        } finally {
-                            continuation.resume(Unit)
-                        }
-                    }
-                }
+            handler.post {
+                handleMessage(playMessage)
             }
         }
     }
@@ -216,7 +208,7 @@ internal class RemoteMediaServiceProxy(
     init {
         this.playInfo.information
             .distinctUntilChanged()
-            .debounce(1000L)
+            .debounce(200L)
             .onEach { information ->
                 val playMessage = PlayMessage.ofCommand(PlayCommand.UPDATE_PLAY_INFORMATION)
                 playMessage.data = information

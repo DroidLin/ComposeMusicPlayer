@@ -26,7 +26,6 @@ enum class SettingSectionType(
         iconResId = R.drawable.ic_about,
         nameResId = R.string.string_about_app
     ),
-
     ThirdPartyDataShareManifest(
         iconResId = R.drawable.ic_third_party_share_manifest,
         nameResId = R.string.string_privacy_third_party_share_manifest
