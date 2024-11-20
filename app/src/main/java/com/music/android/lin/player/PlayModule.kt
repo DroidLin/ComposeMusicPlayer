@@ -25,7 +25,6 @@ import org.koin.core.annotation.Module
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Qualifier
 import org.koin.core.annotation.Single
-import org.koin.dsl.module
 import java.util.logging.Logger
 
 @Module
@@ -97,10 +96,10 @@ class PlayModule {
 
     @Single
     internal fun playMediaSession(
-        @Named(AppIdentifier.applicationContext)
+        @Qualifier(name = AppIdentifier.applicationContext)
         context: Context,
         playInfo: PlayInfo,
-        @Named(PlayerIdentifier.proxyMediaController)
+        @Qualifier(name = PlayerIdentifier.proxyMediaController)
         mediaController: MediaController,
         coroutineScope: CoroutineScope
     ): PlayMediaSession = PlayMediaSession(context, mediaController, playInfo, coroutineScope)
