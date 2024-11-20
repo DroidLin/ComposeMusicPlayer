@@ -1,10 +1,12 @@
 package com.music.android.lin.application.minibar.audio.ui
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,11 +43,14 @@ fun AudioMinibar(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(72.dp),
     ) {
         Box(
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp),
+            contentAlignment = Alignment.CenterStart
         ) {
             Row(
                 modifier = Modifier
@@ -103,11 +108,13 @@ private fun MinibarTitle(
         modifier = modifier,
     ) {
         Text(
+            modifier = Modifier.basicMarquee(iterations = 3),
             text = minibarTitle.value,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
         Text(
+            modifier = Modifier.basicMarquee(iterations = 3),
             text = minibarDescription.value,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
