@@ -1,4 +1,4 @@
-package com.music.android.lin.application.music.ui.vm
+package com.music.android.lin.application.music.single.ui.vm
 
 import com.music.android.lin.application.usecase.MediaQuality
 import com.music.android.lin.application.usecase.MusicItem

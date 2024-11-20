@@ -1,4 +1,4 @@
-package com.music.android.lin.application.music.ui.component
+package com.music.android.lin.application.music.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

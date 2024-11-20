@@ -1,4 +1,4 @@
-package com.music.android.lin.application.music.ui.component
+package com.music.android.lin.application.common.ui.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State

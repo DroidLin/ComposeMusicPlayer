@@ -1,11 +1,10 @@
-package com.music.android.lin.application.music.ui
+package com.music.android.lin.application.music.single.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -29,10 +28,10 @@ import com.music.android.lin.R
 import com.music.android.lin.application.common.state.DataLoadState
 import com.music.android.lin.application.common.ui.LoadingProgress
 import com.music.android.lin.application.framework.AppMaterialTheme
-import com.music.android.lin.application.music.ui.component.DataLoadView
-import com.music.android.lin.application.music.ui.component.MusicItemView
-import com.music.android.lin.application.music.ui.vm.FakeMusicItemData
-import com.music.android.lin.application.music.ui.vm.SingleMusicViewModel
+import com.music.android.lin.application.common.ui.component.DataLoadView
+import com.music.android.lin.application.music.component.MusicItemView
+import com.music.android.lin.application.music.single.ui.vm.FakeMusicItemData
+import com.music.android.lin.application.music.single.ui.vm.SingleMusicViewModel
 import com.music.android.lin.application.usecase.MusicItem
 import com.music.android.lin.application.usecase.MusicItemSnapshot
 import org.koin.androidx.compose.koinViewModel
@@ -51,8 +50,7 @@ fun SingleMusicView(
 
     ContentMusicView(
         state = musicDataLoadState,
-        modifier = modifier
-            .navigationBarsPadding(),
+        modifier = modifier,
         onDrawerIconPressed = onDrawerIconPressed,
         onMusicItemPress = viewModel::onMusicItemPressed
     )

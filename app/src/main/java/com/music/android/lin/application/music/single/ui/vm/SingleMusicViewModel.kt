@@ -1,4 +1,4 @@
-package com.music.android.lin.application.music.ui.vm
+package com.music.android.lin.application.music.single.ui.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

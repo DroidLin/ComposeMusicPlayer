@@ -1,4 +1,4 @@
-package com.music.android.lin.application.music.ui.component
+package com.music.android.lin.application.music.component
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
