@@ -7,6 +7,8 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
@@ -24,13 +26,22 @@ import com.music.android.lin.application.minibar.ui.vm.MinibarViewModel
 import com.music.android.lin.player.metadata.MediaType
 import org.koin.androidx.compose.koinViewModel
 
-private val minibarSwitchTransitionSpec =
-    fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith fadeOut(
-        animationSpec = tween(
-            durationMillis = 300
-        )
-    )
 
+private val minibarEnterAnimation = slideInVertically { it } + fadeIn()
+private val minibarExitAnimation = slideOutVertically { it } + fadeOut()
+
+private val minibarSwitchTransitionSpec =
+    (fadeIn(
+        animationSpec = tween(durationMillis = 200, delayMillis = 200)
+    ) + scaleIn(
+        initialScale = 0.92f,
+        animationSpec = tween(durationMillis = 200, delayMillis = 200)
+    )) togetherWith (fadeOut(
+        animationSpec = tween(durationMillis = 200)
+    ) + scaleOut(
+        animationSpec = tween(durationMillis = 200),
+        targetScale = 0.92f
+    ))
 
 @Composable
 fun Minibar(
@@ -62,8 +73,8 @@ private fun MinibarContent(
         modifier = modifier,
         visible = showMinibar.value,
         label = "minibar_visibility_animation",
-        enter = slideInVertically { it } + fadeIn(),
-        exit = slideOutVertically { it } + fadeOut()
+        enter = minibarEnterAnimation,
+        exit = minibarExitAnimation
     ) {
         val mediaType = remember { derivedStateOf { uiState.value.mediaType } }
         AnimatedContent(
