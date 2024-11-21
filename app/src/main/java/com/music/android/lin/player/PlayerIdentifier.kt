@@ -10,38 +10,40 @@ import org.koin.core.qualifier.named
  */
 object PlayerIdentifier {
 
+    const val playerDatabaseAccessToken = "PlayerAccessToken"
     /**
      * define a database access token qualifier in dependencies injection.
      */
     @JvmField
-    val PlayerDatabaseAccessToken = named("PlayerAccessToken")
-    const val playerDatabaseAccessToken = "PlayerAccessToken"
+    val PlayerDatabaseAccessToken = named(playerDatabaseAccessToken)
 
-    @JvmField
-    val PlayerLogger= named("player_logger")
     const val playerLogger = "player_logger"
-
     @JvmField
-    val ExoPlayer3 = named("exo_player3")
+    val PlayerLogger= named(playerLogger)
+
     const val exoPlayer3 = "exo_player3"
-
     @JvmField
-    val PlayService = named("play_service")
+    val ExoPlayer3 = named(exoPlayer3)
+
     const val playService = "play_service"
-
     @JvmField
-    val PlayerControl = named("player_control")
+    val PlayService = named(playService)
+
     const val playerControl = "player_control"
-
     @JvmField
-    val BizMediaController = named("biz_media_controller")
+    val PlayerControl = named(playerControl)
+
     const val bizMediaController = "biz_media_controller"
-
     @JvmField
-    val ProxyMediaController = named("proxy_media_controller")
+    val BizMediaController = named(bizMediaController)
+
     const val proxyMediaController = "proxy_media_controller"
-
     @JvmField
-    val PlayServiceHandlerThread = named("play_service_handler_thread")
+    val ProxyMediaController = named(proxyMediaController)
+
     const val playServiceHandlerThread = "play_service_handler_thread"
+    @JvmField
+    val PlayServiceHandlerThread = named(playServiceHandlerThread)
+
+    const val playerCoroutineScope = "player_coroutineScope"
 }

@@ -92,6 +92,7 @@ class PlayModule {
         @Qualifier(name = PlayerIdentifier.proxyMediaController)
         mediaController: MediaController,
         playInfo: PlayInfo,
+        @Qualifier(name = PlayerIdentifier.playerCoroutineScope)
         coroutineScope: CoroutineScope
     ): PlayerAudioFocusManager =
         PlayerAudioFocusManager(context, mediaController, playInfo, coroutineScope)
@@ -103,6 +104,7 @@ class PlayModule {
         playInfo: PlayInfo,
         @Qualifier(name = PlayerIdentifier.proxyMediaController)
         mediaController: MediaController,
+        @Qualifier(name = PlayerIdentifier.playerCoroutineScope)
         coroutineScope: CoroutineScope
     ): PlayMediaSession = PlayMediaSession(context, mediaController, playInfo, coroutineScope)
 
@@ -111,6 +113,7 @@ class PlayModule {
         @Qualifier(name = PlayerIdentifier.playServiceHandlerThread)
         handler: Handler,
         playInfo: PlayInfo,
+        @Qualifier(name = PlayerIdentifier.playerCoroutineScope)
         coroutineScope: CoroutineScope
     ): RemoteMediaServiceProxy = RemoteMediaServiceProxy(handler, playInfo, coroutineScope)
 
@@ -121,6 +124,7 @@ class PlayModule {
         playInfo: PlayInfo,
         @Qualifier(name = PlayerIdentifier.proxyMediaController)
         mediaController: MediaController,
+        @Qualifier(name = PlayerIdentifier.playerCoroutineScope)
         coroutineScope: CoroutineScope
     ): PlayNotificationManager =
         PlayNotificationManager(service, mediaController, playInfo, coroutineScope)

@@ -9,6 +9,8 @@ import android.os.IBinder
 import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.player.MediaServiceInterfaceHandlerStub
 import com.music.android.lin.player.PlayModule
+import com.music.android.lin.player.PlayServiceLifecycleModule
+import com.music.android.lin.player.PlayServiceModule
 import com.music.android.lin.player.PlayerIdentifier
 import com.music.android.lin.player.audiofocus.PlayerAudioFocusManager
 import com.music.android.lin.player.metadata.PlayMessage
@@ -37,45 +39,24 @@ internal class PlayService : Service() {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    private val playerModule = PlayModule().module
-    private val innerModule = module {
-        factory<Service>(PlayerIdentifier.PlayService) {
-            this@PlayService
-        }
-        single {
-            DataSource.Factory {
-                LocalFileDataSource(it)
-            }
-        }
-        single {
-            coroutineScope
-        }
-    }
-
     private var playEventLoop: PlayEventLoop? = null
     private val playMessageCommandCache = LinkedList<PlayMessageCommand>()
 
     private val handlerThread = object : HandlerThread("player_thread") {
-        private var handlerModule: Module? = null
-
         override fun onLooperPrepared() {
-            val handler = Handler(looper)
-            val handlerModule = module {
-                single(PlayerIdentifier.PlayServiceHandlerThread) {
-                    handler
-                }
-            }
-            AppKoin.koin.loadModules(listOf(handlerModule))
-            val remoteMediaServiceProxy: RemoteMediaServiceProxy = AppKoin.koin.get()
-            val playerService: PlayEventLoop = AppKoin.koin.get()
+            AppKoin.setProperties(PlayServiceLifecycleModule.customParams(Handler(looper)))
+            AppKoin.loadModules(listOf(PlayServiceLifecycleModule().module))
+
+            val remoteMediaServiceProxy: RemoteMediaServiceProxy = AppKoin.get()
+            val playerService: PlayEventLoop = AppKoin.get()
             playerService.addDispatcher(remoteMediaServiceProxy.dispatcher)
 
             val playMessage = PlayMessage.ofCommand(PlayCommand.PLAYER_INIT)
             playerService.dispatchMessage(playMessage)
 
-            val notificationManager: PlayNotificationManager = AppKoin.koin.get()
-            val playMediaSession: PlayMediaSession = AppKoin.koin.get()
-            val audioFocusManager: PlayerAudioFocusManager = AppKoin.koin.get()
+            val notificationManager: PlayNotificationManager = AppKoin.get()
+            val playMediaSession: PlayMediaSession = AppKoin.get()
+            val audioFocusManager: PlayerAudioFocusManager = AppKoin.get()
 
             val mediaSessionToken = playMediaSession.mediaSessionToken
             notificationManager.setMediaSessionToken(mediaSessionToken)
@@ -90,16 +71,12 @@ internal class PlayService : Service() {
             this@PlayService.notificationManager = notificationManager
             this@PlayService.playMediaSession = playMediaSession
             this@PlayService.audioFocusManager = audioFocusManager
-
-            this.handlerModule = handlerModule
         }
 
         override fun run() {
             super.run()
-            val handlerModule = this.handlerModule
-            if (handlerModule != null) {
-                AppKoin.koin.unloadModules(listOf(handlerModule))
-            }
+            AppKoin.unloadModules(listOf(PlayServiceLifecycleModule().module))
+            AppKoin.unSetProperties(PlayServiceLifecycleModule.unInstallPropertyKeys)
         }
     }
 
@@ -109,7 +86,8 @@ internal class PlayService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        AppKoin.koin.loadModules(listOf(playerModule, innerModule))
+        AppKoin.setProperties(PlayServiceModule.customParams(this, this.coroutineScope))
+        AppKoin.loadModules(listOf(PlayModule().module, PlayServiceModule().module))
         this.handlerThread.start()
     }
 
@@ -149,6 +127,7 @@ internal class PlayService : Service() {
         this.audioFocusManager?.release()
         this.audioFocusManager = null
         this.playMediaSession = null
-        AppKoin.koin.unloadModules(listOf(playerModule, innerModule))
+        AppKoin.unloadModules(listOf(PlayModule().module, PlayServiceModule().module))
+        AppKoin.unSetProperties(PlayServiceModule.unInstallPropertiesKeys)
     }
 }
