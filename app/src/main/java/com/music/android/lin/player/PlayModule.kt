@@ -23,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Named
+import org.koin.core.annotation.Property
 import org.koin.core.annotation.Qualifier
 import org.koin.core.annotation.Single
 import java.util.logging.Logger

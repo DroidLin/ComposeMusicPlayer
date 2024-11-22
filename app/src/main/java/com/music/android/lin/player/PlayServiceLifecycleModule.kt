@@ -3,6 +3,7 @@ package com.music.android.lin.player
 import android.os.Handler
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
+import org.koin.core.annotation.Property
 import org.koin.core.annotation.Qualifier
 
 /**
@@ -13,8 +14,9 @@ import org.koin.core.annotation.Qualifier
 class PlayServiceLifecycleModule {
 
     @Factory
+    @Qualifier(name = PlayerIdentifier.playServiceHandlerThread)
     fun playerHandler(
-        @Qualifier(name = PlayerIdentifier.playServiceHandlerThread)
+        @Property(PlayerIdentifier.playServiceHandlerThread)
         handler: Handler
     ): Handler = handler
 

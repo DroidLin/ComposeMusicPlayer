@@ -1,5 +1,6 @@
 package com.music.android.lin.player
 
+import android.app.Service
 import com.music.android.lin.player.service.PlayService
 import com.music.android.lin.player.service.player.datasource.DataSource
 import com.music.android.lin.player.service.player.datasource.LocalFileDataSource
@@ -8,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
+import org.koin.core.annotation.Property
 import org.koin.core.annotation.Qualifier
 import org.koin.core.annotation.Singleton
 
@@ -26,16 +28,18 @@ internal class PlayServiceModule {
     }
 
     @Singleton
+    @Qualifier(name = PlayerIdentifier.playerCoroutineScope)
     fun coroutineScope(
-        @Qualifier(name = PlayerIdentifier.playerCoroutineScope)
+        @Property(PlayerIdentifier.playerCoroutineScope)
         coroutineScope: CoroutineScope
     ): CoroutineScope = coroutineScope
 
     @Factory
+    @Qualifier(name = PlayerIdentifier.playService)
     fun playService(
-        @Qualifier(name = PlayerIdentifier.playService)
+        @Property(PlayerIdentifier.playService)
         service: PlayService
-    ): PlayService = service
+    ): Service = service
 
     companion object {
         @JvmStatic
