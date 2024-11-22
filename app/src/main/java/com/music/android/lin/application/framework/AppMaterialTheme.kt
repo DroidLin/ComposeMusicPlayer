@@ -41,9 +41,9 @@ private fun determineAppColorScheme(context: Context, configuration: Configurati
         }
     }
     return if (configuration.isNightModeOn) {
-        lightColorScheme()
-    } else {
         darkColorScheme()
+    } else {
+        lightColorScheme()
     }
 }
 
