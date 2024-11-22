@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.dev.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -43,7 +44,7 @@ android {
         aidl = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
     packaging {
         resources {
@@ -51,6 +52,12 @@ android {
         }
     }
     buildToolsVersion = "34.0.0"
+}
+
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
+    stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
 }
 
 dependencies {
@@ -105,11 +112,14 @@ dependencies {
     // datastore
     implementation(libs.jetpack.datastore.preference)
 
+    // kotlin
     implementation(libs.kotlin.serialization)
+    implementation(libs.kotin.immutable.collection)
 
     // adaptive
     implementation(libs.material3.adaptive)
     implementation(libs.material3.adaptive.layout)
     implementation(libs.material3.adaptive.navigation)
     implementation(kotlin("reflect"))
+
 }
