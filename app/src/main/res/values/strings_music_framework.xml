@@ -12,7 +12,7 @@
     <string name="string_loading_description">努力加载中…</string>
 
     <string name="string_more_options_add_to_playlist">添加到歌单</string>
-    <string name="string_more_options_delete_media">媒体文件</string>
+    <string name="string_more_options_delete_media">删除媒体文件</string>
     <string name="string_more_options_information">媒体信息</string>
     <string name="string_more_options_edit">编辑信息</string>
 </resources>

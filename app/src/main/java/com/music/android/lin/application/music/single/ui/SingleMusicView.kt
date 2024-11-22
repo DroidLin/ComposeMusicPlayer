@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -29,6 +30,7 @@ import com.music.android.lin.application.common.state.DataLoadState
 import com.music.android.lin.application.common.ui.LoadingProgress
 import com.music.android.lin.application.framework.AppMaterialTheme
 import com.music.android.lin.application.common.ui.component.DataLoadView
+import com.music.android.lin.application.music.component.MoreOptionsDialog
 import com.music.android.lin.application.music.component.MusicItemView
 import com.music.android.lin.application.music.single.ui.vm.FakeMusicItemData
 import com.music.android.lin.application.music.single.ui.vm.SingleMusicViewModel
@@ -63,6 +65,9 @@ private fun ContentMusicView(
     onDrawerIconPressed: () -> Unit = {},
     onMusicItemPress: (MusicItemSnapshot, MusicItem) -> Unit = { _, _ -> },
 ) {
+    val deleteMusicItemState = remember {
+        mutableStateOf<MusicItem?>(null)
+    }
     Column(
         modifier = modifier,
     ) {
@@ -83,11 +88,25 @@ private fun ContentMusicView(
                 MusicLazyColumn(
                     data = data,
                     modifier = Modifier.weight(1f),
-                    onMusicItemPress = onMusicItemPress
+                    onMusicItemPress = onMusicItemPress,
+                    onMusicItemLongPress = { snapshot, musicItem ->
+                        deleteMusicItemState.value = musicItem
+                    }
                 )
             }
         )
     }
+    MoreOptionsDialog(
+        mediaInfo = deleteMusicItemState,
+        deleteOperation = {
+            val item = deleteMusicItemState.value ?: return@MoreOptionsDialog true
+            true
+        },
+        dismissRequest = {
+            deleteMusicItemState.value = null
+        },
+        modifier = Modifier,
+    )
 }
 
 @Composable
@@ -95,6 +114,7 @@ private fun MusicLazyColumn(
     data: DataLoadState.Data<MusicItemSnapshot>,
     modifier: Modifier = Modifier,
     onMusicItemPress: (MusicItemSnapshot, MusicItem) -> Unit,
+    onMusicItemLongPress: ((MusicItemSnapshot, MusicItem) -> Unit)? = null
 ) {
     val musicInfoList = data.data.musicItemList
     val lazyListState = rememberLazyListState()
@@ -114,6 +134,11 @@ private fun MusicLazyColumn(
                 musicItem = musicItem,
                 onClick = {
                     onMusicItemPress(data.data, musicItem)
+                },
+                onLongPress = {
+                    if (onMusicItemLongPress != null) {
+                        onMusicItemLongPress(data.data, musicItem)
+                    }
                 }
             )
         }
