@@ -4,7 +4,7 @@ import java.io.Serializable
 
 interface MediaResource : Serializable
 
-data class PositionalMediaSourceParameter(
+data class PositionalPlayMediaResource(
     val startPosition: Int
 ) : MediaResource {
     companion object {
@@ -12,8 +12,8 @@ data class PositionalMediaSourceParameter(
     }
 }
 
-data class CommonMediaResourceParameter(
-    val playList: PlayList,
+data class CommonPlayMediaResource(
+    val mediaInfoPlayList: MediaInfoPlayList,
     val startPosition: Int,
     val autoStart: Boolean = true,
 ) : MediaResource {

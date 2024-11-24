@@ -11,7 +11,7 @@ import org.koin.core.annotation.Qualifier
 import org.koin.core.annotation.Single
 
 @Module
-class ApplicationModule {
+internal class ApplicationModule {
 
     @Factory
     @Qualifier(name = AppIdentifier.applicationContext)

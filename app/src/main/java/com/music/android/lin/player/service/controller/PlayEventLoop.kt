@@ -5,7 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import com.music.android.lin.player.MessageDispatcher
-import com.music.android.lin.player.metadata.CommonMediaResourceParameter
+import com.music.android.lin.player.metadata.CommonPlayMediaResource
 import com.music.android.lin.player.metadata.MediaResource
 import com.music.android.lin.player.metadata.PlayMessage
 import com.music.android.lin.player.metadata.PlayMode
@@ -105,8 +105,8 @@ internal class PlayEventLoopHost(
                     } else null
                 } else null
                 if (playHistory != null) {
-                    val mediaResource = CommonMediaResourceParameter(
-                        playList = playHistory.playList,
+                    val mediaResource = CommonPlayMediaResource(
+                        mediaInfoPlayList = playHistory.mediaInfoPlayList,
                         startPosition = playHistory.indexOfCurrentPosition,
                         autoStart = false
                     )

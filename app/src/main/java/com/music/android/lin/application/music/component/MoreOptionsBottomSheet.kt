@@ -17,9 +17,9 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
@@ -31,9 +31,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.music.android.lin.R
+import com.music.android.lin.application.common.usecase.MediaQuality
+import com.music.android.lin.application.common.usecase.MusicItem
 import com.music.android.lin.application.framework.AppMaterialTheme
-import com.music.android.lin.application.usecase.MediaQuality
-import com.music.android.lin.application.usecase.MusicItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
@@ -51,24 +51,36 @@ enum class OperationType(@StringRes val nameRes: Int) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoreOptionsDialog(
-    mediaInfo: State<MusicItem?>,
-    deleteOperation: suspend () -> Boolean,
+fun MoreOptionsBottomSheet(
+    sheetState: SheetState,
+    musicItemState: State<MusicItem?>,
+    addToPlaylist: () -> Unit,
+    deleteOperation: (onComplete: () -> Unit) -> Unit,
     dismissRequest: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val mediaInfoItem = mediaInfo.value ?: return
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val mediaInfoItem = musicItemState.value ?: return
     val coroutineScope = rememberCoroutineScope()
     val optionItemPressed: (OperationType) -> Unit = { type ->
         coroutineScope.launch {
             when (type) {
                 OperationType.Delete -> {
-                    if (deleteOperation()) {
-                        sheetState.hide()
-                        dismissRequest()
+                    deleteOperation {
+                        launch {
+                            sheetState.hide()
+                            dismissRequest()
+                        }
                     }
                 }
+
+                OperationType.AddToPlayList -> {
+                    addToPlaylist()
+                    sheetState.hide()
+                    dismissRequest()
+                }
+
+                OperationType.Edit -> {}
+                OperationType.Information -> {}
 
                 else -> {}
             }

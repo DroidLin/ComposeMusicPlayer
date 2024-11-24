@@ -1,32 +1,30 @@
 package com.music.android.lin.application.settings.ui.vm
 
 import android.content.Context
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.music.android.lin.application.common.state.DataLoadState
+import com.music.android.lin.application.common.ui.state.DataLoadState
+import com.music.android.lin.application.common.ui.state.withDataLoadState
 import com.music.android.lin.application.settings.model.SettingSection
 import com.music.android.lin.application.settings.model.SettingSectionItem
 import com.music.android.lin.application.settings.model.SettingSectionType
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import org.jetbrains.annotations.TestOnly
 
 @get:TestOnly
 internal val fakeData: List<SettingSection> get() = prepareSettingSections()
 
+@Stable
 internal class AppSettingsViewModel(private val applicationContext: Context) : ViewModel() {
 
-    val settingsList = flow<DataLoadState> {
-        val arraylist = prepareSettingSections()
-        emit(DataLoadState.Data(arraylist))
-    }.onStart {
-        emit(DataLoadState.Loading)
-    }.catch {
-        emit(DataLoadState.Failure(message = it.message ?: "", errorCode = -1))
-    }.stateIn(this.viewModelScope, SharingStarted.WhileSubscribed(5000), DataLoadState.Loading)
+    val settingsList = flowOf(prepareSettingSections())
+        .withDataLoadState { it }
+        .stateIn(this.viewModelScope, SharingStarted.WhileSubscribed(5000), DataLoadState.Loading)
 }
 
 private fun prepareSettingSections(): List<SettingSection> {
@@ -34,7 +32,7 @@ private fun prepareSettingSections(): List<SettingSection> {
     arraylist += SettingSection(
         sectionName = "",
         description = "application basic announcement",
-        sectionItems = listOf(
+        sectionItems = persistentListOf(
             SettingSectionItem(
                 itemType = SettingSectionType.PrivacyProtection
             ),
@@ -52,7 +50,7 @@ private fun prepareSettingSections(): List<SettingSection> {
     arraylist += SettingSection(
         sectionName = "",
         description = "quick operations",
-        sectionItems = listOf(
+        sectionItems = persistentListOf(
             SettingSectionItem(
                 itemType = SettingSectionType.ResetAll
             )

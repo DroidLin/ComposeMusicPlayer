@@ -1,4 +1,4 @@
-package com.music.android.lin.application.usecase
+package com.music.android.lin.application.common.usecase
 
 import android.content.Context
 import androidx.compose.runtime.Stable

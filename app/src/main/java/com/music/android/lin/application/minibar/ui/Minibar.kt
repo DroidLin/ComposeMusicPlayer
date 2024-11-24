@@ -4,11 +4,13 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
@@ -18,57 +20,56 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.music.android.lin.application.common.vm.PlayViewModel
+import com.music.android.lin.application.common.ui.vm.PlayViewModel
 import com.music.android.lin.application.minibar.audio.ui.AudioMinibar
 import com.music.android.lin.application.minibar.ui.state.MinibarUiState
 import com.music.android.lin.application.minibar.ui.vm.MinibarViewModel
 import com.music.android.lin.player.metadata.MediaType
 import org.koin.androidx.compose.koinViewModel
 
-
-private val minibarEnterAnimation = slideInVertically { it } + fadeIn()
-private val minibarExitAnimation = slideOutVertically { it } + fadeOut()
-
-private val minibarSwitchTransitionSpec =
-    (fadeIn(
-        animationSpec = tween(durationMillis = 200, delayMillis = 200)
-    ) + scaleIn(
-        initialScale = 0.92f,
-        animationSpec = tween(durationMillis = 200, delayMillis = 200)
-    )) togetherWith (fadeOut(
-        animationSpec = tween(durationMillis = 200)
-    ) + scaleOut(
-        animationSpec = tween(durationMillis = 200),
-        targetScale = 0.92f
-    ))
+private val minibarEnterAnimation = expandVertically() { 0 } +
+        slideInVertically() { it } +
+        fadeIn()
+private val minibarExitAnimation = shrinkVertically() { 0 } +
+        slideOutVertically() { it } +
+        fadeOut()
 
 @Composable
 fun Minibar(
-    minibarContentPressed: () -> Unit,
-    modifier: Modifier = Modifier
+    shouldShowMinibar: State<Boolean>,
+    navigateToPlayView: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val playViewModel = koinViewModel<PlayViewModel>()
     val minibarViewModel = koinViewModel<MinibarViewModel>()
     val uiState = minibarViewModel.uiState.collectAsStateWithLifecycle()
     MinibarContent(
+        shouldShowMinibar = shouldShowMinibar,
         uiState = uiState,
         playButtonPressed = playViewModel::playButtonPressed,
         playListButtonPressed = {},
-        minibarContentPressed = minibarContentPressed,
-        modifier = modifier,
+        audioMinibarContentPressed = navigateToPlayView,
+        modifier = modifier.anchorMinibarContainer(),
     )
 }
 
 @Composable
 private fun MinibarContent(
+    shouldShowMinibar: State<Boolean>,
     uiState: State<MinibarUiState>,
     playButtonPressed: () -> Unit,
     playListButtonPressed: () -> Unit,
-    minibarContentPressed: () -> Unit,
-    modifier: Modifier = Modifier
+    audioMinibarContentPressed: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val showMinibar = remember { derivedStateOf { uiState.value.mediaType != MediaType.Unsupported } }
+    val showMinibar = remember {
+        derivedStateOf {
+            uiState.value.mediaType != MediaType.Unsupported && shouldShowMinibar.value
+        }
+    }
     AnimatedVisibility(
         modifier = modifier,
         visible = showMinibar.value,
@@ -88,6 +89,7 @@ private fun MinibarContent(
                     uiState = uiState,
                     playButtonPressed = playButtonPressed,
                     playListButtonPressed = playListButtonPressed,
+                    minibarContentPressed = audioMinibarContentPressed,
                     modifier = Modifier
                 )
 

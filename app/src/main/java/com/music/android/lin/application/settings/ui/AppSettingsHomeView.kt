@@ -33,15 +33,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.android.lin.R
-import com.music.android.lin.application.common.state.DataLoadState
-import com.music.android.lin.application.common.ui.LoadingProgress
+import com.music.android.lin.application.common.ui.component.DataLoadingView
+import com.music.android.lin.application.common.ui.state.DataLoadState
 import com.music.android.lin.application.framework.AppMaterialTheme
-import com.music.android.lin.application.common.ui.component.DataLoadView
-import com.music.android.lin.application.settings.ui.component.ResetConfirmDialog
-import com.music.android.lin.application.settings.ui.component.SettingItemViewHolder
 import com.music.android.lin.application.settings.model.SettingSection
 import com.music.android.lin.application.settings.model.SettingSectionItem
 import com.music.android.lin.application.settings.model.SettingSectionType
+import com.music.android.lin.application.settings.ui.component.ResetConfirmDialog
+import com.music.android.lin.application.settings.ui.component.SettingItemViewHolder
 import com.music.android.lin.application.settings.ui.vm.AppSettingsViewModel
 import com.music.android.lin.application.settings.ui.vm.fakeData
 import org.koin.androidx.compose.koinViewModel
@@ -85,26 +84,23 @@ private fun ContentSettingsView(
     Column(
         modifier = modifier
     ) {
-        TopHeader(backPress = backPress)
-        DataLoadView(
+        DataLoadingView(
             state = state,
-            loading = {
-                LoadingProgress(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                )
-            },
-            data = { data ->
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) { data ->
+            Column(
+                modifier = Modifier.matchParentSize(),
+            ) {
+                TopHeader(backPress = backPress)
                 SettingsLazyColumn(
                     data = data,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
+                    modifier = Modifier.weight(1f),
                     onSectionClick = onSectionClick
                 )
             }
-        )
+        }
     }
 }
 

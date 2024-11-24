@@ -1,7 +1,7 @@
 package com.music.android.lin.player.service.playlist
 
 import com.music.android.lin.player.metadata.MediaInfo
-import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.MediaInfoPlayList
 import com.music.android.lin.player.metadata.PlayMode
 import com.music.android.lin.player.service.metadata.MediaListMetadata
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,11 +26,11 @@ class MediaPlayingList internal constructor() : MediaList {
         }
         get() = this.mutableMetadata.value.indexOfCurrentMediaInfo
 
-    override var playList: PlayList? = null
+    override var mediaInfoPlayList: MediaInfoPlayList? = null
 
     override val mediaInfo: MediaInfo?
         get() {
-            val playList = this.playList ?: return null
+            val playList = this.mediaInfoPlayList ?: return null
             val currentPosition = this@MediaPlayingList.indexOfCurrentPosition
             if (currentPosition !in playList.mediaInfoList.indices) {
                 return null
@@ -53,11 +53,11 @@ class MediaPlayingList internal constructor() : MediaList {
         }
     }
 
-    fun setResource(playList: PlayList, indexOfCurrentPosition: Int) {
-        this.playList = playList
+    fun setResource(mediaInfoPlayList: MediaInfoPlayList, indexOfCurrentPosition: Int) {
+        this.mediaInfoPlayList = mediaInfoPlayList
         this.indexOfCurrentPosition = indexOfCurrentPosition
         this.syncCurrentMediaInfo()
-        this.mutableMetadata.update { it.copy(playList = playList) }
+        this.mutableMetadata.update { it.copy(mediaInfoPlayList = mediaInfoPlayList) }
     }
 
     private fun syncCurrentMediaInfo() {
@@ -67,7 +67,7 @@ class MediaPlayingList internal constructor() : MediaList {
     private inner class ListLoopMediaList : MediaListParent(this) {
         override val prevMediaInfo: MediaInfo?
             get() {
-                val playList = this.playList ?: return null
+                val playList = this.mediaInfoPlayList ?: return null
                 val currentPosition = this@MediaPlayingList.indexOfCurrentPosition
                 if (currentPosition !in playList.mediaInfoList.indices) {
                     return null
@@ -83,7 +83,7 @@ class MediaPlayingList internal constructor() : MediaList {
             }
         override val nextMediaInfo: MediaInfo?
             get() {
-                val playList = this.playList ?: return null
+                val playList = this.mediaInfoPlayList ?: return null
                 val currentPosition = this@MediaPlayingList.indexOfCurrentPosition
                 if (currentPosition !in playList.mediaInfoList.indices) {
                     return null
@@ -110,7 +110,7 @@ class MediaPlayingList internal constructor() : MediaList {
     }
 
     internal abstract class MediaListParent(private val rawMediaList: MediaList) : MediaList {
-        final override val playList: PlayList? get() = this.rawMediaList.playList
+        final override val mediaInfoPlayList: MediaInfoPlayList? get() = this.rawMediaList.mediaInfoPlayList
         override val mediaInfo: MediaInfo? get() = this.rawMediaList.mediaInfo
     }
 }

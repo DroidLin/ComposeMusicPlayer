@@ -1,8 +1,37 @@
 package com.music.android.lin.application.common.ui.component
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import com.music.android.lin.application.common.state.DataLoadState
+import androidx.compose.ui.Modifier
+import com.music.android.lin.application.common.ui.LoadingProgress
+import com.music.android.lin.application.common.ui.state.DataLoadState
+
+@Composable
+inline fun <T> DataLoadingView(
+    state: State<DataLoadState>,
+    modifier: Modifier = Modifier,
+    noinline failure: (BoxScope.(DataLoadState.Failure) -> Unit)? = null,
+    data: BoxScope.(DataLoadState.Data<T>) -> Unit,
+) {
+    Box(modifier = modifier) {
+        DataLoadView<T>(
+            state = state,
+            failure = failure?.let { failureBlock ->
+                {
+                    failureBlock(it)
+                }
+            },
+            data = {
+                data(it)
+            },
+            loading = {
+                LoadingProgress(modifier = Modifier.matchParentSize())
+            }
+        )
+    }
+}
 
 @Composable
 inline fun <T> DataLoadView(

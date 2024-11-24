@@ -1,7 +1,7 @@
 package com.music.android.lin.player.service
 
 import com.music.android.lin.player.metadata.MediaInfo
-import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.MediaInfoPlayList
 
 /**
  * @author liuzhongao
@@ -12,7 +12,7 @@ internal interface PlayStrategy {
     /**
      * 当前正在播放的播放列表信息
      */
-    val playList: PlayList?
+    val mediaInfoPlayList: MediaInfoPlayList?
 
     /**
      * 当前正在播放的歌曲信息
@@ -24,7 +24,7 @@ internal interface PlayStrategy {
     fun nextMusicInfo(): MediaInfo?
 
     companion object Null : PlayStrategy {
-        override val playList: PlayList? = null
+        override val mediaInfoPlayList: MediaInfoPlayList? = null
         override val mediaInfo: MediaInfo? = null
         override fun previousMusicInfo(): MediaInfo? = null
         override fun nextMusicInfo(): MediaInfo? = null

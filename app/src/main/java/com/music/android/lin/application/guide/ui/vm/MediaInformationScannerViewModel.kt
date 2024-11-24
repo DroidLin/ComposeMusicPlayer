@@ -1,5 +1,6 @@
 package com.music.android.lin.application.guide.ui.vm
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
+@Stable
 class MediaInformationScannerViewModel(
     private val scanAndroidContentUseCase: ScanAndroidContentUseCase,
     private val saveMediaInfoUseCase: SaveMediaInfoUseCase,

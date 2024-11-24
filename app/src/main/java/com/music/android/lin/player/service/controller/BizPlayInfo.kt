@@ -17,7 +17,7 @@ internal class BizPlayInfo(
         this.mediaList.metadata
     ) { playerMetadata, mediaMetadata ->
         PlayInformation(
-            playList = mediaMetadata.playList,
+            mediaInfoPlayList = mediaMetadata.mediaInfoPlayList,
             mediaInfo = mediaMetadata.mediaInfo,
             playMode = mediaMetadata.playMode,
             playerMetadata = playerMetadata

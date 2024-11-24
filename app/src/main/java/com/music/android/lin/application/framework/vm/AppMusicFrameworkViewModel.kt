@@ -3,6 +3,7 @@ package com.music.android.lin.application.framework.vm
 import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import com.music.android.lin.R
 import com.music.android.lin.application.PageDefinition
@@ -17,9 +18,11 @@ val NavigationDrawerTypes = listOf(
     NavigationDrawerType.About,
 )
 
+@Stable
 internal class AppMusicFrameworkViewModel(private val applicationContext: Context) : ViewModel() {
 }
 
+@Stable
 enum class NavigationDrawerType(
     @StringRes val nameResId: Int,
     @DrawableRes val drawableResId: Int,
@@ -39,5 +42,6 @@ enum class NavigationDrawerType(
          NavigationDrawerType.Album -> PageDefinition.AlbumView::class.qualifiedName
          NavigationDrawerType.Settings -> PageDefinition.SettingsView::class.qualifiedName
          NavigationDrawerType.About -> PageDefinition.AboutView::class.qualifiedName
+         NavigationDrawerType.PlayList -> PageDefinition.PlayList::class.qualifiedName
          else -> null
      }

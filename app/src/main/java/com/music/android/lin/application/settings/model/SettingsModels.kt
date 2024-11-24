@@ -4,12 +4,13 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Stable
 import com.music.android.lin.R
+import kotlinx.collections.immutable.ImmutableList
 
 @Stable
 data class SettingSection(
     val sectionName: String,
     val description: String,
-    val sectionItems: List<SettingSectionItem>
+    val sectionItems: ImmutableList<SettingSectionItem>
 )
 
 @Stable

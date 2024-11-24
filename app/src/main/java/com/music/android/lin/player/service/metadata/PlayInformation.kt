@@ -1,7 +1,7 @@
 package com.music.android.lin.player.service.metadata
 
 import com.music.android.lin.player.metadata.MediaInfo
-import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.MediaInfoPlayList
 import com.music.android.lin.player.metadata.PlayMode
 import java.io.Serializable
 
@@ -10,7 +10,7 @@ import java.io.Serializable
  * @since 2024/10/24 13:55
  */
 data class PlayInformation(
-    val playList: PlayList? = null,
+    val mediaInfoPlayList: MediaInfoPlayList? = null,
     val mediaInfo: MediaInfo? = null,
     val playMode: PlayMode = PlayMode.PlayListLoop,
     val playerMetadata: PlayerMetadata = PlayerMetadata()

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="string_single_music_title">单曲</string>
+    <string name="string_playlist_title">歌单</string>
+
+    <string name="string_empty">空空如也</string>
+    <string name="string_no_play_list_exist">没有已创建的歌单</string>
+    <string name="string_create_playlist">创建歌单</string>
+
+    <string name="string_playlist_description">%1$s首歌曲</string>
+
+    <string name="string_create_playlist_complete">完成</string>
+</resources>

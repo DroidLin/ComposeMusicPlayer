@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
-import org.koin.core.annotation.Single
 
 /**
  * @author liuzhongao
@@ -74,7 +73,7 @@ internal class PlayMediaSession(
         this.playInfo.information
             .map { information ->
                 MediaSessionMetadata(
-                    numberOfMediaInfo = information.playList?.mediaInfoList?.size ?: 0,
+                    numberOfMediaInfo = information.mediaInfoPlayList?.mediaInfoList?.size ?: 0,
                     mediaInfo = information.mediaInfo,
                     isPlaying = information.playerMetadata.isPlaying,
                     contentProgress = information.playerMetadata.contentProgress,

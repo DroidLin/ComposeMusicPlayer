@@ -1,8 +1,6 @@
 package com.music.android.lin.application.framework
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -38,13 +36,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
+import androidx.navigation.toRoute
 import com.music.android.lin.application.PageDeepLinks
 import com.music.android.lin.application.PageDefinition
-import com.music.android.lin.application.music.album.ui.AlbumView
 import com.music.android.lin.application.framework.vm.NavigationDrawerType
 import com.music.android.lin.application.framework.vm.NavigationDrawerTypes
 import com.music.android.lin.application.framework.vm.pageDefinitionName
 import com.music.android.lin.application.minibar.ui.Minibar
+import com.music.android.lin.application.minibar.ui.MinibarSizeContainer
+import com.music.android.lin.application.minibar.ui.minibarHeightPadding
+import com.music.android.lin.application.music.album.ui.AlbumView
+import com.music.android.lin.application.music.play.ui.PlayerView
+import com.music.android.lin.application.music.playlist.ui.PlayListDetailView
+import com.music.android.lin.application.music.playlist.ui.PlayListView
 import com.music.android.lin.application.music.single.ui.SingleMusicView
 import com.music.android.lin.application.settings.ui.AboutView
 import com.music.android.lin.application.settings.ui.AppSettingsHomeView
@@ -57,31 +61,40 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val onDrawerIconPressed: suspend () -> Unit = {
         if (drawerState.isOpen) {
-            drawerState.animateTo(DrawerValue.Closed, tween(300))
+            drawerState.close()
         } else if (drawerState.isClosed) {
-            drawerState.animateTo(DrawerValue.Open, tween(300))
+            drawerState.open()
         }
     }
 
-    val navigateToPage: (String) -> Unit = { route: String ->
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute by remember {
+        derivedStateOf {
+            currentBackStackEntry?.destination?.route
+        }
+    }
+
+    // there is an issue in NavController#popBackStack while the function is called more than once at the same time,
+    // so we try to use BackPressDispatcher instead.
+    val backPressDispatcher = LocalOnBackPressedDispatcherOwner.current
+    val backPressed: () -> Unit = {
+        backPressDispatcher?.onBackPressedDispatcher?.onBackPressed()
+    }
+    val navigateToPage: (String) -> Unit = navigateToPage@{ route: String ->
+        if (currentRoute == route) {
+            return@navigateToPage
+        }
         navController.navigate(route) {
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true
             }
             launchSingleTop = true
-            restoreState = true
         }
     }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            val currentBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute by remember {
-                derivedStateOf {
-                    currentBackStackEntry?.destination?.route
-                }
-            }
             val drawerItemClick: (NavigationDrawerType) -> Unit = onClick@{ type ->
                 coroutineScope.launch {
                     onDrawerIconPressed()
@@ -92,7 +105,6 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                     navigateToPage(route)
                 }
             }
-
             DismissibleDrawerSheet(drawerState) {
                 var selectedItem by remember { mutableStateOf(NavigationDrawerTypes[0]) }
                 Column(
@@ -122,74 +134,134 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
             }
         }
     ) {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .navigationBarsPadding(),
-        ) {
-            NavHost(
-                modifier = Modifier.weight(1f),
-                navController = navController,
-                startDestination = PageDefinition.SingleMusicView
+        MinibarSizeContainer {
+            Box(
+                modifier = modifier
+                    .fillMaxSize(),
             ) {
-                composable<PageDefinition.SingleMusicView>(
-                    deepLinks = listOf(
-                        navDeepLink<PageDefinition.SingleMusicView>(
-                            basePath = PageDeepLinks.PATH_SINGLE_MUSIC
-                        )
-                    )
+                NavHost(
+                    modifier = Modifier.matchParentSize(),
+                    navController = navController,
+                    startDestination = PageDefinition.SingleMusicView
                 ) {
-                    SingleMusicView(
-                        modifier = Modifier,
-                        onDrawerIconPressed = {
-                            coroutineScope.launch {
-                                onDrawerIconPressed()
+                    composable<PageDefinition.SingleMusicView>(
+                        deepLinks = listOf(
+                            navDeepLink<PageDefinition.SingleMusicView>(
+                                basePath = PageDeepLinks.PATH_SINGLE_MUSIC
+                            )
+                        )
+                    ) {
+                        SingleMusicView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .minibarHeightPadding()
+                                .navigationBarsPadding(),
+                            onDrawerIconPressed = {
+                                coroutineScope.launch {
+                                    onDrawerIconPressed()
+                                }
                             }
+                        )
+                    }
+                    composable<PageDefinition.AlbumView>(
+                        deepLinks = listOf(
+                            navDeepLink<PageDefinition.AlbumView>(
+                                basePath = PageDeepLinks.PATH_ALBUM
+                            )
+                        )
+                    ) {
+                        AlbumView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .minibarHeightPadding()
+                                .navigationBarsPadding()
+                        )
+                    }
+                    composable<PageDefinition.SettingsView>(
+                        deepLinks = listOf(
+                            navDeepLink<PageDefinition.SettingsView>(
+                                basePath = PageDeepLinks.PATH_SETTINGS
+                            )
+                        )
+                    ) {
+                        AppSettingsHomeView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .minibarHeightPadding()
+                                .navigationBarsPadding(),
+                            backPress = navController::popBackStack,
+                            goToAboutView = {
+                                navigateToPage(requireNotNull(PageDefinition.AboutView::class.qualifiedName))
+                            }
+                        )
+                    }
+                    composable<PageDefinition.AboutView>(
+                        deepLinks = listOf(
+                            navDeepLink<PageDefinition.AboutView>(
+                                basePath = PageDeepLinks.PATH_ABOUT
+                            )
+                        )
+                    ) {
+                        AboutView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .minibarHeightPadding()
+                                .navigationBarsPadding(),
+                            backPress = navController::popBackStack
+                        )
+                    }
+                    composable<PageDefinition.PlayerView>(
+                        deepLinks = listOf(
+                            navDeepLink<PageDefinition.PlayerView>(basePath = PageDeepLinks.PATH_PLAYER)
+                        )
+                    ) {
+                        PlayerView(
+                            modifier = Modifier.fillMaxSize(),
+                            backPressed = backPressed,
+                        )
+                    }
+                    composable<PageDefinition.PlayList> {
+                        PlayListView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .minibarHeightPadding()
+                                .navigationBarsPadding(),
+                            backPressed = backPressed,
+                            goToPlayListDetail = { playListItem ->
+                                navController.navigate(PageDefinition.PlayListDetail(playListItem.id)) {
+                                    launchSingleTop = true
+                                }
+                            }
+                        )
+                    }
+                    composable<PageDefinition.PlayListDetail> {
+                        val playListDetail = it.toRoute<PageDefinition.PlayListDetail>()
+                        PlayListDetailView(
+                            modifier = Modifier
+                                .minibarHeightPadding()
+                                .navigationBarsPadding(),
+                            playListId = playListDetail.id,
+                            backPressed = backPressed
+                        )
+                    }
+                }
+                Minibar(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .navigationBarsPadding(),
+                    shouldShowMinibar = remember {
+                        derivedStateOf {
+                            currentRoute != PageDefinition.PlayerView::class.qualifiedName
                         }
-                    )
-                }
-                composable<PageDefinition.AlbumView>(
-                    deepLinks = listOf(
-                        navDeepLink<PageDefinition.AlbumView>(
-                            basePath = PageDeepLinks.PATH_ALBUM
-                        )
-                    )
-                ) {
-                    AlbumView(modifier = Modifier)
-                }
-                composable<PageDefinition.SettingsView>(
-                    deepLinks = listOf(
-                        navDeepLink<PageDefinition.SettingsView>(
-                            basePath = PageDeepLinks.PATH_SETTINGS
-                        )
-                    )
-                ) {
-                    AppSettingsHomeView(
-                        backPress = navController::popBackStack,
-                        modifier = Modifier,
-                        goToAboutView = {
-                            navigateToPage(requireNotNull(PageDefinition.AboutView::class.qualifiedName))
+                    },
+                    navigateToPlayView = {
+                        navController.navigate(PageDefinition.PlayerView) {
+                            launchSingleTop = true
                         }
-                    )
-                }
-                composable<PageDefinition.AboutView>(
-                    deepLinks = listOf(
-                        navDeepLink<PageDefinition.AboutView>(
-                            basePath = PageDeepLinks.PATH_ABOUT
-                        )
-                    )
-                ) {
-                    AboutView(
-                        modifier = Modifier,
-                        backPress = navController::popBackStack
-                    )
-                }
+                    }
+                )
             }
-            Minibar(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                minibarContentPressed = {}
-            )
         }
     }
 }

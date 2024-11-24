@@ -44,4 +44,18 @@ internal object PageDefinition {
     @Stable
     @Serializable
     data object AboutView
+
+    @Stable
+    @Serializable
+    data object PlayerView
+
+    @Stable
+    @Serializable
+    data object PlayList
+
+    @Stable
+    @Serializable
+    data class PlayListDetail(
+        val id: String
+    )
 }

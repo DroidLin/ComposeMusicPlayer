@@ -16,6 +16,7 @@ internal class LocalPlayList(
     @ColumnInfo(name = "playList_id") val id: String,
     @ColumnInfo(name = "playlist_type") val typeCode: Int,
     @ColumnInfo(name = "playlist_name") val name: String,
+    @ColumnInfo(name = "playlist_cover") val cover: String,
     @ColumnInfo(name = "playlist_description") val description: String,
     @ColumnInfo(name = "playlist_extensions_str") val extensionsStr: String,
     @ColumnInfo(name = "playlist_update_timestamp") val updateTimeStamp: Long

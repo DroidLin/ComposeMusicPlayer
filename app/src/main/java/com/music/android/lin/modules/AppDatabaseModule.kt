@@ -13,7 +13,7 @@ import org.koin.core.annotation.Qualifier
 import org.koin.core.annotation.Single
 
 @Module
-class AppDatabaseModule {
+internal class AppDatabaseModule {
 
     @Single
     fun databaseService(

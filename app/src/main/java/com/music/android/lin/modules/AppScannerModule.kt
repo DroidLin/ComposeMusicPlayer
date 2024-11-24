@@ -8,7 +8,7 @@ import org.koin.core.annotation.Named
 import org.koin.core.annotation.Qualifier
 
 @Module
-class AppScannerModule {
+internal class AppScannerModule {
 
     @Factory
     @Qualifier(name = AppIdentifier.androidScanner)

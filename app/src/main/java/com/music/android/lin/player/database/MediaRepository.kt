@@ -18,6 +18,7 @@ import com.music.android.lin.player.metadata.Album
 import com.music.android.lin.player.metadata.Artist
 import com.music.android.lin.player.metadata.MediaExtras
 import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.MediaInfoPlayList
 import com.music.android.lin.player.metadata.MediaInfoRecentPlayItem
 import com.music.android.lin.player.metadata.MediaType
 import com.music.android.lin.player.metadata.PlayList
@@ -44,11 +45,15 @@ interface MediaRepository {
 
     fun observablePlayList(limit: Int = Int.MAX_VALUE): Flow<List<PlayList>>
 
+    fun observableMediaInfoPlayList(limit: Int = Int.MAX_VALUE): Flow<List<MediaInfoPlayList>>
+
     fun observableMusicInfoList(): Flow<List<MediaInfo>>
 
     fun observableVideoInfoList(): Flow<List<MediaInfo>>
 
-    suspend fun fetchUserPlaylist(limit: Int = Int.MAX_VALUE): List<PlayList>
+    fun observablePlayListMediaInfo(playListId: String): Flow<List<MediaInfo>>
+
+    suspend fun fetchUserPlaylist(limit: Int = Int.MAX_VALUE): List<MediaInfoPlayList>
 
     suspend fun fetchMusicInfoList(): List<MediaInfo>
 
@@ -64,32 +69,40 @@ interface MediaRepository {
 
     suspend fun updateMediaInfo(mediaInfo: MediaInfo): Boolean
 
-    suspend fun insertPlayList(playList: PlayList)
+    suspend fun insertPlayList(mediaInfoPlayList: MediaInfoPlayList)
 
-    suspend fun updatePlayList(playList: PlayList)
+    suspend fun updatePlayList(mediaInfoPlayList: MediaInfoPlayList)
 
-    suspend fun deletePlayList(playList: PlayList)
+    suspend fun deletePlayList(mediaInfoPlayList: MediaInfoPlayList)
 
-    suspend fun queryPlayList(playListId: String): PlayList?
+    suspend fun queryPlayList(playListId: String): MediaInfoPlayList?
 
-    fun observablePlayList(playListId: String): Flow<PlayList?>
+    fun observableMediaInfoPlayList(playListId: String): Flow<MediaInfoPlayList?>
 
-    suspend fun addMusicInfoToPlayList(playList: PlayList, musicInfoIdList: List<String>)
+    suspend fun addMusicInfoToPlayList(
+        mediaInfoPlayList: MediaInfoPlayList,
+        musicInfoIdList: List<String>,
+    )
+
+    suspend fun addMediaInfoToPlayList(playListId: String, mediaInfoId: String)
 
     suspend fun addMusicInfoToPlayList(playListId: String, musicInfoIdList: List<String>)
 
     suspend fun insertMediaInfo(mediaInfoList: List<MediaInfo>)
 
-    suspend fun deleteMediaInfoFromPlayList(playList: PlayList, musicInfoIdList: List<String>)
+    suspend fun deleteMediaInfoFromPlayList(
+        mediaInfoPlayList: MediaInfoPlayList,
+        musicInfoIdList: List<String>,
+    )
 
     /**
      * 指定删除某一首歌，会同步删除所有与其关联的歌单
      */
     suspend fun deleteMediaInfo(mediaInfo: MediaInfo)
 
-    suspend fun deleteMediaInfo(playList: PlayList, mediaInfo: MediaInfo)
+    suspend fun deleteMediaInfo(mediaInfoPlayList: MediaInfoPlayList, mediaInfo: MediaInfo)
 
-    suspend fun deleteMediaInfo(playList: PlayList, id: String)
+    suspend fun deleteMediaInfo(mediaInfoPlayList: MediaInfoPlayList, id: String)
 
     suspend fun fetchAlbumList(): List<Album>
 
@@ -126,9 +139,13 @@ private class MediaRepositoryImpl constructor(
     private val playlistMediaInfoDao: PlayListMediaInfoDao get() = this.mediaDatabase.playlistMediaInfoDao
 
     override fun observablePlayList(limit: Int): Flow<List<PlayList>> {
-        return this.playListDao.fetchAllPlayList(limit).map { itemList ->
-            itemList.map { item -> item.toPlayList() }
-        }
+        return this.playListDao.fetchAllPlayList(limit)
+            .map { list -> list.map { it.toPlayList() } }
+    }
+
+    override fun observableMediaInfoPlayList(limit: Int): Flow<List<MediaInfoPlayList>> {
+        return this.playListDao.fetchAllPlayList(limit)
+            .map { itemList -> itemList.map { item -> item.toMediaInfoPlayList() } }
     }
 
     override fun observableMusicInfoList(): Flow<List<MediaInfo>> {
@@ -140,9 +157,18 @@ private class MediaRepositoryImpl constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun fetchUserPlaylist(limit: Int): List<PlayList> {
+    override fun observablePlayListMediaInfo(playListId: String): Flow<List<MediaInfo>> {
+        return this.playlistMediaInfoDao.observableRecordAboutPlayList(playListId)
+            .map { recordList ->
+                recordList.mapNotNull { record ->
+                    musicInfoDao.getMusicInfo(record.mediaInfoId)?.toMediaInfo()
+                }
+            }
+    }
+
+    override suspend fun fetchUserPlaylist(limit: Int): List<MediaInfoPlayList> {
         return this.playListDao.getAllPlaylist(limit)
-            .map { localPlayList -> localPlayList.toPlayList() }
+            .map { localPlayList -> localPlayList.toMediaInfoPlayList() }
     }
 
     override suspend fun fetchMusicInfoList(): List<MediaInfo> {
@@ -202,7 +228,7 @@ private class MediaRepositoryImpl constructor(
             .map { it.toMediaInfo() }
     }
 
-    private suspend fun LocalPlayList.toPlayList(): PlayList {
+    private suspend fun LocalPlayList.toMediaInfoPlayList(): MediaInfoPlayList {
         val mediaInfoWithOrder = playlistMediaInfoDao.fetchMediaInfoAboutPlayList(this.id)
         val mediaInfoList = coroutineScope {
             mediaInfoWithOrder.map { record ->
@@ -211,14 +237,29 @@ private class MediaRepositoryImpl constructor(
                 }
             }.awaitAll().filterNotNull().toMutableList()
         }
+        return MediaInfoPlayList(
+            id = this.id,
+            type = PlayListType.fromCode(this.typeCode),
+            name = this.name,
+            description = this.description,
+            playListCover = this.cover,
+            mediaInfoList = mediaInfoList,
+            extensions = this.extensionsMap,
+            updateTimeStamp = this.updateTimeStamp,
+            countOfPlayable = mediaInfoWithOrder.size
+        )
+    }
+
+    private suspend fun LocalPlayList.toPlayList(): PlayList {
         return PlayList(
             id = this.id,
             type = PlayListType.fromCode(this.typeCode),
             name = this.name,
             description = this.description,
-            mediaInfoList = mediaInfoList,
+            playListCover = this.cover,
             extensions = this.extensionsMap,
-            updateTimeStamp = this.updateTimeStamp
+            updateTimeStamp = this.updateTimeStamp,
+            countOfPlayable = playlistMediaInfoDao.fetchCountOfPlayList(this.id)
         )
     }
 
@@ -260,28 +301,28 @@ private class MediaRepositoryImpl constructor(
         )
     }
 
-    override suspend fun insertPlayList(playList: PlayList) {
-        this.playListDao.insertAll(playList.toLocalPlayList())
+    override suspend fun insertPlayList(mediaInfoPlayList: MediaInfoPlayList) {
+        this.playListDao.insertAll(mediaInfoPlayList.toLocalPlayList())
     }
 
-    override suspend fun updatePlayList(playList: PlayList) {
-        this.playListDao.update(playList.toLocalPlayList())
+    override suspend fun updatePlayList(mediaInfoPlayList: MediaInfoPlayList) {
+        this.playListDao.update(mediaInfoPlayList.toLocalPlayList())
     }
 
-    override suspend fun deletePlayList(playList: PlayList) {
-        this.playListDao.delete(playList.toLocalPlayList())
+    override suspend fun deletePlayList(mediaInfoPlayList: MediaInfoPlayList) {
+        this.playListDao.delete(mediaInfoPlayList.toLocalPlayList())
     }
 
-    override suspend fun queryPlayList(playListId: String): PlayList? {
-        return this.playListDao.getPlayList(playListId)?.toPlayList()
+    override suspend fun queryPlayList(playListId: String): MediaInfoPlayList? {
+        return this.playListDao.getPlayList(playListId)?.toMediaInfoPlayList()
     }
 
-    override fun observablePlayList(playListId: String): Flow<PlayList?> {
+    override fun observableMediaInfoPlayList(playListId: String): Flow<MediaInfoPlayList?> {
         return this.playListDao.getPlayListFlow(playListId)
-            .map { localPlayList -> localPlayList?.toPlayList() }
+            .map { localPlayList -> localPlayList?.toMediaInfoPlayList() }
     }
 
-    private suspend fun PlayList.toLocalPlayList(): LocalPlayList {
+    private suspend fun MediaInfoPlayList.toLocalPlayList(): LocalPlayList {
         val recordList = this.mediaInfoList.map { mediaInfo ->
             LocalPlayListMediaInfoRecord(
                 playlistId = this.id,
@@ -294,21 +335,32 @@ private class MediaRepositoryImpl constructor(
             typeCode = this.type.code,
             name = this.name,
             description = this.description,
+            cover = this.playListCover ?: "",
             extensionsStr = this.extensions?.toJson() ?: "",
             updateTimeStamp = System.currentTimeMillis()
         )
     }
 
     override suspend fun addMusicInfoToPlayList(
-        playList: PlayList,
-        musicInfoIdList: List<String>
+        mediaInfoPlayList: MediaInfoPlayList,
+        musicInfoIdList: List<String>,
     ) {
         val mediaInfo = this.musicInfoDao.getMusicInfoList(ids = musicInfoIdList)
             .map { it.toMediaInfo() }.distinctBy { it.id }
-        val mutablePlayList = playList.toMutable()
+        val mutablePlayList = mediaInfoPlayList.toMutable()
         mutablePlayList.mediaInfoList.clear()
         mutablePlayList.mediaInfoList.addAll(mediaInfo)
         this.updatePlayList(mutablePlayList.toImmutable())
+    }
+
+    override suspend fun addMediaInfoToPlayList(playListId: String, mediaInfoId: String) {
+        kotlin.runCatching {
+            val localRecord = LocalPlayListMediaInfoRecord(
+                playlistId = playListId,
+                mediaInfoId = mediaInfoId
+            )
+            this.playlistMediaInfoDao.insertRecord(localRecord)
+        }.onFailure { it.printStackTrace() }
     }
 
     override suspend fun addMusicInfoToPlayList(playListId: String, musicInfoIdList: List<String>) {
@@ -352,15 +404,17 @@ private class MediaRepositoryImpl constructor(
     }
 
     override suspend fun deleteMediaInfoFromPlayList(
-        playList: PlayList,
-        musicInfoIdList: List<String>
+        mediaInfoPlayList: MediaInfoPlayList,
+        musicInfoIdList: List<String>,
     ) {
-        val mutablePlayList = playList.toMutable()
+        val mutablePlayList = mediaInfoPlayList.toMutable()
         mutablePlayList.mediaInfoList.removeAll { it.id in musicInfoIdList }
         this.insertPlayList(mutablePlayList.toImmutable())
     }
 
     override suspend fun deleteMediaInfo(mediaInfo: MediaInfo) {
+        val records = this.playlistMediaInfoDao.fetchRecordByMediaInfoId(mediaInfoId = mediaInfo.id)
+        this.playlistMediaInfoDao.deleteRecord(records)
         this.musicInfoDao.delete(musicInfo = mediaInfo.toLocalMusicInfo())
     }
 
@@ -379,13 +433,16 @@ private class MediaRepositoryImpl constructor(
         )
     }
 
-    override suspend fun deleteMediaInfo(playList: PlayList, mediaInfo: MediaInfo) {
-        return this.deleteMediaInfo(playList = playList, id = mediaInfo.id)
+    override suspend fun deleteMediaInfo(
+        mediaInfoPlayList: MediaInfoPlayList,
+        mediaInfo: MediaInfo,
+    ) {
+        return this.deleteMediaInfo(mediaInfoPlayList = mediaInfoPlayList, id = mediaInfo.id)
     }
 
-    override suspend fun deleteMediaInfo(playList: PlayList, id: String) {
+    override suspend fun deleteMediaInfo(mediaInfoPlayList: MediaInfoPlayList, id: String) {
         this.insertPlayList(
-            playList.toMutable()
+            mediaInfoPlayList.toMutable()
                 .also { mutablePlayList ->
                     mutablePlayList.mediaInfoList.removeAll { it.id == id }
                 }

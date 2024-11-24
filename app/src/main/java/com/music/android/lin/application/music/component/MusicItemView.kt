@@ -31,8 +31,8 @@ import coil3.compose.AsyncImage
 import com.music.android.lin.R
 import com.music.android.lin.application.common.ui.component.tintPainter
 import com.music.android.lin.application.framework.AppMaterialTheme
-import com.music.android.lin.application.usecase.MediaQuality
-import com.music.android.lin.application.usecase.MusicItem
+import com.music.android.lin.application.common.usecase.MediaQuality
+import com.music.android.lin.application.common.usecase.MusicItem
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

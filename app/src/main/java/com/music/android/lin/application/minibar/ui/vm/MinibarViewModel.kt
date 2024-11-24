@@ -1,5 +1,6 @@
 package com.music.android.lin.application.minibar.ui.vm
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.music.android.lin.application.minibar.ui.state.MinibarUiState
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
+@Stable
 class MinibarViewModel(
     private val mediaService: MediaService,
 ) : ViewModel() {

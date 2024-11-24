@@ -13,6 +13,7 @@ import com.music.android.lin.application.framework.AppFramework
 import com.music.android.lin.application.framework.AppMaterialTheme
 import com.music.android.lin.application.framework.AppMusicFramework
 import com.music.android.lin.application.framework.isNightModeOnCompat
+import com.music.android.lin.application.framework.vm.AppFrameworkViewModel
 import com.music.android.lin.application.util.LocalWindow
 import com.music.android.lin.application.util.SystemBarStyleComponent
 import com.music.android.lin.application.util.applyWindowBackgroundSettings
@@ -20,6 +21,8 @@ import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.modules.mediaService
 import com.music.android.lin.player.service.MediaService
 import org.koin.androidx.compose.KoinAndroidContext
+import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.compose.KoinApplication
 
 class MainActivity : ComponentActivity() {
@@ -30,9 +33,10 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
+        val frameworkViewModel = getViewModel<AppFrameworkViewModel>()
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {
-            !AppKoin.mediaService.isConnected
+            !AppKoin.mediaService.isConnected && frameworkViewModel.firstGuideCompleted.value != null
         }
 
         setContent {

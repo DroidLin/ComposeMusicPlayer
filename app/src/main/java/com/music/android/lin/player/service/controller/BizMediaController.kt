@@ -1,11 +1,11 @@
 package com.music.android.lin.player.service.controller
 
-import com.music.android.lin.player.metadata.CommonMediaResourceParameter
+import com.music.android.lin.player.metadata.CommonPlayMediaResource
 import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.metadata.MediaResource
-import com.music.android.lin.player.metadata.PlayList
+import com.music.android.lin.player.metadata.MediaInfoPlayList
 import com.music.android.lin.player.metadata.PlayMode
-import com.music.android.lin.player.metadata.PositionalMediaSourceParameter
+import com.music.android.lin.player.metadata.PositionalPlayMediaResource
 import com.music.android.lin.player.service.player.Player
 import com.music.android.lin.player.service.player.datasource.DataSource
 import com.music.android.lin.player.service.playlist.MediaPlayingList
@@ -59,13 +59,20 @@ class BizMediaController(
 
     override fun playMediaResource(mediaResource: MediaResource) {
         when (mediaResource) {
-            is PositionalMediaSourceParameter -> {
-
+            is PositionalPlayMediaResource -> {
+                val playList = this.mediaList.mediaInfoPlayList
+                if (playList != null) {
+                    this.playResource(
+                        mediaInfoPlayList = playList,
+                        fromIndex = mediaResource.startPosition,
+                        playWhenReady = true
+                    )
+                }
             }
 
-            is CommonMediaResourceParameter -> {
+            is CommonPlayMediaResource -> {
                 this.playResource(
-                    playList = mediaResource.playList,
+                    mediaInfoPlayList = mediaResource.mediaInfoPlayList,
                     fromIndex = mediaResource.startPosition,
                     playWhenReady = mediaResource.autoStart
                 )
@@ -77,8 +84,8 @@ class BizMediaController(
         }
     }
 
-    private fun playResource(playList: PlayList, fromIndex: Int, playWhenReady: Boolean) {
-        this.mediaList.setResource(playList, fromIndex)
+    private fun playResource(mediaInfoPlayList: MediaInfoPlayList, fromIndex: Int, playWhenReady: Boolean) {
+        this.mediaList.setResource(mediaInfoPlayList, fromIndex)
 
         val currentMediaInfo = this.mediaList.mediaInfo
         this.playResourceInner(currentMediaInfo, playWhenReady)

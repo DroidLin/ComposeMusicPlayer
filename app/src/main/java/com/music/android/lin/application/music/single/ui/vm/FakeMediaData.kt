@@ -1,7 +1,7 @@
 package com.music.android.lin.application.music.single.ui.vm
 
-import com.music.android.lin.application.usecase.MediaQuality
-import com.music.android.lin.application.usecase.MusicItem
+import com.music.android.lin.application.common.usecase.MediaQuality
+import com.music.android.lin.application.common.usecase.MusicItem
 
 val FakeMusicItemData = (0..20).map { index ->
     MusicItem(

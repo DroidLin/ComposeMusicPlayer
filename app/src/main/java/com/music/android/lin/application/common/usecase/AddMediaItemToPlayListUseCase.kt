@@ -1,0 +1,13 @@
+package com.music.android.lin.application.common.usecase
+
+import com.music.android.lin.application.common.model.PlayListItem
+import com.music.android.lin.player.database.MediaRepository
+
+class AddMediaItemToPlayListUseCase(
+    private val mediaRepository: MediaRepository,
+) {
+
+    suspend fun addToPlayList(playListItem: PlayListItem, musicItem: MusicItem) {
+        mediaRepository.addMediaInfoToPlayList(playListId = playListItem.id, musicItem.mediaId)
+    }
+}

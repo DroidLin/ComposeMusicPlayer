@@ -40,12 +40,14 @@ fun AudioMinibar(
     uiState: State<MinibarUiState>,
     playButtonPressed: () -> Unit,
     playListButtonPressed: () -> Unit,
+    minibarContentPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .height(72.dp),
+        onClick = minibarContentPressed
     ) {
         Box(
             modifier = Modifier
@@ -165,13 +167,14 @@ private fun MinibarContentPreview() {
     AppMaterialTheme {
         AudioMinibar(
             modifier = Modifier.fillMaxWidth(),
-            playButtonPressed = {},
-            playListButtonPressed = {},
             uiState = remember {
                 derivedStateOf {
                     PreviewFakeUiState
                 }
-            }
+            },
+            playButtonPressed = {},
+            playListButtonPressed = {},
+            minibarContentPressed = {}
         )
     }
 }
