@@ -9,5 +9,6 @@ data class PlayerUiState(
     val musicItem: MusicItem? = null,
     val playMode: PlayMode = PlayMode.PlayListLoop,
     val currentProgress: Long = 0L,
-    val currentDuration: Long = 0L
+    val currentDuration: Long = 0L,
+    val isPlaying: Boolean = false
 )
