@@ -2,18 +2,15 @@ package com.music.android.lin.application.music.play.ui.vm
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.music.android.lin.application.common.usecase.util.toMusicItem
-import com.music.android.lin.application.music.play.ui.state.PlayerUiState
+import com.music.android.lin.application.music.play.ui.state.PlayerState
 import com.music.android.lin.player.service.MediaService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.channels.onSuccess
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
@@ -24,42 +21,55 @@ import kotlinx.coroutines.supervisorScope
 @OptIn(ExperimentalCoroutinesApi::class)
 @SuppressLint("StaticFieldLeak")
 class PlayerPageViewModel(
-    private val context: Context,
     private val mediaService: MediaService,
 ) : ViewModel() {
 
     val playerState = flow {
         supervisorScope {
-            val languageContext = ContextCompat.getContextForLanguage(context)
             val channel = produce {
                 mediaService.information.collect { send(it) }
             }
-            var uiState = PlayerUiState()
-            var currentProgress = 0L
+            var currentProgress = mediaService.information.value.playerMetadata.contentProgress
+            var currentDuration = mediaService.information.value.playerMetadata.contentDuration
+            var isPlaying = mediaService.information.value.playerMetadata.isPlaying
+            var currentMediaId: String? = mediaService.information.value.mediaInfo?.id
+            var progress = if (currentDuration > 0L) {
+                currentProgress / currentDuration.toFloat()
+            } else 0f
             var error = false
+            var uiState = PlayerState(progress, currentProgress, currentDuration)
             while (isActive && !error) {
                 select<Unit> {
-                    if (uiState.isPlaying && currentProgress <= uiState.currentDuration) {
+                    if (isPlaying && currentProgress <= uiState.currentDuration) {
                         onTimeout(500L) {
-                            val currentDuration = uiState.currentDuration.coerceAtLeast(0)
+                            currentDuration = uiState.currentDuration.coerceAtLeast(0)
                             currentProgress = (currentProgress + 500L).coerceIn(0, currentDuration)
-                            uiState = uiState.copy(currentProgress = currentProgress)
+                            progress = if (currentDuration > 0L) {
+                                currentProgress / currentDuration.toFloat()
+                            } else 0f
+                            uiState = uiState.copy(
+                                progress = progress,
+                                currentProgress = currentProgress
+                            )
                             emit(uiState)
                         }
                     }
                     channel.onReceiveCatching { value ->
                         value
                             .onSuccess { information ->
-                                val currentDuration = information.playerMetadata.contentDuration.coerceAtLeast(0L)
-                                currentProgress = if (information.mediaInfo?.id == uiState.musicItem?.mediaId) {
+                                currentDuration = information.playerMetadata.contentDuration.coerceAtLeast(0L)
+                                currentProgress = if (information.mediaInfo?.id == currentMediaId) {
                                     information.playerMetadata.contentProgress.coerceIn(0, currentDuration)
                                 } else 0L
+                                progress = if (currentDuration > 0L) {
+                                    currentProgress / currentDuration.toFloat()
+                                } else 0f
+                                currentMediaId = information.mediaInfo?.id
+                                isPlaying = information.playerMetadata.isPlaying
                                 uiState = uiState.copy(
-                                    musicItem = information.mediaInfo?.toMusicItem(languageContext),
-                                    playMode = information.playMode,
+                                    progress = progress,
                                     currentProgress = currentProgress,
-                                    currentDuration = currentDuration,
-                                    isPlaying = information.playerMetadata.isPlaying
+                                    currentDuration = currentDuration
                                 )
                                 emit(uiState)
                             }
@@ -69,6 +79,6 @@ class PlayerPageViewModel(
             }
         }
     }
-        .stateIn(this.viewModelScope, SharingStarted.Lazily, PlayerUiState())
+        .stateIn(this.viewModelScope, SharingStarted.Lazily, PlayerState())
 }
 

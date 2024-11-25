@@ -102,7 +102,7 @@ internal class PlayNotificationManager constructor(
                     isPlaying = information.playerMetadata.isPlaying
                 )
             }
-            .debounce(500L)
+            .debounce(200L)
             .distinctUntilChanged()
             .onEach(::updateMediaNotification)
             .collectWithScope(this.coroutineScope)

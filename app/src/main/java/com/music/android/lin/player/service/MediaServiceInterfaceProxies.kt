@@ -208,7 +208,6 @@ internal class RemoteMediaServiceProxy(
     init {
         this.playInfo.information
             .distinctUntilChanged()
-            .debounce(200L)
             .onEach { information ->
                 val playMessage = PlayMessage.ofCommand(PlayCommand.UPDATE_PLAY_INFORMATION)
                 playMessage.data = information

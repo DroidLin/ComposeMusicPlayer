@@ -119,8 +119,6 @@ internal class AppViewModelModule {
 
     @Factory
     internal fun playerPageViewModel(
-        @Qualifier(name = AppIdentifier.applicationContext)
-        context: Context,
         mediaService: MediaService,
-    ): PlayerPageViewModel = PlayerPageViewModel(context, mediaService)
+    ): PlayerPageViewModel = PlayerPageViewModel(mediaService)
 }

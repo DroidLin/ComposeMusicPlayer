@@ -1,14 +1,12 @@
-package com.music.android.lin.application.music.play.ui.state
+package com.music.android.lin.application.common.ui.state
 
 import androidx.compose.runtime.Stable
 import com.music.android.lin.application.common.usecase.MusicItem
 import com.music.android.lin.player.metadata.PlayMode
 
 @Stable
-data class PlayerUiState(
+data class PlayState(
     val musicItem: MusicItem? = null,
     val playMode: PlayMode = PlayMode.PlayListLoop,
-    val currentProgress: Long = 0L,
-    val currentDuration: Long = 0L,
-    val isPlaying: Boolean = false
+    val isPlaying: Boolean = false,
 )

@@ -117,10 +117,12 @@ internal class ExoMediaPlayer(
 
     override fun seekToPosition(position: Long) {
         this.exoPlayer.seekTo(position)
+        this.updatePlayerMetadata()
     }
 
     override fun stop() {
         this.exoPlayer.stop()
+        this.updatePlayerMetadata()
     }
 
     override fun release() {
@@ -139,7 +141,7 @@ internal class ExoMediaPlayer(
         this.metadataFlow.update {
             it.copy(
                 contentProgress = this.contentProgress,
-                contentDuration = this.contentDuration
+                contentDuration = this.contentDuration,
             )
         }
     }
