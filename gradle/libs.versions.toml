@@ -23,6 +23,8 @@ adaptiveWindow = "1.0.0"
 
 kotinImmutableCollection = "0.3.8"
 
+palette = "1.0.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -70,6 +72,8 @@ kotin-immutable-collection = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive", version.ref = "adaptiveWindow" }
 material3-adaptive-layout = { group = "androidx.compose.material3.adaptive", name = "adaptive-layout", version.ref = "adaptiveWindow" }
 material3-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation", version.ref = "adaptiveWindow" }
+
+palette = { group = "androidx.palette", name = "palette", version.ref = "palette"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

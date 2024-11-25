@@ -240,11 +240,7 @@ internal class PlayNotificationManager constructor(
 
     private suspend fun loadCoverBitmap(mediaInfo: MediaInfo): Bitmap? = withContext(Dispatchers.IO) {
         kotlin.runCatching {
-            val imageResourceUrl = mediaInfo.coverUri
-            if (imageResourceUrl.isNullOrEmpty()) {
-                return@runCatching null
-            }
-            fetchImageBitmap(imageResourceUrl = imageResourceUrl)
+            fetchImageAsBitmap(imageResourceUrl = mediaInfo.coverUri)
         }.onFailure { it.printStackTrace() }.getOrNull()
     }
 

@@ -120,6 +120,7 @@ dependencies {
     implementation(libs.material3.adaptive)
     implementation(libs.material3.adaptive.layout)
     implementation(libs.material3.adaptive.navigation)
-    implementation(kotlin("reflect"))
 
+    // palette
+    implementation(libs.palette)
 }
