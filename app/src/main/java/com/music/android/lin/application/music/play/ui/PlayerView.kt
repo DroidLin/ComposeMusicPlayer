@@ -38,8 +38,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
@@ -50,6 +52,7 @@ import com.music.android.lin.application.common.ui.state.PlayState
 import com.music.android.lin.application.common.ui.vm.PlayViewModel
 import com.music.android.lin.application.music.play.model.formatAudioTimestamp
 import com.music.android.lin.application.music.play.ui.component.PlayerPageSeekbarTrack
+import com.music.android.lin.application.music.play.ui.state.PlayerColorScheme
 import com.music.android.lin.application.music.play.ui.state.PlayerState
 import com.music.android.lin.application.music.play.ui.vm.PlayerPageViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -131,6 +134,12 @@ private fun PlayerContentView(
                 skipToPrevButtonPressed = skipToPrevButtonPressed,
                 playOrPauseButtonPressed = playOrPauseButtonPressed,
                 skipToNextButtonPressed = skipToNextButtonPressed,
+            )
+            PlayerColorSchemeViewer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                colorScheme = remember { derivedStateOf { playerState.value.colorScheme } },
             )
         }
     }
@@ -329,4 +338,60 @@ private fun PlayControlPanel(
     modifier: Modifier = Modifier
 ) {
 
+}
+
+@Composable
+private fun PlayerColorSchemeViewer(
+    colorScheme: State<PlayerColorScheme>,
+    modifier: Modifier = Modifier
+) {
+    AnimatedContent(
+        targetState = colorScheme.value,
+        transitionSpec = {
+            fadeIn(tween(800)) togetherWith fadeOut(tween(800))
+        },
+        contentAlignment = Alignment.Center
+    ) { scheme ->
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(56.dp)
+                    .drawBehind { drawRect(color = scheme.lightVibrant) }
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(56.dp)
+                    .drawBehind { drawRect(color = scheme.vibrant) }
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(56.dp)
+                    .drawBehind { drawRect(color = scheme.darkVibrant) }
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(56.dp)
+                    .drawBehind { drawRect(color = scheme.lightMuted) }
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(56.dp)
+                    .drawBehind { drawRect(color = scheme.muted) }
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(56.dp)
+                    .drawBehind { drawRect(color = scheme.darkMuted) }
+            )
+        }
+    }
 }
