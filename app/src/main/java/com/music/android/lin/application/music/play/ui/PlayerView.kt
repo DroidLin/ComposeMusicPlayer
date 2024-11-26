@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,7 +39,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
@@ -90,11 +91,13 @@ private fun PlayerContentView(
     modifier: Modifier = Modifier,
 ) {
     val mediaCover = remember { derivedStateOf { playerState.value.mediaCoverPainter } }
+    val mediaBackgroundCover =
+        remember { derivedStateOf { playerState.value.mediaBackgroundPainter } }
     Box(
         modifier = modifier
     ) {
         PlayerBackground(
-            playCover = mediaCover,
+            playCover = mediaBackgroundCover,
             modifier = Modifier.matchParentSize()
         )
         Column(
@@ -148,9 +151,7 @@ private fun PlayerBackground(
     ) { playCoverPainter ->
         if (playCoverPainter != null) {
             Image(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .blur(25.dp),
+                modifier = Modifier.fillMaxSize(),
                 painter = playCoverPainter,
                 contentDescription = "",
                 contentScale = ContentScale.Crop
@@ -192,7 +193,30 @@ private fun PlayerCover(
     playCover: State<Painter?>,
     modifier: Modifier = Modifier,
 ) {
-
+    AnimatedContent(
+        modifier = modifier,
+        targetState = playCover.value,
+        label = "player_background_animation",
+        transitionSpec = {
+            fadeIn(tween(800)) togetherWith fadeOut(tween(800))
+        }
+    ) { playCoverPainter ->
+        if (playCoverPainter != null) {
+            Image(
+                modifier = Modifier
+                    .aspectRatio(1f, true)
+                    .clip(shape = MaterialTheme.shapes.large),
+                painter = playCoverPainter,
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .aspectRatio(1f, true)
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

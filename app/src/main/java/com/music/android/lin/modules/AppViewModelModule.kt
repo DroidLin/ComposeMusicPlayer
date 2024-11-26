@@ -27,6 +27,7 @@ import com.music.android.lin.player.service.controller.MediaController
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Qualifier
+import java.util.logging.Logger
 
 @Module
 internal class AppViewModelModule {
@@ -99,13 +100,13 @@ internal class AppViewModelModule {
         @Qualifier(name = AppIdentifier.applicationContext)
         context: Context,
         deleteMediaInfoUseCase: DeleteMediaInfoUseCase,
-        fetctMyPlayListUseCase: FetchMyPlayListUseCase,
+        fetchMyPlayListUseCase: FetchMyPlayListUseCase,
         addMediaItemToPlayListUseCase: AddMediaItemToPlayListUseCase,
         createPlayListUseCase: CreatePlayListUseCase,
     ): MediaRepositoryViewModel = MediaRepositoryViewModel(
         context = context,
         deleteMediaInfoUseCase = deleteMediaInfoUseCase,
-        fetchMyPlayListUseCase = fetctMyPlayListUseCase,
+        fetchMyPlayListUseCase = fetchMyPlayListUseCase,
         addMediaItemToPlayListUseCase = addMediaItemToPlayListUseCase,
         createPlayListUseCase = createPlayListUseCase
     )
@@ -120,5 +121,6 @@ internal class AppViewModelModule {
     @Factory
     internal fun playerPageViewModel(
         mediaService: MediaService,
-    ): PlayerPageViewModel = PlayerPageViewModel(mediaService)
+        logger: Logger,
+    ): PlayerPageViewModel = PlayerPageViewModel(mediaService, logger)
 }

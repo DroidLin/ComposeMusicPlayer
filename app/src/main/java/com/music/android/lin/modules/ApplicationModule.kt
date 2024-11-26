@@ -5,10 +5,10 @@ import com.music.android.lin.player.service.MediaService
 import com.music.android.lin.player.service.controller.MediaController
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
-import org.koin.core.annotation.Named
 import org.koin.core.annotation.Property
 import org.koin.core.annotation.Qualifier
 import org.koin.core.annotation.Single
+import java.util.logging.Logger
 
 @Module
 internal class ApplicationModule {
@@ -28,6 +28,9 @@ internal class ApplicationModule {
 
     @Factory
     fun mediaController(mediaService: MediaService): MediaController = mediaService.mediaController
+
+    @Single
+    fun appLogger(): Logger = Logger.getLogger("AppLogger")
 
     companion object {
         @JvmStatic
