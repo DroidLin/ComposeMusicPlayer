@@ -26,10 +26,22 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs["debug"]
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            signingConfig = signingConfigs["debug"]
+        }
+    }
+    signingConfigs {
+        maybeCreate("debug").apply {
+            this.storeFile = file("keystore/debugKey")
+            this.keyAlias = "musicplayer"
+            this.keyPassword = "123456"
+            this.storePassword = "123456"
         }
     }
     compileOptions {

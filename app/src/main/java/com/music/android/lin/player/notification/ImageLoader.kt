@@ -26,7 +26,11 @@ suspend fun fetchImageAsPainter(imageResourceUrl: String?): Painter? {
     return result.image?.asPainter(context, FilterQuality.None)
 }
 
-suspend fun fetchBlurImageAsPainter(imageResourceUrl: String?): Painter? {
+suspend fun fetchBlurImageAsPainter(
+    imageResourceUrl: String?,
+    radius: Float = 25f,
+    sampling: Float = 2f
+): Painter? {
     if (imageResourceUrl == null) return null
     val context: Context = AppKoin.applicationContext
     val imageLoader = SingletonImageLoader.get(context)
@@ -35,8 +39,8 @@ suspend fun fetchBlurImageAsPainter(imageResourceUrl: String?): Painter? {
         .transformations(
             BlurTransformation(
                 context = context,
-                radius = 25f,
-                sampling = 4f
+                radius = radius,
+                sampling = sampling
             )
         )
         .allowHardware(false)

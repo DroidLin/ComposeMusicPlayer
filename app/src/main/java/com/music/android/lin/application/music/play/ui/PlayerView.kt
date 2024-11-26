@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,12 +21,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -42,20 +46,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.android.lin.application.common.ui.state.PlayState
 import com.music.android.lin.application.common.ui.vm.PlayViewModel
 import com.music.android.lin.application.music.play.model.formatAudioTimestamp
+import com.music.android.lin.application.music.play.ui.component.LocalPlayerCustomUiColorScheme
+import com.music.android.lin.application.music.play.ui.component.PlayerColorTheme
 import com.music.android.lin.application.music.play.ui.component.PlayerPageSeekbarTrack
 import com.music.android.lin.application.music.play.ui.state.PlayerColorScheme
 import com.music.android.lin.application.music.play.ui.state.PlayerState
 import com.music.android.lin.application.music.play.ui.vm.PlayerPageViewModel
 import org.koin.androidx.compose.koinViewModel
+
+private const val ContentSwitchDuration = 1000
 
 @Composable
 fun PlayerView(
@@ -81,6 +92,9 @@ fun PlayerView(
     )
 }
 
+private val ContentHorizontalPadding = 32.dp
+private val HeaderHorizontalPadding = 16.dp
+
 @Composable
 private fun PlayerContentView(
     playState: State<PlayState>,
@@ -96,51 +110,66 @@ private fun PlayerContentView(
     val mediaCover = remember { derivedStateOf { playerState.value.mediaCoverPainter } }
     val mediaBackgroundCover =
         remember { derivedStateOf { playerState.value.mediaBackgroundPainter } }
-    Box(
-        modifier = modifier
+    val mediaTitle = remember { derivedStateOf { playState.value.musicItem?.musicName ?: "" } }
+    val mediaSubTitle =
+        remember { derivedStateOf { playState.value.musicItem?.musicDescription ?: "" } }
+    PlayerColorTheme(
+        playerColorScheme = remember { derivedStateOf { playerState.value.colorScheme } }
     ) {
-        PlayerBackground(
-            playCover = mediaBackgroundCover,
-            modifier = Modifier.matchParentSize()
-        )
-        Column(
-            modifier = Modifier
-                .matchParentSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
+        Box(
+            modifier = modifier
         ) {
-            PlayerHeader(
-                modifier = Modifier,
-                backPressed = backPressed,
+            PlayerBackground(
+                playCover = mediaBackgroundCover,
+                modifier = Modifier.matchParentSize()
             )
-            PlayerCover(
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp),
-                playCover = mediaCover,
-            )
-            PlayerProgressView(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp),
-                progress = remember { derivedStateOf { playerState.value.progress } },
-                currentProgress = remember { derivedStateOf { playerState.value.currentProgress } },
-                currentDuration = remember { derivedStateOf { playerState.value.currentDuration } },
-                seekToPosition = seekToPosition,
-                updateSliderProgress = updateSliderProgress,
-            )
-            PlayControlPanel(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp),
-                isPlaying = remember { derivedStateOf { playState.value.isPlaying } },
-                skipToPrevButtonPressed = skipToPrevButtonPressed,
-                playOrPauseButtonPressed = playOrPauseButtonPressed,
-                skipToNextButtonPressed = skipToNextButtonPressed,
-            )
-            PlayerColorSchemeViewer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                colorScheme = remember { derivedStateOf { playerState.value.colorScheme } },
-            )
+                    .matchParentSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding(),
+                verticalArrangement = Arrangement.SpaceAround
+            ) {
+                PlayerHeader(
+                    modifier = Modifier
+                        .padding(horizontal = HeaderHorizontalPadding),
+                    backPressed = backPressed,
+                )
+                PlayerCover(
+                    modifier = Modifier
+                        .padding(horizontal = ContentHorizontalPadding),
+                    playCover = mediaCover,
+                )
+                PlayerInformationView(
+                    modifier = Modifier
+                        .padding(horizontal = ContentHorizontalPadding),
+                    mediaTitle = mediaTitle,
+                    mediaSubTitle = mediaSubTitle
+                )
+                PlayerProgressView(
+                    modifier = Modifier
+                        .padding(horizontal = ContentHorizontalPadding),
+                    progress = remember { derivedStateOf { playerState.value.progress } },
+                    currentProgress = remember { derivedStateOf { playerState.value.currentProgress } },
+                    currentDuration = remember { derivedStateOf { playerState.value.currentDuration } },
+                    seekToPosition = seekToPosition,
+                    updateSliderProgress = updateSliderProgress,
+                )
+                PlayControlPanel(
+                    modifier = Modifier
+                        .padding(horizontal = ContentHorizontalPadding),
+                    isPlaying = remember { derivedStateOf { playState.value.isPlaying } },
+                    skipToPrevButtonPressed = skipToPrevButtonPressed,
+                    playOrPauseButtonPressed = playOrPauseButtonPressed,
+                    skipToNextButtonPressed = skipToNextButtonPressed,
+                )
+                PlayerColorSchemeViewer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = ContentHorizontalPadding),
+                    colorScheme = remember { derivedStateOf { playerState.value.colorScheme } },
+                )
+            }
         }
     }
 }
@@ -150,23 +179,34 @@ private fun PlayerBackground(
     playCover: State<Painter?>,
     modifier: Modifier = Modifier,
 ) {
+    val customUiColorScheme = LocalPlayerCustomUiColorScheme.current
     AnimatedContent(
         modifier = modifier,
         targetState = playCover.value,
         label = "player_background_animation",
         transitionSpec = {
-            fadeIn(tween(800)) togetherWith fadeOut(tween(800))
+            fadeIn(tween(ContentSwitchDuration)) togetherWith fadeOut(tween(ContentSwitchDuration))
         }
     ) { playCoverPainter ->
         if (playCoverPainter != null) {
             Image(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .drawWithContent {
+                        this.drawContent()
+                        this.drawRect(color = customUiColorScheme.backgroundMaskColor)
+                    },
                 painter = playCoverPainter,
                 contentDescription = "",
                 contentScale = ContentScale.Crop
             )
         } else {
-            Box(modifier = Modifier)
+            Box(
+                modifier = Modifier.drawWithContent {
+                    this.drawContent()
+                    this.drawRect(color = customUiColorScheme.backgroundMaskColor)
+                }
+            )
         }
     }
 }
@@ -178,6 +218,7 @@ private fun PlayerHeader(
     modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(
+        modifier = modifier,
         title = {},
         navigationIcon = {
             IconButton(
@@ -192,7 +233,10 @@ private fun PlayerHeader(
         windowInsets = WindowInsets(0, 0, 0, 0),
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = Color.Transparent,
-            scrolledContainerColor = Color.Transparent
+            scrolledContainerColor = Color.Transparent,
+            navigationIconContentColor = LocalContentColor.current,
+            titleContentColor = LocalContentColor.current,
+            actionIconContentColor = LocalContentColor.current,
         )
     )
 }
@@ -207,7 +251,7 @@ private fun PlayerCover(
         targetState = playCover.value,
         label = "player_background_animation",
         transitionSpec = {
-            fadeIn(tween(800)) togetherWith fadeOut(tween(800))
+            fadeIn(tween(ContentSwitchDuration)) togetherWith fadeOut(tween(ContentSwitchDuration))
         }
     ) { playCoverPainter ->
         if (playCoverPainter != null) {
@@ -228,6 +272,32 @@ private fun PlayerCover(
     }
 }
 
+@Composable
+private fun PlayerInformationView(
+    mediaTitle: State<String>,
+    mediaSubTitle: State<String>,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Text(
+            text = mediaTitle.value,
+            style = MaterialTheme.typography.headlineMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = mediaSubTitle.value,
+            style = MaterialTheme.typography.bodyLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = LocalContentColor.current.copy(alpha = 0.75f)
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerProgressView(
@@ -238,10 +308,22 @@ fun PlayerProgressView(
     seekToPosition: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val customUiColorScheme = LocalPlayerCustomUiColorScheme.current
     Column(
         modifier = modifier
     ) {
-        val colors = SliderDefaults.colors()
+        val colors = SliderDefaults.colors(
+            thumbColor = customUiColorScheme.slideBarActiveColor,
+            activeTrackColor = customUiColorScheme.slideBarActiveColor,
+            activeTickColor = customUiColorScheme.slideBarActiveColor,
+            inactiveTrackColor = customUiColorScheme.slideBarInactiveColor,
+            inactiveTickColor = customUiColorScheme.slideBarInactiveColor,
+            disabledThumbColor = customUiColorScheme.slideBarInactiveColor,
+            disabledActiveTrackColor = customUiColorScheme.slideBarInactiveColor,
+            disabledActiveTickColor = customUiColorScheme.slideBarInactiveColor,
+            disabledInactiveTrackColor = customUiColorScheme.slideBarInactiveColor,
+            disabledInactiveTickColor = customUiColorScheme.slideBarInactiveColor,
+        )
         val interactionSource = remember { MutableInteractionSource() }
         val inTouchMode = remember { mutableStateOf(false) }
         val valueProgressRecord = remember { mutableStateOf(0f) }
@@ -298,8 +380,9 @@ fun PlayerProgressView(
             )
             androidx.compose.animation.AnimatedVisibility(
                 visible = inTouchMode.value,
-                enter = fadeIn(),
-                exit = fadeOut()
+                enter = fadeIn(tween(ContentSwitchDuration)),
+                exit = fadeOut(tween(ContentSwitchDuration)),
+                label = "duration_slider_indication_animation"
             ) {
                 val inputProgressText = remember {
                     derivedStateOf {
@@ -345,53 +428,64 @@ private fun PlayerColorSchemeViewer(
     colorScheme: State<PlayerColorScheme>,
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
     AnimatedContent(
+        modifier = modifier,
         targetState = colorScheme.value,
         transitionSpec = {
-            fadeIn(tween(800)) togetherWith fadeOut(tween(800))
+            fadeIn(tween(ContentSwitchDuration)) togetherWith fadeOut(tween(ContentSwitchDuration))
         },
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
+        label = "color_scheme_viewer_animation"
     ) { scheme ->
         Column(
-            modifier = modifier,
+            modifier = Modifier.verticalScroll(state = scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .height(56.dp)
-                    .drawBehind { drawRect(color = scheme.lightVibrant) }
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .height(56.dp)
-                    .drawBehind { drawRect(color = scheme.vibrant) }
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .height(56.dp)
-                    .drawBehind { drawRect(color = scheme.darkVibrant) }
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .height(56.dp)
-                    .drawBehind { drawRect(color = scheme.lightMuted) }
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .height(56.dp)
-                    .drawBehind { drawRect(color = scheme.muted) }
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .height(56.dp)
-                    .drawBehind { drawRect(color = scheme.darkMuted) }
-            )
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth(0.5f)
+//                    .height(56.dp)
+//                    .drawBehind { drawRect(color = scheme.lightVibrant) }
+//            )
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth(0.5f)
+//                    .height(56.dp)
+//                    .drawBehind { drawRect(color = scheme.vibrant) }
+//            )
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth(0.5f)
+//                    .height(56.dp)
+//                    .drawBehind { drawRect(color = scheme.darkVibrant) }
+//            )
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth(0.5f)
+//                    .height(56.dp)
+//                    .drawBehind { drawRect(color = scheme.lightMuted) }
+//            )
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth(0.5f)
+//                    .height(56.dp)
+//                    .drawBehind { drawRect(color = scheme.muted) }
+//            )
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth(0.5f)
+//                    .height(56.dp)
+//                    .drawBehind { drawRect(color = scheme.darkMuted) }
+//            )
+            scheme.swatchesColorList.forEach { color ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(56.dp)
+                        .drawBehind { drawRect(color = color) }
+                )
+            }
         }
     }
 }

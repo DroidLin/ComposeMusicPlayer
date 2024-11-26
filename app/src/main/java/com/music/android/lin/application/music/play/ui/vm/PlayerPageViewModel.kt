@@ -102,14 +102,14 @@ class PlayerPageViewModel(
                                 var mediaBackgroundPainter: Painter? =
                                     uiState.mediaBackgroundPainter
                                 var colorScheme: PlayerColorScheme = uiState.colorScheme
-                                // if cover url has been changed, we need to generate a new cover image and
-                                // pick color from cover.
+                                // if cover url has changed, we need to generate a new cover image and
+                                // relaunch picking color.
                                 if (currentCoverUrl != mediaCover) {
-                                    currentCoverUrl = mediaCover
                                     val playColorScheme = fetchPlayerCoverAndColorScheme(mediaCover)
                                     mediaCoverPainter = playColorScheme.coverPainter
                                     mediaBackgroundPainter = playColorScheme.backgroundPainter
                                     colorScheme = playColorScheme.colorScheme
+                                    currentCoverUrl = mediaCover
                                 }
 
                                 uiState = uiState.copy(

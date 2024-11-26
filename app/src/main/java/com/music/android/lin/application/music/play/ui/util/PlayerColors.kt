@@ -10,23 +10,12 @@ import kotlinx.coroutines.withContext
 
 suspend fun pickColorAndTransformToScheme(bitmap: Bitmap?): PlayerColorScheme {
     bitmap ?: return PlayerColorScheme()
-
     val palette = withContext(Dispatchers.Default) {
         Palette.from(bitmap).generate()
     }
-    val lightVibrant = palette.getColorForTarget(Target.LIGHT_VIBRANT, Color.TRANSPARENT)
-    val vibrant = palette.getColorForTarget(Target.VIBRANT, Color.TRANSPARENT)
-    val darkVibrant = palette.getColorForTarget(Target.DARK_VIBRANT, Color.TRANSPARENT)
-    val lightMuted = palette.getColorForTarget(Target.LIGHT_MUTED, Color.TRANSPARENT)
-    val muted = palette.getColorForTarget(Target.MUTED, Color.TRANSPARENT)
-    val darkMuted = palette.getColorForTarget(Target.DARK_MUTED, Color.TRANSPARENT)
-
+    val dominantColor = palette.dominantSwatch?.rgb ?: Color.TRANSPARENT
     return PlayerColorScheme(
-        lightVibrant = androidx.compose.ui.graphics.Color(lightVibrant),
-        vibrant = androidx.compose.ui.graphics.Color(vibrant),
-        darkVibrant = androidx.compose.ui.graphics.Color(darkVibrant),
-        lightMuted = androidx.compose.ui.graphics.Color(lightMuted),
-        muted = androidx.compose.ui.graphics.Color(muted),
-        darkMuted = androidx.compose.ui.graphics.Color(darkMuted),
+        dominantColor = androidx.compose.ui.graphics.Color(dominantColor),
+        swatchesColorList = palette.swatches.mapNotNull { it?.rgb }.map { androidx.compose.ui.graphics.Color(it) }
     )
 }
