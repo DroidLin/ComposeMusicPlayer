@@ -1,19 +1,12 @@
 package com.music.android.lin.application.music.play.ui.state
 
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 
+@Stable
 data class PlayerColorScheme(
-    val dominantColor: Color = Color.Transparent,
-    val swatchesColorList: List<Color> = emptyList()
+    val textColor: Color = Color.White,
+    val slideBarActiveColor: Color = Color.White,
+    val slideBarInactiveColor: Color = Color.White.copy(alpha = 0.5f),
+    val backgroundMaskColor: Color = Color.Black,
 )
-
-val PlayerColorScheme.availableColor: Color?
-    get() {
-        if (dominantColor != Color.Transparent) {
-            return dominantColor
-        }
-        if (swatchesColorList.isNotEmpty()) {
-            return swatchesColorList.first()
-        }
-        return null
-    }
