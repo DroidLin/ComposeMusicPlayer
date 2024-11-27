@@ -44,11 +44,11 @@ class PlayViewModel(
     }
 
     fun skipToPrev() {
-
+        mediaController.skipToPrevious()
     }
 
     fun skipToNext() {
-
+        mediaController.skipToNext()
     }
 
     fun playButtonPressed() {

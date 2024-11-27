@@ -57,7 +57,7 @@ class PlayerPageViewModel(
                 currentProgress / currentDuration.toFloat()
             } else 0f
             var error = false
-            var uiState = PlayerState(progress, currentProgress, currentDuration)
+            var uiState = PlayerState(progress, currentDuration)
             var handleInput: Boolean = false
             var currentCoverUrl: String? = null
 
@@ -74,7 +74,6 @@ class PlayerPageViewModel(
                             }
                             uiState = uiState.copy(
                                 progress = progress,
-                                currentProgress = currentProgress
                             )
                             emit(uiState)
                         }
@@ -114,7 +113,6 @@ class PlayerPageViewModel(
 
                                 uiState = uiState.copy(
                                     progress = progress,
-                                    currentProgress = currentProgress,
                                     currentDuration = currentDuration,
                                     mediaCoverPainter = mediaCoverPainter,
                                     mediaBackgroundPainter = mediaBackgroundPainter,

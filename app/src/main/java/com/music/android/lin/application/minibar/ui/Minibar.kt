@@ -7,6 +7,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -30,12 +31,14 @@ import com.music.android.lin.application.minibar.ui.vm.MinibarViewModel
 import com.music.android.lin.player.metadata.MediaType
 import org.koin.androidx.compose.koinViewModel
 
-private val minibarEnterAnimation = expandVertically() { 0 } +
-        slideInVertically() { it } +
-        fadeIn()
-private val minibarExitAnimation = shrinkVertically() { 0 } +
-        slideOutVertically() { it } +
-        fadeOut()
+private const val minibarTransitionDuration = 500
+
+private val minibarEnterAnimation = expandVertically(tween(minibarTransitionDuration)) { 0 } +
+        slideInVertically(tween(minibarTransitionDuration)) { it } +
+        fadeIn(tween(minibarTransitionDuration))
+private val minibarExitAnimation = shrinkVertically(tween(minibarTransitionDuration)) { 0 } +
+        slideOutVertically(tween(minibarTransitionDuration)) { it } +
+        fadeOut(tween(minibarTransitionDuration))
 
 @Composable
 fun Minibar(

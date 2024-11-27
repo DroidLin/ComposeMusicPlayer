@@ -29,8 +29,8 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
-private val PROGRESS_MAX_WIDTH_STROKE = 12.dp
-private val PROGRESS_DEFAULT_STROKE = 6.dp
+private val PROGRESS_MAX_WIDTH_STROKE = 8.dp
+private val PROGRESS_DEFAULT_STROKE = 4.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

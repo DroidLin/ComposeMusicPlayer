@@ -33,6 +33,7 @@ android {
             )
         }
         debug {
+            applicationIdSuffix = ".debug"
             signingConfig = signingConfigs["debug"]
         }
     }
