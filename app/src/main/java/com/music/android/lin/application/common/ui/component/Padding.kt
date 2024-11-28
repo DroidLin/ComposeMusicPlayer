@@ -23,9 +23,7 @@ interface PaddingScope {
 }
 
 @Stable
-private class PaddingScopeImpl(
-    private val function: PaddingScope.() -> Unit,
-) : PaddingScope {
+private class PaddingScopeImpl : PaddingScope {
 
     override var left: Dp = Dp.Hairline
     override var top: Dp = Dp.Hairline
@@ -33,50 +31,46 @@ private class PaddingScopeImpl(
     override var bottom: Dp = Dp.Hairline
     override var isRTLAware: Boolean = true
 
-    fun receivePaddingValues() {
-        this.function()
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
         other as PaddingScopeImpl
 
-        if (function != other.function) return false
         if (left != other.left) return false
         if (top != other.top) return false
         if (right != other.right) return false
         if (bottom != other.bottom) return false
+        if (isRTLAware != other.isRTLAware) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = function.hashCode()
-        result = 31 * result + left.hashCode()
+        var result = left.hashCode()
         result = 31 * result + top.hashCode()
         result = 31 * result + right.hashCode()
         result = 31 * result + bottom.hashCode()
+        result = 31 * result + isRTLAware.hashCode()
         return result
     }
 }
 
 @Stable
-fun Modifier.padding(function: PaddingScope.() -> Unit): Modifier {
-    return this.then(PaddingScopeElement(PaddingScopeImpl(function)))
+fun Modifier.padding(block: PaddingScope.() -> Unit): Modifier {
+    return this.then(PaddingScopeElement(block))
 }
 
 private class PaddingScopeElement(
-    private val paddingScope: PaddingScopeImpl,
+    private val block: PaddingScope.() -> Unit,
 ) : ModifierNodeElement<PaddingScopeNode>() {
 
     override fun create(): PaddingScopeNode {
-        return PaddingScopeNode(this.paddingScope)
+        return PaddingScopeNode(this.block)
     }
 
     override fun update(node: PaddingScopeNode) {
-        node.paddingScope = this.paddingScope
+        node.block = this.block
     }
 
     override fun equals(other: Any?): Boolean {
@@ -85,24 +79,26 @@ private class PaddingScopeElement(
 
         other as PaddingScopeElement
 
-        return paddingScope == other.paddingScope
+        return block == other.block
     }
 
     override fun hashCode(): Int {
-        return paddingScope.hashCode()
+        return block.hashCode()
     }
+
 }
 
 private class PaddingScopeNode(
-    var paddingScope: PaddingScopeImpl,
+    var block: PaddingScope.() -> Unit,
 ) : Modifier.Node(), LayoutModifierNode {
+
+    private val paddingScope = PaddingScopeImpl()
 
     override fun MeasureScope.measure(
         measurable: Measurable,
         constraints: Constraints,
     ): MeasureResult {
-
-        paddingScope.receivePaddingValues()
+        paddingScope.apply(block)
 
         val start = paddingScope.left
         val end = paddingScope.right
