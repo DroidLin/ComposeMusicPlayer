@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,9 +31,9 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.music.android.lin.R
 import com.music.android.lin.application.common.ui.component.tintPainter
-import com.music.android.lin.application.framework.AppMaterialTheme
 import com.music.android.lin.application.common.usecase.MediaQuality
 import com.music.android.lin.application.common.usecase.MusicItem
+import com.music.android.lin.application.framework.AppMaterialTheme
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -64,20 +65,29 @@ fun MusicItemView(
             Surface(
                 shape = MaterialTheme.shapes.small
             ) {
-                val picturePainter = painterResource(R.drawable.ic_placeholder_img)
-                    .tintPainter(LocalContentColor.current)
                 val pictureBrokenPainter = painterResource(R.drawable.ic_broken_img)
                     .tintPainter(LocalContentColor.current)
-                AsyncImage(
-                    modifier = Modifier
-                        .size(56.dp),
-                    model = musicItem.musicCover,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    placeholder = picturePainter,
-                    fallback = picturePainter,
-                    error = pictureBrokenPainter,
-                )
+                if (musicItem.musicCover.isNullOrEmpty()) {
+                    Icon(
+                        modifier = Modifier
+                            .size(56.dp),
+                        painter = pictureBrokenPainter,
+                        contentDescription = null
+                    )
+                } else {
+                    val picturePainter = painterResource(R.drawable.ic_placeholder_img)
+                        .tintPainter(LocalContentColor.current)
+                    AsyncImage(
+                        modifier = Modifier
+                            .size(56.dp),
+                        model = musicItem.musicCover,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        placeholder = picturePainter,
+                        fallback = picturePainter,
+                        error = pictureBrokenPainter,
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column(

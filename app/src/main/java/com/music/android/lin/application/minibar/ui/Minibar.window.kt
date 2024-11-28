@@ -15,6 +15,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import com.music.android.lin.application.common.ui.component.padding
 
 private val LocalMinibarConfig =
     compositionLocalOf<Minibar> { throw NotImplementedError("not implemented") }
@@ -44,7 +45,7 @@ internal fun Modifier.anchorMinibarContainer(): Modifier = composed {
 @Composable
 internal fun Modifier.minibarHeightPadding(): Modifier = composed {
     val minibar = LocalMinibarConfig.current
-    padding(bottom = minibar.minibarSize.height)
+    padding { bottom = minibar.minibarSize.height }
 }
 
 @Stable

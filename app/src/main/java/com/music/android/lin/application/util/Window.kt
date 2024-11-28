@@ -6,10 +6,14 @@ import android.os.Build
 import android.view.View
 import android.view.Window
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 
 val LocalWindow = compositionLocalOf<Window> { error("Not Provide Window") }
+
+val Window.isLightSystemBar: Boolean
+    get() = this.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR == View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
 fun Window.applyWindowBackgroundSettings() {
     val colorDrawable = ColorDrawable(Color.TRANSPARENT)
@@ -44,8 +48,16 @@ fun Window.setNavigationBarStyle(light: Boolean = false) {
 @Composable
 fun SystemBarStyleComponent(isLightMode: Boolean) {
     val window = LocalWindow.current
-    LaunchedEffect(window, isLightMode) {
+    DisposableEffect(window, isLightMode) {
+        val isLightSystemBar = window.isLightSystemBar
+
         window.setStatusBarStyle(isLightMode)
         window.setNavigationBarStyle(isLightMode)
+
+        onDispose {
+            // restore system bar light style
+            window.setStatusBarStyle(isLightSystemBar)
+            window.setNavigationBarStyle(isLightSystemBar)
+        }
     }
 }

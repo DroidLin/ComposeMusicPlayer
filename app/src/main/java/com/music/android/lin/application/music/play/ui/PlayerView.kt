@@ -1,9 +1,8 @@
 package com.music.android.lin.application.music.play.ui
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.animateColor
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -41,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -54,17 +54,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.android.lin.R
 import com.music.android.lin.application.common.ui.state.PlayState
 import com.music.android.lin.application.common.ui.vm.PlayViewModel
 import com.music.android.lin.application.music.play.model.formatAudioTimestamp
-import com.music.android.lin.application.music.play.ui.component.LocalPlayerCustomUiColorScheme
 import com.music.android.lin.application.music.play.ui.component.PlayButton
 import com.music.android.lin.application.music.play.ui.component.PlayerColorTheme
 import com.music.android.lin.application.music.play.ui.component.PlayerPageSeekbarTrack
+import com.music.android.lin.application.music.play.ui.state.PlayerColorScheme
+import com.music.android.lin.application.music.play.ui.state.PlayerInformationState
 import com.music.android.lin.application.music.play.ui.state.PlayerState
 import com.music.android.lin.application.music.play.ui.vm.PlayerPageViewModel
+import com.music.android.lin.application.util.SystemBarStyleComponent
 import org.koin.androidx.compose.koinViewModel
 
 private const val ContentSwitchDuration = 1000
@@ -80,6 +83,7 @@ fun PlayerView(
     val playerPageViewModel = koinViewModel<PlayerPageViewModel>()
     val playerState = playerPageViewModel.playerState.collectAsState()
 
+    SystemBarStyleComponent(isLightMode = false)
     PlayerContentView(
         modifier = modifier,
         playerState = playerState,
@@ -108,25 +112,16 @@ private fun PlayerContentView(
     updateSliderProgress: (Float, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val mediaCover = remember {
-        derivedStateOf { playerState.value.mediaCoverPainter }
-    }
-    val mediaBackgroundCover = remember {
-        derivedStateOf { playerState.value.mediaBackgroundPainter }
-    }
-    val mediaTitle = remember {
-        derivedStateOf { playState.value.musicItem?.musicName ?: "" }
-    }
-    val mediaSubTitle = remember {
-        derivedStateOf { playState.value.musicItem?.musicDescription ?: "" }
-    }
     val playerColorScheme = remember { derivedStateOf { playerState.value.colorScheme } }
     PlayerColorTheme(playerColorScheme = playerColorScheme) {
         Box(
             modifier = modifier
         ) {
             PlayerBackground(
-                playCover = mediaBackgroundCover,
+                playCover = remember {
+                    derivedStateOf { playerState.value.mediaBackgroundPainter }
+                },
+                backgroundColorState = playerColorScheme,
                 modifier = Modifier.matchParentSize()
             )
             Column(
@@ -150,7 +145,9 @@ private fun PlayerContentView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = ContentHorizontalPadding),
-                    playCover = mediaCover,
+                    playCover = remember {
+                        derivedStateOf { playerState.value.mediaCoverPainter }
+                    },
                 )
                 Spacer(
                     modifier = Modifier
@@ -161,8 +158,14 @@ private fun PlayerContentView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = ContentHorizontalPadding),
-                    mediaTitle = mediaTitle,
-                    mediaSubTitle = mediaSubTitle
+                    informationState = remember {
+                        derivedStateOf {
+                            PlayerInformationState(
+                                title = playState.value.musicItem?.musicName ?: "",
+                                subTitle = playState.value.musicItem?.musicDescription ?: ""
+                            )
+                        }
+                    },
                 )
                 Spacer(
                     modifier = Modifier
@@ -177,6 +180,7 @@ private fun PlayerContentView(
                     currentDuration = remember { derivedStateOf { playerState.value.currentDuration } },
                     seekToPosition = seekToPosition,
                     updateSliderProgress = updateSliderProgress,
+                    playerColorScheme = playerColorScheme
                 )
                 Spacer(
                     modifier = Modifier
@@ -205,10 +209,13 @@ private fun PlayerContentView(
 @Composable
 private fun PlayerBackground(
     playCover: State<Painter?>,
+    backgroundColorState: State<PlayerColorScheme>,
     modifier: Modifier = Modifier,
 ) {
-    val updateTransient = updateTransition(LocalPlayerCustomUiColorScheme.current, null)
-    val backgroundMaskColor = updateTransient.animateColor(label = "background_mask_animation") { it.backgroundMaskColor }
+    val backgroundMaskColor = animateColorAsState(
+        targetValue = backgroundColorState.value.backgroundMaskColor,
+        label = "background_mask_animation"
+    )
     Box(
         modifier = modifier.drawWithContent {
             this.drawRect(color = Color.Black)
@@ -300,15 +307,14 @@ private fun PlayerCover(
 
 @Composable
 private fun PlayerInformationView(
-    mediaTitle: State<String>,
-    mediaSubTitle: State<String>,
+    informationState: State<PlayerInformationState>,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
     ) {
         Text(
-            text = mediaTitle.value,
+            text = informationState.value.title,
             style = MaterialTheme.typography.headlineMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -320,7 +326,7 @@ private fun PlayerInformationView(
                 .height(12.dp)
         )
         Text(
-            text = mediaSubTitle.value,
+            text = informationState.value.subTitle,
             style = MaterialTheme.typography.bodyLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -334,25 +340,25 @@ private fun PlayerInformationView(
 fun PlayerProgressView(
     progress: State<Float>,
     currentDuration: State<Long>,
+    playerColorScheme: State<PlayerColorScheme>,
     updateSliderProgress: (Float, Boolean) -> Unit,
     seekToPosition: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val customUiColorScheme = LocalPlayerCustomUiColorScheme.current
     Column(
         modifier = modifier
     ) {
         val colors = SliderDefaults.colors(
-            thumbColor = customUiColorScheme.slideBarActiveColor,
-            activeTrackColor = customUiColorScheme.slideBarActiveColor,
-            activeTickColor = customUiColorScheme.slideBarActiveColor,
-            inactiveTrackColor = customUiColorScheme.slideBarInactiveColor,
-            inactiveTickColor = customUiColorScheme.slideBarInactiveColor,
-            disabledThumbColor = customUiColorScheme.slideBarInactiveColor,
-            disabledActiveTrackColor = customUiColorScheme.slideBarInactiveColor,
-            disabledActiveTickColor = customUiColorScheme.slideBarInactiveColor,
-            disabledInactiveTrackColor = customUiColorScheme.slideBarInactiveColor,
-            disabledInactiveTickColor = customUiColorScheme.slideBarInactiveColor,
+            thumbColor = playerColorScheme.value.slideBarActiveColor,
+            activeTrackColor = playerColorScheme.value.slideBarActiveColor,
+            activeTickColor = playerColorScheme.value.slideBarActiveColor,
+            inactiveTrackColor = playerColorScheme.value.slideBarInactiveColor,
+            inactiveTickColor = playerColorScheme.value.slideBarInactiveColor,
+            disabledThumbColor = playerColorScheme.value.slideBarInactiveColor,
+            disabledActiveTrackColor = playerColorScheme.value.slideBarInactiveColor,
+            disabledActiveTickColor = playerColorScheme.value.slideBarInactiveColor,
+            disabledInactiveTrackColor = playerColorScheme.value.slideBarInactiveColor,
+            disabledInactiveTickColor = playerColorScheme.value.slideBarInactiveColor,
         )
         val interactionSource = remember { MutableInteractionSource() }
         val inTouchMode = remember { mutableStateOf(false) }

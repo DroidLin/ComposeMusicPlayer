@@ -1,6 +1,9 @@
 package com.music.android.lin.application.framework
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +24,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -113,22 +117,24 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.height(12.dp))
                     NavigationDrawerTypes.forEach { drawerType ->
                         val isSelect = drawerType.pageDefinitionName == currentRoute
-                        NavigationDrawerItem(
-                            icon = {
-                                Icon(
-                                    modifier = Modifier.size(36.dp),
-                                    painter = painterResource(id = drawerType.drawableResId),
-                                    contentDescription = null
-                                )
-                            },
-                            label = {
-                                Text(
-                                    text = stringResource(id = drawerType.nameResId)
-                                )
-                            },
-                            selected = isSelect,
-                            onClick = { selectedItem = drawerType; drawerItemClick(drawerType) }
-                        )
+                        key(drawerType, isSelect) {
+                            NavigationDrawerItem(
+                                icon = {
+                                    Icon(
+                                        modifier = Modifier.size(36.dp),
+                                        painter = painterResource(id = drawerType.drawableResId),
+                                        contentDescription = null
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = stringResource(id = drawerType.nameResId)
+                                    )
+                                },
+                                selected = isSelect,
+                                onClick = { selectedItem = drawerType; drawerItemClick(drawerType) }
+                            )
+                        }
                     }
                 }
             }
@@ -142,7 +148,9 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                 NavHost(
                     modifier = Modifier.matchParentSize(),
                     navController = navController,
-                    startDestination = PageDefinition.SingleMusicView
+                    startDestination = PageDefinition.SingleMusicView,
+                    enterTransition = { fadeIn(tween(500)) },
+                    exitTransition = { fadeOut(tween(500)) }
                 ) {
                     composable<PageDefinition.SingleMusicView>(
                         deepLinks = listOf(
