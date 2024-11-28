@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "188822988682",
+    "project_id": "mediaplayer-a19a0",
+    "storage_bucket": "mediaplayer-a19a0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:188822988682:android:59cf5282969414b2288a73",
+        "android_client_info": {
+          "package_name": "com.music.android.lin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnGcCjVfHZWpWzSC7a0MaMm20qlXueBQU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:188822988682:android:c195cd9ea6765e6f288a73",
+        "android_client_info": {
+          "package_name": "com.music.android.lin.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnGcCjVfHZWpWzSC7a0MaMm20qlXueBQU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

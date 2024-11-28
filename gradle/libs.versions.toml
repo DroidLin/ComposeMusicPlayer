@@ -26,6 +26,11 @@ kotinImmutableCollection = "0.3.8"
 
 palette = "1.0.0"
 
+googleGmsServicePlugin = "4.4.2"
+firebaseBom = "33.6.0"
+firebaseCrashlytics = "3.0.2"
+firebasePerf = "1.4.2"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -77,10 +82,19 @@ material3-adaptive-navigation = { group = "androidx.compose.material3.adaptive",
 
 palette = { group = "androidx.palette", name = "palette", version.ref = "palette"}
 
+google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+google-firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+google-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+google-firebase-performance = { group = "com.google.firebase", name = "firebase-perf" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
 google-dev-ksp = { id = "com.google.devtools.ksp", version.ref = "kspSymbol" }
+google-gms-service = { id = "com.google.gms.google-services", version.ref = "googleGmsServicePlugin" }
+google-firebase-cashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
+google-firebase-performance = { id = "com.google.firebase.firebase-perf", version.ref = "firebasePerf" }
+
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

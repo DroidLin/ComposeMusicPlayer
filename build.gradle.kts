@@ -3,4 +3,7 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.jetbrains.kotlin.android) apply false
     alias(libs.plugins.google.dev.ksp) apply false
+    alias(libs.plugins.google.gms.service) apply false
+    alias(libs.plugins.google.firebase.cashlytics) apply false
+    alias(libs.plugins.google.firebase.performance) apply false
 }
