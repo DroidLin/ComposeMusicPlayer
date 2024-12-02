@@ -147,6 +147,26 @@ fun PermissionTestAndAcquireView(
         }
     }
 
+    val requireMediaPermission = requireMediaPermission@{
+        if (readMediaFilePermissionGranted) {
+            return@requireMediaPermission
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mediaPermissionLauncher.launch(arrayOf(Manifest.permission.READ_MEDIA_AUDIO))
+        } else {
+            mediaPermissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+        }
+    }
+
+    val requireNotificationPermission = requireNotificationPermission@{
+        if (notificationPermissionGranted) {
+            return@requireNotificationPermission
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mediaPermissionLauncher.launch(arrayOf(Manifest.permission.POST_NOTIFICATIONS))
+        }
+    }
+
     BoxWithConstraints(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -177,16 +197,7 @@ fun PermissionTestAndAcquireView(
             Spacer(modifier = Modifier.height(20.dp))
             Card(
                 modifier = Modifier,
-                onClick = {
-                    if (readMediaFilePermissionGranted) {
-                        return@Card
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        mediaPermissionLauncher.launch(arrayOf(Manifest.permission.READ_MEDIA_AUDIO))
-                    } else {
-                        mediaPermissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
-                    }
-                }
+                onClick = requireMediaPermission
             ) {
                 Row(
                     modifier = Modifier
@@ -207,20 +218,13 @@ fun PermissionTestAndAcquireView(
                         )
                     }
                     Spacer(modifier = Modifier.width(10.dp))
-                    Switch(checked = readMediaFilePermissionGranted, onCheckedChange = {})
+                    Switch(checked = readMediaFilePermissionGranted, onCheckedChange = { requireMediaPermission() })
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
             Card(
                 modifier = Modifier,
-                onClick = {
-                    if (notificationPermissionGranted) {
-                        return@Card
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        mediaPermissionLauncher.launch(arrayOf(Manifest.permission.POST_NOTIFICATIONS))
-                    }
-                }
+                onClick = requireNotificationPermission
             ) {
                 Row(
                     modifier = Modifier
@@ -241,7 +245,7 @@ fun PermissionTestAndAcquireView(
                         )
                     }
                     Spacer(modifier = Modifier.width(10.dp))
-                    Switch(checked = notificationPermissionGranted, onCheckedChange = {})
+                    Switch(checked = notificationPermissionGranted, onCheckedChange = { requireNotificationPermission() })
                 }
             }
         }

@@ -25,16 +25,22 @@ fun ScanningResultDialog(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
         text = {
-            LazyColumn {
-                items(
-                    items = scanningData.mediaInfoList,
-                    key = { it.id },
-                    contentType = { it.mediaType }
-                ) {
-                    Text(
-                        modifier = Modifier.fillParentMaxWidth(),
-                        text = it.mediaTitle
-                    )
+            val mediaInfoList = scanningData.mediaInfoList
+            if (mediaInfoList.isEmpty()) {
+                Text(text = stringResource(R.string.string_empty))
+            } else {
+                LazyColumn {
+
+                    items(
+                        items = mediaInfoList,
+                        key = { it.id },
+                        contentType = { it.mediaType }
+                    ) {
+                        Text(
+                            modifier = Modifier.fillParentMaxWidth(),
+                            text = it.mediaTitle
+                        )
+                    }
                 }
             }
         },

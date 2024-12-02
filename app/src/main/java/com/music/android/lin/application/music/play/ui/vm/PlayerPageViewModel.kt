@@ -1,8 +1,10 @@
 package com.music.android.lin.application.music.play.ui.vm
 
 import android.annotation.SuppressLint
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +14,7 @@ import com.music.android.lin.application.music.play.ui.util.pickColorAndTransfor
 import com.music.android.lin.player.notification.fetchBlurImageAsPainter
 import com.music.android.lin.player.notification.fetchImageAsBitmap
 import com.music.android.lin.player.service.MediaService
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.channels.onSuccess
@@ -31,12 +34,9 @@ import java.util.logging.Logger
 @SuppressLint("StaticFieldLeak")
 class PlayerPageViewModel(
     private val mediaService: MediaService,
-    private val logger: Logger
+    private val logger: Logger,
+    private val coroutineScope: CoroutineScope,
 ) : ViewModel() {
-
-    companion object {
-        private const val TIMEOUT_INTERVAL = 1000L
-    }
 
     private val sharedInputFlow = MutableSharedFlow<SliderBarInputRecord>(extraBufferCapacity = 1)
 
@@ -63,7 +63,7 @@ class PlayerPageViewModel(
 
             while (isActive && !error) {
                 select<Unit> {
-                    if (isPlaying && currentProgress <= uiState.currentDuration) {
+                    if (!handleInput && isPlaying && currentProgress <= uiState.currentDuration) {
                         onTimeout(TIMEOUT_INTERVAL) {
                             currentDuration = uiState.currentDuration.coerceAtLeast(0)
                             currentProgress = (currentProgress + TIMEOUT_INTERVAL).coerceIn(0, currentDuration)
@@ -97,9 +97,10 @@ class PlayerPageViewModel(
                                 isPlaying = information.playerMetadata.isPlaying
 
                                 val mediaCover = information.mediaInfo?.coverUri
-                                var mediaCoverPainter: Painter? = uiState.mediaCoverPainter
-                                var mediaBackgroundPainter: Painter? =
-                                    uiState.mediaBackgroundPainter
+                                var mediaCoverPainter: Painter =
+                                    uiState.mediaCoverPainter ?: DefaultColorScheme.coverPainter
+                                var mediaBackgroundPainter: Painter = uiState.mediaBackgroundPainter
+                                    ?: DefaultColorScheme.backgroundPainter
                                 var colorScheme: PlayerColorScheme = uiState.colorScheme
                                 // if cover url has changed, we need to generate a new cover image and
                                 // relaunch picking color.
@@ -139,7 +140,11 @@ class PlayerPageViewModel(
             }
         }
     }
-        .stateIn(this.viewModelScope, SharingStarted.Lazily, PlayerState())
+        .stateIn(
+            CoroutineScope(this.viewModelScope.coroutineContext + this.coroutineScope.coroutineContext),
+            SharingStarted.Lazily,
+            PlayerState()
+        )
 
     fun handleSliderInput(progress: Float, handleInput: Boolean) {
         while (!sharedInputFlow.tryEmit(SliderBarInputRecord(progress, handleInput))) {
@@ -148,7 +153,7 @@ class PlayerPageViewModel(
     }
 
     private suspend fun fetchPlayerCoverAndColorScheme(imageCoverUrl: String?): PlayCoverScheme {
-        if (imageCoverUrl.isNullOrEmpty()) return PlayCoverScheme()
+        if (imageCoverUrl.isNullOrEmpty()) return DefaultColorScheme
         return coroutineScope {
             val playCoverBitmap = fetchImageAsBitmap(imageCoverUrl)
             val playBackgroundPainter = fetchBlurImageAsPainter(imageCoverUrl)
@@ -156,22 +161,30 @@ class PlayerPageViewModel(
             PlayCoverScheme(
                 coverPainter = if (playCoverBitmap != null) {
                     BitmapPainter(playCoverBitmap.asImageBitmap())
-                } else null,
-                backgroundPainter = playBackgroundPainter,
+                } else DefaultColorScheme.coverPainter,
+                backgroundPainter = playBackgroundPainter ?: DefaultColorScheme.backgroundPainter,
                 colorScheme = colorScheme
             )
         }
     }
 
     private data class PlayCoverScheme(
-        val coverPainter: Painter? = null,
-        val backgroundPainter: Painter? = null,
-        val colorScheme: PlayerColorScheme = PlayerColorScheme()
+        val coverPainter: Painter,
+        val backgroundPainter: Painter = coverPainter,
+        val colorScheme: PlayerColorScheme = PlayerColorScheme(),
     )
 
     private data class SliderBarInputRecord(
         val progress: Float,
         val handleInput: Boolean,
     )
+
+    companion object {
+        private const val TIMEOUT_INTERVAL = 1000L
+        private val DefaultColorScheme = PlayCoverScheme(
+            coverPainter = ColorPainter(Color.Black),
+        )
+    }
+
 }
 

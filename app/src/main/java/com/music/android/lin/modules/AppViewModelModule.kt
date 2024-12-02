@@ -24,6 +24,7 @@ import com.music.android.lin.application.settings.usecase.SaveMediaInfoUseCase
 import com.music.android.lin.application.settings.usecase.ScanAndroidContentUseCase
 import com.music.android.lin.player.service.MediaService
 import com.music.android.lin.player.service.controller.MediaController
+import kotlinx.coroutines.CoroutineScope
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Qualifier
@@ -122,5 +123,7 @@ internal class AppViewModelModule {
     internal fun playerPageViewModel(
         mediaService: MediaService,
         logger: Logger,
-    ): PlayerPageViewModel = PlayerPageViewModel(mediaService, logger)
+        @Qualifier(name = AppIdentifier.globalCoroutineScope)
+        coroutineScope: CoroutineScope
+    ): PlayerPageViewModel = PlayerPageViewModel(mediaService, logger, coroutineScope)
 }
