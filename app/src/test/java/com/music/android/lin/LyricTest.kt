@@ -4,7 +4,7 @@ import com.music.android.lin.application.music.play.domain.LRCLyricParser
 import com.music.android.lin.application.music.play.model.LyricInformation
 import com.music.android.lin.application.music.play.model.LyricOutput
 import com.music.android.lin.application.music.play.model.SimpleLineLyricOutput
-import com.music.android.lin.application.music.play.ui.util.binarySearchLyricLine
+import com.music.android.lin.application.music.play.ui.util.binarySearch
 import org.junit.Assert
 import org.junit.Test
 import java.io.File
@@ -49,11 +49,11 @@ class LyricTest {
         require(output is SimpleLineLyricOutput && output.lyricEntities.isNotEmpty())
 
         val binarySearchCost = measureNanoTime {
-            Assert.assertEquals(output.lyricEntities.binarySearchLyricLine(0), 0)
-            Assert.assertEquals(output.lyricEntities.binarySearchLyricLine(900), 0)
-            Assert.assertEquals(output.lyricEntities.binarySearchLyricLine(1200), 1)
-            Assert.assertEquals(output.lyricEntities.binarySearchLyricLine(19320), 3)
-            Assert.assertEquals(output.lyricEntities.binarySearchLyricLine(90000), 8)
+            Assert.assertEquals(output.lyricEntities.binarySearch(0), 0)
+            Assert.assertEquals(output.lyricEntities.binarySearch(900), 0)
+            Assert.assertEquals(output.lyricEntities.binarySearch(1200), 1)
+            Assert.assertEquals(output.lyricEntities.binarySearch(19320), 3)
+            Assert.assertEquals(output.lyricEntities.binarySearch(90000), 8)
         }
         println("binarySearchCost: ${binarySearchCost / 1000_000.0}ms")
     }
