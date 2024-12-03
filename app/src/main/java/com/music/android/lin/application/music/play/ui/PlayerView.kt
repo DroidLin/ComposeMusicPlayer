@@ -11,6 +11,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
@@ -98,7 +100,10 @@ private fun PlayerHorizontalPagerView(
             ) { pageIndex ->
                 when (pageIndex) {
                     1 -> PlayerCoverContentView(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding()
+                            .navigationBarsPadding(),
                         playerState = playerState,
                         playState = playState,
                         skipToPrevButtonPressed = skipToPrevButtonPressed,
@@ -110,9 +115,16 @@ private fun PlayerHorizontalPagerView(
                     )
 
                     2 -> PlayLyricsView(
-                        modifier = Modifier.fillMaxSize(),
-                        progress = playerState.value.progress,
-                        lyricOutput = lyricOutput.value
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding()
+                            .navigationBarsPadding(),
+                        currentPosition = remember {
+                            derivedStateOf {
+                                (playerState.value.progress * playerState.value.currentDuration).toLong()
+                            }
+                        },
+                        lyricOutput = lyricOutput
                     )
 
                     else -> Box(modifier = Modifier.fillMaxSize())

@@ -74,9 +74,7 @@ fun PlayerCoverContentView(
 ) {
     val playerColorScheme = remember { derivedStateOf { playerState.value.colorScheme } }
     Column(
-        modifier = modifier
-            .statusBarsPadding()
-            .navigationBarsPadding(),
+        modifier = modifier,
     ) {
         PlayerHeader(
             modifier = Modifier
