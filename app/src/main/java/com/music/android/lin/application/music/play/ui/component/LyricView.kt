@@ -22,6 +22,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,6 +40,8 @@ import com.music.android.lin.application.music.play.model.LyricOutput
 import com.music.android.lin.application.music.play.model.SimpleLineLyricOutput
 import com.music.android.lin.application.music.play.ui.util.binarySearchLine
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -153,9 +156,10 @@ private fun SimpleLineLyricView(
     val lyricLineAnimation = remember(lyricOutput) {
         lyricOutput.lyricEntities.map { line ->
             Animatable(initialValue = 1f)
-        }
+        }.toMutableList()
     }
 
+    val lastLine = remember { mutableIntStateOf(-1) }
     val currentLine = remember {
         derivedStateOf {
             lyricOutput.lyricEntities.binarySearchLine(currentPosition.value)
@@ -163,13 +167,27 @@ private fun SimpleLineLyricView(
     }
 
     LaunchedEffect(currentLine.value) {
-        lyricLineAnimation.forEachIndexed { index, animatable ->
-            if (currentLine.value == index) {
-                animatable.animateTo(titleLarge.fontSize.value / titleMedium.fontSize.value)
-            } else {
-                animatable.animateTo(1f)
+//        lyricLineAnimation[currentLine.value] = Animatable(initialValue = titleMedium.fontSize.value / titleLarge.fontSize.value)
+//        if (lastLine.intValue >= 0) {
+//            lyricLineAnimation[lastLine.intValue] = Animatable(initialValue = titleLarge.fontSize.value / titleMedium.fontSize.value)
+//        }
+//        lyricLineAnimation.forEachIndexed { index, animatable ->
+//            println("LaunchedEffect: scale: ${lyricLineAnimation[index].value}, index: ${index}.")
+//        }
+        lyricLineAnimation.mapIndexed { index, animatable ->
+            async {
+                if (currentLine.value == index) {
+                    animatable.snapTo(titleMedium.fontSize.value / titleLarge.fontSize.value)
+                    animatable.animateTo(1f)
+                } else if(lastLine.intValue == index) {
+                    animatable.snapTo(titleLarge.fontSize.value / titleMedium.fontSize.value)
+                    animatable.animateTo(1f)
+                } else {
+                    animatable.animateTo(1f)
+                }
             }
-        }
+        }.awaitAll()
+        lastLine.intValue = currentLine.value
     }
 
     Canvas(
@@ -190,7 +208,7 @@ private fun SimpleLineLyricView(
                 val layoutResult = textMeasurer.measure(
                     text = lyricLine.lyricString,
                     style = if (currentLine.value == index) {
-                        titleMedium
+                        titleLarge
                     } else titleMedium,
                     constraints = constraints,
                 )
