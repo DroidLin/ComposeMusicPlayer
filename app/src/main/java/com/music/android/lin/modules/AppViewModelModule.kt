@@ -16,6 +16,8 @@ import com.music.android.lin.application.framework.vm.AppMusicFrameworkViewModel
 import com.music.android.lin.application.framework.vm.AppNavigationViewModel
 import com.music.android.lin.application.guide.ui.vm.MediaInformationScannerViewModel
 import com.music.android.lin.application.minibar.ui.vm.MinibarViewModel
+import com.music.android.lin.application.music.play.domain.LyricParser
+import com.music.android.lin.application.music.play.ui.vm.PlayerLyricViewModel
 import com.music.android.lin.application.music.play.ui.vm.PlayerPageViewModel
 import com.music.android.lin.application.music.playlist.ui.vm.PlayListDetailViewModel
 import com.music.android.lin.application.music.single.ui.vm.SingleMusicViewModel
@@ -126,4 +128,11 @@ internal class AppViewModelModule {
         @Qualifier(name = AppIdentifier.globalCoroutineScope)
         coroutineScope: CoroutineScope
     ): PlayerPageViewModel = PlayerPageViewModel(mediaService, logger, coroutineScope)
+
+    @Factory
+    internal fun playerLyricViewModel(
+        @Qualifier(name = AppIdentifier.applicationContext)
+        context: Context,
+        lyricParser: LyricParser
+    ): PlayerLyricViewModel = PlayerLyricViewModel(context, lyricParser)
 }

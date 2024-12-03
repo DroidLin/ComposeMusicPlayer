@@ -15,7 +15,6 @@ sealed interface LyricOutput
 
 @Stable
 sealed interface LyricLine {
-
     val time: Long
 }
 

@@ -26,9 +26,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.android.lin.application.common.ui.state.PlayState
 import com.music.android.lin.application.common.ui.vm.PlayViewModel
+import com.music.android.lin.application.music.play.model.LyricOutput
 import com.music.android.lin.application.music.play.ui.component.PlayerColorTheme
 import com.music.android.lin.application.music.play.ui.state.PlayerColorScheme
 import com.music.android.lin.application.music.play.ui.state.PlayerState
+import com.music.android.lin.application.music.play.ui.vm.PlayerLyricViewModel
 import com.music.android.lin.application.music.play.ui.vm.PlayerPageViewModel
 import com.music.android.lin.application.util.SystemBarStyleComponent
 import org.koin.androidx.compose.koinViewModel
@@ -44,6 +46,9 @@ fun PlayerView(
     val playerPageViewModel = koinViewModel<PlayerPageViewModel>()
     val playerState = playerPageViewModel.playerState.collectAsState()
 
+    val lyricViewModel = koinViewModel<PlayerLyricViewModel>()
+    val lyricOutputState = lyricViewModel.lyricOutput.collectAsState()
+
     SystemBarStyleComponent(isLightMode = false)
     PlayerHorizontalPagerView(
         modifier = modifier,
@@ -54,7 +59,8 @@ fun PlayerView(
         skipToNextButtonPressed = playViewModel::skipToNext,
         backPressed = backPressed,
         seekToPosition = playViewModel::seekToPosition,
-        updateSliderProgress = playerPageViewModel::handleSliderInput
+        updateSliderProgress = playerPageViewModel::handleSliderInput,
+        lyricOutput = lyricOutputState
     )
 }
 
@@ -62,6 +68,7 @@ fun PlayerView(
 private fun PlayerHorizontalPagerView(
     playState: State<PlayState>,
     playerState: State<PlayerState>,
+    lyricOutput: State<LyricOutput?>,
     skipToPrevButtonPressed: () -> Unit,
     playOrPauseButtonPressed: () -> Unit,
     skipToNextButtonPressed: () -> Unit,
@@ -100,6 +107,12 @@ private fun PlayerHorizontalPagerView(
                         backPressed = backPressed,
                         seekToPosition = seekToPosition,
                         updateSliderProgress = updateSliderProgress
+                    )
+
+                    2 -> PlayLyricsView(
+                        modifier = Modifier.fillMaxSize(),
+                        progress = playerState.value.progress,
+                        lyricOutput = lyricOutput.value
                     )
 
                     else -> Box(modifier = Modifier.fillMaxSize())
