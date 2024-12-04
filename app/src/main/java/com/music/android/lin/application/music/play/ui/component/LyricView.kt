@@ -6,6 +6,7 @@ import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.TwoWayConverter
 import androidx.compose.animation.core.animateDecay
 import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.MutatorMutex
@@ -149,7 +150,7 @@ private fun SimpleLineLyricView(
     val titleMedium = MaterialTheme.typography.titleMedium.copy(
         color = LocalContentColor.current,
     )
-    val titleLarge = MaterialTheme.typography.titleLarge.copy(
+    val headlineMedium = MaterialTheme.typography.headlineMedium.copy(
         color = LocalContentColor.current,
     )
 
@@ -174,21 +175,18 @@ private fun SimpleLineLyricView(
 //        lyricLineAnimation.forEachIndexed { index, animatable ->
 //            println("LaunchedEffect: scale: ${lyricLineAnimation[index].value}, index: ${index}.")
 //        }
+        val tweenSpec = tween<Float>(300)
         lyricLineAnimation.mapIndexed { index, animatable ->
             async {
                 if (currentLine.value == index) {
-                    animatable.snapTo(titleMedium.fontSize.value / titleLarge.fontSize.value)
-                    animatable.animateTo(1f)
-                } else if(lastLine.intValue == index) {
-                    animatable.snapTo(titleLarge.fontSize.value / titleMedium.fontSize.value)
-                    animatable.animateTo(1f)
-                } else {
-                    animatable.animateTo(1f)
-                }
+                    animatable.animateTo(headlineMedium.fontSize.value / titleMedium.fontSize.value, tweenSpec)
+                } else animatable.animateTo(1f, tweenSpec)
             }
         }.awaitAll()
         lastLine.intValue = currentLine.value
     }
+
+    val constraintState = remember { mutableStateOf<Constraints?>(null) }
 
     Canvas(
         modifier = modifier
@@ -200,27 +198,27 @@ private fun SimpleLineLyricView(
                 onDragStopped = lyricViewState::onDragStopped
             )
     ) {
-        val constraints =
+        val constraints = constraintState.value ?:
             Constraints(maxWidth = this.size.width.toInt(), maxHeight = this.size.height.toInt())
+                .also { constraintState.value = it }
         translate(left = 0f, top = lyricViewState.yOffset) {
             var offset = 0f
             lyricOutput.lyricEntities.forEachIndexed { index, lyricLine ->
                 val layoutResult = textMeasurer.measure(
                     text = lyricLine.lyricString,
-                    style = if (currentLine.value == index) {
-                        titleLarge
-                    } else titleMedium,
+                    style = titleMedium,
                     constraints = constraints,
                 )
+                val scaleValue = lyricLineAnimation[index].value
                 translate(top = offset) {
                     scale(
-                        scale = lyricLineAnimation[index].value,
+                        scale = scaleValue,
                         pivot = Offset(0f, layoutResult.multiParagraph.height / 2)
                     ) {
                         drawText(textLayoutResult = layoutResult)
                     }
                 }
-                offset += layoutResult.multiParagraph.height
+                offset += (layoutResult.multiParagraph.height * scaleValue)
             }
         }
     }
