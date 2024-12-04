@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Constraints
@@ -65,12 +67,12 @@ class LyricViewState : DraggableState {
         get() {
             return lyricViewYOffset
         }
-        set(value) {
+        private set(value) {
             lyricViewYOffset = value
         }
 
     override fun dispatchRawDelta(delta: Float) {
-        lyricViewYOffset += delta
+        yOffset += delta
     }
 
     override suspend fun drag(dragPriority: MutatePriority, block: suspend DragScope.() -> Unit) {
@@ -100,7 +102,7 @@ class LyricViewState : DraggableState {
             ).animateDecay(animationSpec) {
                 val currentToken = flingInteger.get()
                 if (token == currentToken) {
-                    lyricViewYOffset = this.value
+                    yOffset = this.value
                 } else this.cancelAnimation()
             }
         }
@@ -160,7 +162,6 @@ private fun SimpleLineLyricView(
         }.toMutableList()
     }
 
-    val lastLine = remember { mutableIntStateOf(-1) }
     val currentLine = remember {
         derivedStateOf {
             lyricOutput.lyricEntities.binarySearchLine(currentPosition.value)
@@ -168,14 +169,7 @@ private fun SimpleLineLyricView(
     }
 
     LaunchedEffect(currentLine.value) {
-//        lyricLineAnimation[currentLine.value] = Animatable(initialValue = titleMedium.fontSize.value / titleLarge.fontSize.value)
-//        if (lastLine.intValue >= 0) {
-//            lyricLineAnimation[lastLine.intValue] = Animatable(initialValue = titleLarge.fontSize.value / titleMedium.fontSize.value)
-//        }
-//        lyricLineAnimation.forEachIndexed { index, animatable ->
-//            println("LaunchedEffect: scale: ${lyricLineAnimation[index].value}, index: ${index}.")
-//        }
-        val tweenSpec = tween<Float>(300)
+        val tweenSpec = tween<Float>(400)
         lyricLineAnimation.mapIndexed { index, animatable ->
             async {
                 if (currentLine.value == index) {
@@ -183,10 +177,12 @@ private fun SimpleLineLyricView(
                 } else animatable.animateTo(1f, tweenSpec)
             }
         }.awaitAll()
-        lastLine.intValue = currentLine.value
     }
 
     val constraintState = remember { mutableStateOf<Constraints?>(null) }
+    val textLayoutResultListState = remember {
+        mutableStateOf<List<TextLayoutResult>?>(null)
+    }
 
     Canvas(
         modifier = modifier
@@ -203,14 +199,18 @@ private fun SimpleLineLyricView(
                 .also { constraintState.value = it }
         translate(left = 0f, top = lyricViewState.yOffset) {
             var offset = 0f
-            lyricOutput.lyricEntities.forEachIndexed { index, lyricLine ->
-                val layoutResult = textMeasurer.measure(
+            val textLayoutResultList = textLayoutResultListState.value ?: lyricOutput.lyricEntities.map { lyricLine ->
+                textMeasurer.measure(
                     text = lyricLine.lyricString,
                     style = titleMedium,
                     constraints = constraints,
                 )
+            }.also { textLayoutResultListState.value = it }
+            textLayoutResultList.forEachIndexed { index, layoutResult ->
                 val scaleValue = lyricLineAnimation[index].value
-                translate(top = offset) {
+                val scaleHeight = layoutResult.multiParagraph.height * scaleValue
+                val topOffset = (scaleHeight - layoutResult.multiParagraph.height) / 2
+                translate(top = offset + topOffset) {
                     scale(
                         scale = scaleValue,
                         pivot = Offset(0f, layoutResult.multiParagraph.height / 2)
@@ -218,7 +218,7 @@ private fun SimpleLineLyricView(
                         drawText(textLayoutResult = layoutResult)
                     }
                 }
-                offset += (layoutResult.multiParagraph.height * scaleValue)
+                offset += scaleHeight
             }
         }
     }
