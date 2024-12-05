@@ -23,6 +23,7 @@
         <activity
             android:name=".application.MainActivity"
             android:windowSoftInputMode="adjustUnspecified"
+            android:configChanges="colorMode|density|fontScale|fontWeightAdjustment|grammaticalGender|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
             android:exported="true"
             android:theme="@style/Theme.MusicPlayer">
 
