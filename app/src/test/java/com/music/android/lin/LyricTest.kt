@@ -38,7 +38,7 @@ class LyricTest {
     fun lyricTest() {
         val parseLyricCost = measureNanoTime {
             val output = parseLrcLyrics()
-            Assert.assertTrue(output is SimpleLineLyricOutput && output.lyricEntities.isNotEmpty())
+            Assert.assertTrue(output is SimpleLineLyricOutput && output.entries.isNotEmpty())
         }
         println("parseLyricCost: ${parseLyricCost / 1000_000.0}ms")
     }
@@ -46,15 +46,15 @@ class LyricTest {
     @Test
     fun lyricAnchor() {
         val output = parseLrcLyrics()
-        require(output is SimpleLineLyricOutput && output.lyricEntities.isNotEmpty())
+        require(output is SimpleLineLyricOutput && output.entries.isNotEmpty())
 
         val binarySearchCost = measureNanoTime {
-            Assert.assertEquals(0, output.lyricEntities.binarySearchLine(0))
-            Assert.assertEquals(0, output.lyricEntities.binarySearchLine(900))
-            Assert.assertEquals(1, output.lyricEntities.binarySearchLine(1200))
-            Assert.assertEquals(3, output.lyricEntities.binarySearchLine(19320))
-            Assert.assertEquals(7, output.lyricEntities.binarySearchLine(40230))
-            Assert.assertEquals(8, output.lyricEntities.binarySearchLine(90000))
+            Assert.assertEquals(0, output.entries.binarySearchLine(0))
+            Assert.assertEquals(0, output.entries.binarySearchLine(900))
+            Assert.assertEquals(1, output.entries.binarySearchLine(1200))
+            Assert.assertEquals(3, output.entries.binarySearchLine(19320))
+            Assert.assertEquals(7, output.entries.binarySearchLine(40230))
+            Assert.assertEquals(8, output.entries.binarySearchLine(90000))
         }
         println("binarySearchCost: ${binarySearchCost / 1000_000.0}ms")
     }

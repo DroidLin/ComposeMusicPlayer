@@ -7,11 +7,14 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import com.music.android.lin.application.music.play.model.LyricOutput
 import com.music.android.lin.application.music.play.ui.component.LyricView
+import com.music.android.lin.application.music.play.ui.component.LyricViewState
+import com.music.android.lin.application.music.play.ui.component.rememberLyricViewState
 
 @Composable
 fun PlayLyricsView(
     currentPosition: State<Long>,
     lyricOutput: State<LyricOutput?>,
+    lyricViewState: LyricViewState = rememberLyricViewState(),
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -22,7 +25,8 @@ fun PlayLyricsView(
                 .fillMaxWidth()
                 .weight(1f),
             currentPosition = currentPosition,
-            lyricOutput = lyricOutput
+            lyricOutput = lyricOutput,
+            lyricViewState = lyricViewState,
         )
     }
 }

@@ -11,20 +11,28 @@ data class LyricInformation(
 )
 
 @Stable
-sealed interface LyricOutput
+sealed interface LyricOutput {
+
+    val entries: List<LyricLine>
+
+    companion object : LyricOutput {
+        override val entries: List<LyricLine> = emptyList()
+    }
+}
 
 @Stable
 sealed interface LyricLine {
     val time: Long
+    val value: String
 }
 
 @Immutable
 data class SimpleLineLyricOutput(
-    val lyricEntities: List<SimpleLyricLine>,
+    override val entries: List<SimpleLyricLine>,
 ) : LyricOutput
 
 @Immutable
 data class SimpleLyricLine(
     override val time: Long,
-    val lyricString: String,
+    override val value: String,
 ) : LyricLine

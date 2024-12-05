@@ -24,14 +24,14 @@ internal object LRCLyricParser : LyricParser {
                 val doubleNumber = "0.$milliSecondString".toDoubleOrNull() ?: return@let 0L
                 (doubleNumber * 1000).toLong()
             } ?: continue
-            val lyricContent = matcher.group(5)?.trim() ?: continue
+            val value = matcher.group(5)?.trim() ?: continue
 
             simpleLyricLines += SimpleLyricLine(
                 time = minutes * 60 * 1000 + seconds * 1000 + milliSeconds,
-                lyricString = lyricContent
+                value = value
             )
         }
-        return SimpleLineLyricOutput(lyricEntities = simpleLyricLines)
+        return SimpleLineLyricOutput(entries = simpleLyricLines)
     }
 
 }
