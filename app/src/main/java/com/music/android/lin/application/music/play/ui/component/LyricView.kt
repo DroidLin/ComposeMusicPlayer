@@ -44,6 +44,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import com.music.android.lin.application.music.play.model.LyricLine
 import com.music.android.lin.application.music.play.model.LyricOutput
 import com.music.android.lin.application.music.play.model.SimpleLineLyricOutput
 import com.music.android.lin.application.music.play.ui.util.binarySearchLine
@@ -72,6 +73,7 @@ internal class LyricTextMeasureResult(
 
 @Immutable
 internal class LyricLineMeasureResult(
+    val lyricLine: LyricLine,
     val textLayoutResult: TextLayoutResult,
     val animatable: Animatable<Float, AnimationVector1D>
 ) {
@@ -105,6 +107,9 @@ class LyricViewState : DraggableState {
     internal val layoutInfoState =
         mutableStateOf<LyricTextMeasureResult>(value = EmptyLyricMeasureResult)
 
+    internal val anchorLyricLayoutInfoState =
+        mutableStateOf<LyricLineMeasureResult?>(null)
+
     var yOffset: Float
         get() = lyricViewYOffset
         private set(value) {
@@ -127,26 +132,37 @@ class LyricViewState : DraggableState {
         return cancel
     }
 
+    suspend fun snapToLine(lineIndex: Int) {
+        scrollToLine(lineIndex = lineIndex, smooth = false)
+    }
+
     suspend fun animateToLine(lineIndex: Int) {
-        coroutineScope {
-            val lineMeasureResult = layoutInfoState.value.measureLyricTextResult.getOrNull(lineIndex) ?: return@coroutineScope
-            val drawScopeOffset = layoutInfoState.value.drawScopeSize.height / 4
-            val token = flingInteger.incrementAndGet()
-            val targetValue = -lineMeasureResult.lineYOffset + drawScopeOffset
-            var lastValue = yOffset
-            Animatable(
-                initialValue = yOffset
-            ).animateTo(
-                targetValue = targetValue,
-                animationSpec = spring(stiffness = Spring.StiffnessLow)
-            ) {
-                val currentToken = flingInteger.get()
-                if (token == currentToken) {
-                    val delta = this.value - lastValue
-                    scrollByInner(delta)
-                    lastValue = this.value
-                } else {
-                    launch { stop() }
+        scrollToLine(lineIndex = lineIndex, smooth = true)
+    }
+
+    private suspend fun scrollToLine(lineIndex: Int, smooth: Boolean = false) {
+        if (isDragging) return
+        val lineMeasureResult = layoutInfoState.value.measureLyricTextResult.getOrNull(lineIndex) ?: return
+        val drawScopeOffset = layoutInfoState.value.drawScopeSize.height / 4
+        val targetValue = -lineMeasureResult.lineYOffset + drawScopeOffset
+        if (!smooth) {
+            scrollByInner(targetValue - yOffset)
+        } else {
+            coroutineScope {
+                val token = flingInteger.incrementAndGet()
+                var lastValue = yOffset
+                Animatable(initialValue = yOffset).animateTo(
+                    targetValue = targetValue,
+                    animationSpec = spring(stiffness = Spring.StiffnessLow)
+                ) {
+                    val currentToken = flingInteger.get()
+                    if (token == currentToken) {
+                        val delta = this.value - lastValue
+                        scrollByInner(delta)
+                        lastValue = this.value
+                    } else {
+                        launch { stop() }
+                    }
                 }
             }
         }
@@ -218,6 +234,8 @@ fun LyricView(
     }
 }
 
+private const val FontScale = 28f / 16f
+
 @Composable
 private fun SimpleLineLyricView(
     currentPosition: State<Long>,
@@ -228,7 +246,6 @@ private fun SimpleLineLyricView(
     val textMeasurer = rememberTextMeasurer()
     val contentColor = LocalContentColor.current
     val titleMedium = MaterialTheme.typography.titleMedium
-    val headlineMedium = MaterialTheme.typography.headlineMedium
 
     val lastLine = remember { mutableIntStateOf(-1) }
     val currentLine = remember {
@@ -240,26 +257,60 @@ private fun SimpleLineLyricView(
         }
     }
 
+    val first = remember { mutableStateOf(true) }
+
     LaunchedEffect(currentLine.value) {
-        launch {
-            lyricViewState.animateToLine(currentLine.value)
+        if (lyricViewState.layoutInfoState.value.measureLyricTextResult.isEmpty()) {
+            return@LaunchedEffect
         }
-        val animSpec = spring<Float>(stiffness = Spring.StiffnessLow)
-        val scaleUpValue = headlineMedium.fontSize.value / titleMedium.fontSize.value
-        launch {
-            lyricViewState.layoutInfoState.value
-                .measureLyricTextResult
-                .getOrNull(currentLine.value)
-                ?.animatable
-                ?.animateTo(scaleUpValue, animSpec)
-        }
-        launch {
-            lyricViewState.layoutInfoState.value
-                .measureLyricTextResult
-                .getOrNull(lastLine.intValue)
-                ?.animatable
-                ?.animateTo(1f, animSpec)
-            lastLine.intValue = currentLine.value
+        val indexOfCurrentLine = currentLine.value
+        val indexOfLastLine = lastLine.intValue
+        if (first.value) {
+            launch { lyricViewState.snapToLine(indexOfCurrentLine) }
+            launch {
+                lyricViewState.anchorLyricLayoutInfoState.value
+                    ?.animatable
+                    ?.snapTo(FontScale)
+            }
+            launch {
+                lyricViewState.layoutInfoState.value
+                    .measureLyricTextResult
+                    .getOrNull(indexOfCurrentLine)
+                    ?.animatable
+                    ?.snapTo(FontScale)
+            }
+            launch {
+                lyricViewState.layoutInfoState.value
+                    .measureLyricTextResult
+                    .getOrNull(indexOfLastLine)
+                    ?.animatable
+                    ?.snapTo(1f)
+                lastLine.intValue = currentLine.value
+            }
+            first.value = false
+        } else {
+            launch { lyricViewState.animateToLine(currentLine.value) }
+            val animSpec = spring<Float>(stiffness = Spring.StiffnessLow)
+            launch {
+                lyricViewState.anchorLyricLayoutInfoState.value
+                    ?.animatable
+                    ?.animateTo(FontScale, animSpec)
+            }
+            launch {
+                lyricViewState.layoutInfoState.value
+                    .measureLyricTextResult
+                    .getOrNull(indexOfCurrentLine)
+                    ?.animatable
+                    ?.animateTo(FontScale, animSpec)
+            }
+            launch {
+                lyricViewState.layoutInfoState.value
+                    .measureLyricTextResult
+                    .getOrNull(indexOfLastLine)
+                    ?.animatable
+                    ?.animateTo(1f, animSpec)
+                lastLine.intValue = indexOfCurrentLine
+            }
         }
     }
 
@@ -274,15 +325,18 @@ private fun SimpleLineLyricView(
             )
     ) {
         measureLyrics(
+            currentLine = currentLine,
             lyricOutput = lyricOutput,
             textMeasurer = textMeasurer,
             textStyle = titleMedium,
             lyricViewState = lyricViewState
         )
         layoutLyrics(
+            currentLine = currentLine,
             lyricViewState = lyricViewState
         )
         drawLyrics(
+            currentLine = currentLine,
             contentColor = contentColor,
             lyricViewState = lyricViewState
         )
@@ -290,11 +344,32 @@ private fun SimpleLineLyricView(
 }
 
 private fun DrawScope.measureLyrics(
+    currentLine: State<Int>,
     lyricOutput: LyricOutput,
     textMeasurer: TextMeasurer,
     textStyle: TextStyle,
     lyricViewState: LyricViewState,
 ) {
+    val indexOfCurrentLine = currentLine.value
+    val cacheLyricLine = lyricViewState.anchorLyricLayoutInfoState.value?.lyricLine
+    val sourceLyricLine = lyricOutput.entries.getOrNull(indexOfCurrentLine)
+    if (sourceLyricLine != null && sourceLyricLine != cacheLyricLine) {
+        val scaleConstraints = Constraints(
+            maxWidth = (this.size.width / FontScale).toInt(),
+            maxHeight = this.size.height.toInt()
+        )
+        val scaleLineMeasureResult = LyricLineMeasureResult(
+            textLayoutResult = textMeasurer.measure(
+                text = sourceLyricLine.value,
+                style = textStyle,
+                constraints = scaleConstraints,
+            ),
+            animatable = Animatable(initialValue = 1f),
+            lyricLine = sourceLyricLine
+        )
+        lyricViewState.anchorLyricLayoutInfoState.value = scaleLineMeasureResult
+    }
+
     val lyricMatch = lyricOutput == lyricViewState.layoutInfoState.value.lyricOutput
     val sizeMatch = this.size.width == lyricViewState.layoutInfoState.value.drawScopeSize.width &&
             this.size.height == lyricViewState.layoutInfoState.value.drawScopeSize.height
@@ -312,7 +387,8 @@ private fun DrawScope.measureLyrics(
                 style = textStyle,
                 constraints = constraints,
             ),
-            animatable = Animatable(initialValue = 1f)
+            animatable = Animatable(initialValue = 1f),
+            lyricLine = line
         )
     }
     val lyricMeasureResult = LyricTextMeasureResult(
@@ -325,20 +401,31 @@ private fun DrawScope.measureLyrics(
 }
 
 private fun DrawScope.layoutLyrics(
+    currentLine: State<Int>,
     lyricViewState: LyricViewState
 ) {
     val lyricLineOffset = 16.dp.toPx()
     var offset = 0f
     val lyricMeasureResult = lyricViewState.layoutInfoState.value
-    lyricMeasureResult.measureLyricTextResult.forEach { lineMeasureResult ->
-        val scaleValue = lineMeasureResult.animatable.value
-        val scaleHeight = lineMeasureResult.textHeight * scaleValue
-        val topOffset = (scaleHeight - lineMeasureResult.textHeight) / 2
+    lyricMeasureResult.measureLyricTextResult.forEachIndexed { index, lineMeasureResult ->
+        val measureResult = if (index == currentLine.value) {
+            lyricViewState.anchorLyricLayoutInfoState.value ?: lineMeasureResult
+        } else lineMeasureResult
+
+        val scaleValue = measureResult.animatable.value
+        val scaleHeight = measureResult.textHeight * scaleValue
+        val topOffset = (scaleHeight - measureResult.textHeight) / 2
+        if (index == currentLine.value) {
+            val currentMeasureResult = lyricViewState.anchorLyricLayoutInfoState.value
+            currentMeasureResult?.lineYOffset = offset + topOffset
+            currentMeasureResult?.realLineHeight = scaleHeight
+            currentMeasureResult?.viewTopBounds = lyricViewState.yOffset + measureResult.lineYOffset
+            currentMeasureResult?.viewBottomBounds = lyricViewState.yOffset + measureResult.lineYOffset + measureResult.realLineHeight
+        }
         lineMeasureResult.lineYOffset = offset + topOffset
         lineMeasureResult.realLineHeight = scaleHeight
-
-        lineMeasureResult.viewTopBounds = lyricViewState.yOffset + lineMeasureResult.lineYOffset
-        lineMeasureResult.viewBottomBounds = lyricViewState.yOffset + lineMeasureResult.lineYOffset + lineMeasureResult.realLineHeight
+        lineMeasureResult.viewTopBounds = lyricViewState.yOffset + measureResult.lineYOffset
+        lineMeasureResult.viewBottomBounds = lyricViewState.yOffset + measureResult.lineYOffset + measureResult.realLineHeight
         offset += (scaleHeight + lyricLineOffset)
     }
     lyricMeasureResult.lyricContentHeight = offset
@@ -353,6 +440,7 @@ private fun LyricLineMeasureResult.inDrawScreen(drawScope: DrawScope): Boolean {
 }
 
 private fun DrawScope.drawLyrics(
+    currentLine: State<Int>,
     contentColor: Color,
     lyricViewState: LyricViewState
 ) {
@@ -361,17 +449,20 @@ private fun DrawScope.drawLyrics(
         left = 0f,
         top = lyricViewState.yOffset
     ) {
-        for (lineMeasureResult in lyricMeasureResult.measureLyricTextResult) {
+        lyricMeasureResult.measureLyricTextResult.forEachIndexed { index, lineMeasureResult ->
+            val measureResult = if (index == currentLine.value) {
+                lyricViewState.anchorLyricLayoutInfoState.value ?: lineMeasureResult
+            } else lineMeasureResult
             translate(
-                top = lineMeasureResult.lineYOffset
+                top = measureResult.lineYOffset
             ) {
-                if (lineMeasureResult.inDrawScreen(this)) {
+                if (measureResult.inDrawScreen(this)) {
                     scale(
-                        scale = lineMeasureResult.animatable.value,
-                        pivot = lineMeasureResult.scalePivot
+                        scale = measureResult.animatable.value,
+                        pivot = measureResult.scalePivot
                     ) {
                         drawText(
-                            textLayoutResult = lineMeasureResult.textLayoutResult,
+                            textLayoutResult = measureResult.textLayoutResult,
                             color = contentColor
                         )
                     }
