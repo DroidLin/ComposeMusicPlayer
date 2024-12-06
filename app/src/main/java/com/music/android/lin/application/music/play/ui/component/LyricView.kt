@@ -49,8 +49,11 @@ import com.music.android.lin.application.music.play.model.LyricOutput
 import com.music.android.lin.application.music.play.model.SimpleLineLyricOutput
 import com.music.android.lin.application.music.play.ui.util.binarySearchLine
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicInteger
 
 private val EmptyLyricMeasureResult = LyricTextMeasureResult(
@@ -247,8 +250,8 @@ private fun SimpleLineLyricView(
     val contentColor = LocalContentColor.current
     val titleMedium = MaterialTheme.typography.titleMedium
 
-    val lastLine = remember { mutableIntStateOf(-1) }
-    val currentLine = remember {
+    val lastLine = remember(lyricOutput) { mutableIntStateOf(-1) }
+    val currentLine = remember(lyricOutput) {
         derivedStateOf {
             lyricViewState.layoutInfoState.value
                 .lyricOutput
@@ -257,11 +260,12 @@ private fun SimpleLineLyricView(
         }
     }
 
-    val first = remember { mutableStateOf(true) }
+    val first = remember(lyricOutput) { mutableStateOf(true) }
 
     LaunchedEffect(currentLine.value) {
-        if (lyricViewState.layoutInfoState.value.measureLyricTextResult.isEmpty()) {
-            return@LaunchedEffect
+        // wait until lyric measurement and layout is ready.
+        while (lyricViewState.layoutInfoState.value.measureLyricTextResult.isEmpty() || lyricViewState.anchorLyricLayoutInfoState.value == null) {
+            delay(16)
         }
         val indexOfCurrentLine = currentLine.value
         val indexOfLastLine = lastLine.intValue
