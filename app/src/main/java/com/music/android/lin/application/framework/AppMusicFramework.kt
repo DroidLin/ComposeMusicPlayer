@@ -197,7 +197,7 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                                 .fillMaxSize()
                                 .minibarHeightPadding()
                                 .navigationBarsPadding(),
-                            backPress = navController::popBackStack,
+                            backPress = backPressed,
                             goToAboutView = {
                                 navigateToPage(requireNotNull(PageDefinition.AboutView::class.qualifiedName))
                             }
@@ -215,7 +215,7 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                                 .fillMaxSize()
                                 .minibarHeightPadding()
                                 .navigationBarsPadding(),
-                            backPress = navController::popBackStack
+                            backPress = backPressed
                         )
                     }
                     composable<PageDefinition.PlayerView>(

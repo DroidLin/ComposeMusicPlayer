@@ -19,7 +19,6 @@ import com.music.android.lin.application.music.component.CreatePlayListParameter
 import com.music.android.lin.player.metadata.MediaInfo
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 @Stable

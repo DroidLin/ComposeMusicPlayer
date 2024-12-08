@@ -26,11 +26,10 @@ internal class PrepareMusicInfoUseCase(
                 mediaInfoList = musicInfoList.toImmutableList()
             )
         }
-
 }
 
 @Stable
-class MusicItemSnapshot(
+data class MusicItemSnapshot(
     val musicItemList: ImmutableList<MusicItem>,
     val mediaInfoList: ImmutableList<MediaInfo>,
 )

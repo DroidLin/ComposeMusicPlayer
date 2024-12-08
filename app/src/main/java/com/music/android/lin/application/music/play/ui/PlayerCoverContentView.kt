@@ -58,7 +58,6 @@ import com.music.android.lin.application.music.play.ui.state.PlayerInformationSt
 import com.music.android.lin.application.music.play.ui.state.PlayerState
 
 private val ContentHorizontalPadding = 32.dp
-private val HeaderHorizontalPadding = 16.dp
 
 @Composable
 fun PlayerCoverContentView(
@@ -76,12 +75,6 @@ fun PlayerCoverContentView(
     Column(
         modifier = modifier,
     ) {
-        PlayerHeader(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = HeaderHorizontalPadding),
-            backPressed = backPressed,
-        )
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
@@ -148,36 +141,6 @@ fun PlayerCoverContentView(
                 .height(32.dp)
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun PlayerHeader(
-    backPressed: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    CenterAlignedTopAppBar(
-        modifier = modifier,
-        title = {},
-        navigationIcon = {
-            IconButton(
-                onClick = backPressed
-            ) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = null
-                )
-            }
-        },
-        windowInsets = WindowInsets(0, 0, 0, 0),
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color.Transparent,
-            scrolledContainerColor = Color.Transparent,
-            navigationIconContentColor = LocalContentColor.current,
-            titleContentColor = LocalContentColor.current,
-            actionIconContentColor = LocalContentColor.current,
-        )
-    )
 }
 
 @Composable

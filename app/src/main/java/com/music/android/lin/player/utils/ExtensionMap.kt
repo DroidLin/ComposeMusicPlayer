@@ -3,10 +3,13 @@ package com.music.android.lin.player.utils
 import java.io.Serializable
 
 /**
+ * only primitive values and strings are available
+ *
  * @author liuzhongao
  * @since 2023/10/6 11:21
  */
 interface ExtensionMap : Serializable {
+
     fun putInt(key: String, value: Int): Boolean
     fun putFloat(key: String, value: Float): Boolean
     fun putDouble(key: String, value: Double): Boolean

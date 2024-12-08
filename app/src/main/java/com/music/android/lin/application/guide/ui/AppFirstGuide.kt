@@ -2,6 +2,7 @@ package com.music.android.lin.application.guide.ui
 
 import android.content.res.Configuration
 import android.os.Build
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -20,6 +21,13 @@ import com.music.android.lin.application.framework.AppMaterialTheme
 @Composable
 fun AppFirstGuide(modifier: Modifier = Modifier, onComplete: () -> Unit) {
     val navController = rememberNavController()
+    // there is an issue in NavController#popBackStack while the function is called more than once at the same time,
+    // just like double press at the button.
+    // so we try to use BackPressDispatcher instead.
+    val backPressDispatcher = LocalOnBackPressedDispatcherOwner.current
+    val backPressed: () -> Unit = {
+        backPressDispatcher?.onBackPressedDispatcher?.onBackPressed()
+    }
     NavHost(
         modifier = modifier.fillMaxSize(),
         navController = navController,
@@ -44,7 +52,7 @@ fun AppFirstGuide(modifier: Modifier = Modifier, onComplete: () -> Unit) {
             )
         ) {
             PermissionTestAndAcquireView(
-                backPress = navController::popBackStack,
+                backPress = backPressed,
                 goNext = {
                     navController.navigate(PageDefinition.MediaInformationScanner) {
                         launchSingleTop = true
@@ -60,7 +68,7 @@ fun AppFirstGuide(modifier: Modifier = Modifier, onComplete: () -> Unit) {
             )
         ) {
             MediaInformationScannerView(
-                backPress = navController::popBackStack,
+                backPress = backPressed,
                 onComplete = onComplete
             )
         }

@@ -27,27 +27,27 @@ internal class ExtensionMapImpl : ExtensionMap {
 
     override fun putInt(key: String, value: Int): Boolean {
         this.innerExtensionMap[key] = value
-        return this.innerExtensionMap.containsKey(key) && this.innerExtensionMap.containsValue(key)
+        return this.innerExtensionMap.containsKey(key)
     }
 
     override fun putFloat(key: String, value: Float): Boolean {
         this.innerExtensionMap[key] = value
-        return this.innerExtensionMap.containsKey(key) && this.innerExtensionMap.containsValue(key)
+        return this.innerExtensionMap.containsKey(key)
     }
 
     override fun putDouble(key: String, value: Double): Boolean {
         this.innerExtensionMap[key] = value
-        return this.innerExtensionMap.containsKey(key) && this.innerExtensionMap.containsValue(key)
+        return this.innerExtensionMap.containsKey(key)
     }
 
     override fun putBoolean(key: String, value: Boolean): Boolean {
         this.innerExtensionMap[key] = value
-        return this.innerExtensionMap.containsKey(key) && this.innerExtensionMap.containsValue(key)
+        return this.innerExtensionMap.containsKey(key)
     }
 
     override fun putString(key: String, value: String): Boolean {
         this.innerExtensionMap[key] = value
-        return this.innerExtensionMap.containsKey(key) && this.innerExtensionMap.containsValue(key)
+        return this.innerExtensionMap.containsKey(key)
     }
 
     override fun getInt(key: String, default: Int): Int {
@@ -80,7 +80,7 @@ internal class ExtensionMapImpl : ExtensionMap {
 
     override fun remove(key: String): Boolean {
         this.innerExtensionMap.remove(key)
-        return !this.innerExtensionMap.containsKey(key) && !this.innerExtensionMap.containsValue(key)
+        return !this.innerExtensionMap.containsKey(key)
     }
 
     override fun toJson(): String {
