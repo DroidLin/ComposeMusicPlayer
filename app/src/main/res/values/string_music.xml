@@ -11,4 +11,6 @@
     <string name="string_playlist_description">%1$s首歌曲</string>
 
     <string name="string_create_playlist_complete">完成</string>
+
+    <string name="string_select_media_info_complete">完成</string>
 </resources>

@@ -41,6 +41,7 @@ fun MusicItemView(
     musicItem: MusicItem,
     onClick: () -> Unit,
     onLongPress: (() -> Unit)? = null,
+    isSelected: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -57,6 +58,11 @@ fun MusicItemView(
                 indication = ripple(),
                 interactionSource = remember { MutableInteractionSource() }
             ),
+        color = if (isSelected) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.surface
+        }
     ) {
         Row(
             modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),

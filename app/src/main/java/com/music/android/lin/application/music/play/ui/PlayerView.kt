@@ -147,7 +147,6 @@ private fun PlayerHorizontalPagerView(
                             skipToPrevButtonPressed = skipToPrevButtonPressed,
                             playOrPauseButtonPressed = playOrPauseButtonPressed,
                             skipToNextButtonPressed = skipToNextButtonPressed,
-                            backPressed = backPressed,
                             seekToPosition = seekToPosition,
                             updateSliderProgress = updateSliderProgress
                         )

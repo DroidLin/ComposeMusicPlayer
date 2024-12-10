@@ -66,7 +66,6 @@ fun PlayerCoverContentView(
     skipToPrevButtonPressed: () -> Unit,
     playOrPauseButtonPressed: () -> Unit,
     skipToNextButtonPressed: () -> Unit,
-    backPressed: () -> Unit,
     seekToPosition: (Long) -> Unit,
     updateSliderProgress: (Float, Boolean) -> Unit,
     modifier: Modifier = Modifier,

@@ -3,9 +3,11 @@ package com.music.android.lin.application.music.component
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,30 +25,26 @@ fun MediaAudioQualityView(
     ) {
         when (mediaQuality) {
             MediaQuality.HQ -> {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
+                Surface(
+                    color = MaterialTheme.colorScheme.secondary,
+                    shape = CircleShape
                 ) {
                     Text(
                         modifier = Modifier.padding(horizontal = 6.dp),
                         text = "HQ",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
 
             MediaQuality.SQ -> {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape
                 ) {
                     Text(
                         modifier = Modifier.padding(horizontal = 6.dp),
                         text = "SQ",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
