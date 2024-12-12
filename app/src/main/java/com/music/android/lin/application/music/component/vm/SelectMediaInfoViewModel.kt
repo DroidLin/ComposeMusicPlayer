@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.music.android.lin.application.common.ui.state.DataLoadState
 import com.music.android.lin.application.common.ui.state.withDataLoadState
+import com.music.android.lin.application.common.ui.vm.ioViewModelScope
 import com.music.android.lin.application.common.usecase.MusicItem
 import com.music.android.lin.application.common.usecase.MusicItemSnapshot
 import com.music.android.lin.application.common.usecase.PrepareMusicInfoUseCase
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.selects.whileSelect
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 
 
@@ -36,11 +36,6 @@ internal class SelectMediaInfoViewModel(
     private val searchInputChannel = MutableSharedFlow<String>(extraBufferCapacity = 1)
     private val musicItemSelectedMapping =
         MutableSharedFlow<SelectionOperation>(extraBufferCapacity = 1)
-
-    private val ioViewModelScope =
-        CoroutineScope(this.viewModelScope.coroutineContext + Dispatchers.IO)
-
-    private val musicItemSelectedMutex = Mutex()
 
     val searchInput = this.searchInputChannel
         .stateIn(ioViewModelScope, SharingStarted.Lazily, "")
@@ -71,7 +66,7 @@ internal class SelectMediaInfoViewModel(
                     snapshot = snapshot,
                     selectionReceivingMap = selectionReceiving
                 )
-                if (!filterList.isNullOrEmpty()) {
+                if (filterList != null) {
                     emit(filterList)
                 }
             }
@@ -143,10 +138,11 @@ internal class SelectMediaInfoViewModel(
     }
 
     suspend fun peekSelectedIdList(): List<String> {
-        val data = withContext(Dispatchers.IO) {
-            (selectableMusicItems.value as? DataLoadState.Data<*>)?.data as? ImmutableList<SelectableMusicItem>
+        return withContext(Dispatchers.IO) {
+            ((selectableMusicItems.value as? DataLoadState.Data<*>)?.data as? ImmutableList<SelectableMusicItem>)
+                ?.filter { it.isSelected }
+                ?.map { it.musicItem.mediaId } ?: emptyList()
         }
-        return data?.map { it.musicItem.mediaId } ?: emptyList()
     }
 
     private fun filterAvailableMusicItems(

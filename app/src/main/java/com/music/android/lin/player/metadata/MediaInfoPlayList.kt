@@ -19,7 +19,7 @@ interface MediaInfoPlayList : PlayList {
         override val description: String = ""
         override val playListCover: String? = ""
         override val mediaInfoList: List<MediaInfo> = emptyList()
-        override val extensions: ExtensionMap? = null
+        override val extensions: ExtensionMap = ExtensionMap()
         override val updateTimeStamp: Long = 0L
         override val countOfPlayable: Int = 0
     }
@@ -32,7 +32,7 @@ fun MediaInfoPlayList(
     description: String,
     playListCover: String?,
     mediaInfoList: List<MediaInfo>,
-    extensions: ExtensionMap?,
+    extensions: ExtensionMap,
     updateTimeStamp: Long,
     countOfPlayable: Int
 ): MediaInfoPlayList {
@@ -74,7 +74,7 @@ private data class MediaInfoPlayListImpl(
     override val description: String,
     override val playListCover: String?,
     override val mediaInfoList: List<MediaInfo>,
-    override val extensions: ExtensionMap?,
+    override val extensions: ExtensionMap,
     override val updateTimeStamp: Long,
     override val countOfPlayable: Int
 ) : MediaInfoPlayList {

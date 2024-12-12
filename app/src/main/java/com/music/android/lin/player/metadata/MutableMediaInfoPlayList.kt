@@ -19,7 +19,7 @@ interface MutableMediaInfoPlayList : MediaInfoPlayList {
 
     abstract override val mediaInfoList: MutableList<MediaInfo>
 
-    abstract override val extensions: ExtensionMap?
+    abstract override val extensions: ExtensionMap
 
     abstract override val updateTimeStamp: Long
 
@@ -51,7 +51,7 @@ private data class MutableMediaInfoPlayListImpl(
     override var description: String,
     override val playListCover: String?,
     override val mediaInfoList: MutableList<MediaInfo>,
-    override val extensions: ExtensionMap?,
+    override val extensions: ExtensionMap,
     override val updateTimeStamp: Long,
     override val countOfPlayable: Int
 ) : MutableMediaInfoPlayList, Serializable {

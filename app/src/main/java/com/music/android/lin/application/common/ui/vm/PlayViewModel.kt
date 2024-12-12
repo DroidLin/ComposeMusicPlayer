@@ -37,7 +37,7 @@ class PlayViewModel(
                 isPlaying = information.playerMetadata.isPlaying,
             )
         }
-        .stateIn(this.viewModelScope, SharingStarted.Lazily, PlayState())
+        .stateIn(this.ioViewModelScope, SharingStarted.Lazily, PlayState())
 
     fun seekToPosition(position: Long) {
         mediaController.seekToPosition(position)

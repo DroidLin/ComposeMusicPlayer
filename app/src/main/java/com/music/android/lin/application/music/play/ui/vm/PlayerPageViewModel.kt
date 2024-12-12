@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.music.android.lin.application.common.ui.vm.ioViewModelScope
 import com.music.android.lin.application.music.play.ui.state.PlayerColorScheme
 import com.music.android.lin.application.music.play.ui.state.PlayerState
 import com.music.android.lin.application.music.play.ui.util.pickColorAndTransformToScheme
@@ -141,7 +142,7 @@ class PlayerPageViewModel(
         }
     }
         .stateIn(
-            CoroutineScope(this.viewModelScope.coroutineContext + this.coroutineScope.coroutineContext),
+            ioViewModelScope,
             SharingStarted.Lazily,
             PlayerState()
         )

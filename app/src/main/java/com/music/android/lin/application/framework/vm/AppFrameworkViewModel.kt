@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.music.android.lin.application.common.ui.vm.ioViewModelScope
 import com.music.android.lin.application.util.dataStore
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -24,7 +25,7 @@ internal class AppFrameworkViewModel(private val applicationContext: Context) : 
     val firstGuideCompleted = this.dataStore.data
         .map { it[firstEnterGuideCompletedKey] ?: false }
         .distinctUntilChanged()
-        .stateIn(this.viewModelScope, SharingStarted.Eagerly, null)
+        .stateIn(this.ioViewModelScope, SharingStarted.Eagerly, null)
 
     suspend fun operateFirstGuideComplete() {
         dataStore.edit {

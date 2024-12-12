@@ -4,9 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -21,8 +18,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.android.lin.application.common.ui.vm.PlayViewModel
 import com.music.android.lin.application.minibar.audio.ui.AudioMinibar
@@ -32,11 +27,14 @@ import com.music.android.lin.player.metadata.MediaType
 import org.koin.androidx.compose.koinViewModel
 
 private const val minibarTransitionDuration = 500
+private const val minibarExitTransitionDelay = 500
 
-private val minibarEnterAnimation = expandVertically(tween(minibarTransitionDuration)) { 0 } +
-        slideInVertically(tween(minibarTransitionDuration)) { it } +
-        fadeIn(tween(minibarTransitionDuration))
-private val minibarExitAnimation = shrinkVertically(tween(minibarTransitionDuration)) { 0 } +
+private val minibarEnterAnimation =
+    expandVertically(tween(minibarTransitionDuration, minibarExitTransitionDelay)) { 0 } +
+            slideInVertically(tween(minibarTransitionDuration, minibarExitTransitionDelay)) { it } +
+            fadeIn(tween(minibarTransitionDuration, minibarExitTransitionDelay))
+private val minibarExitAnimation =
+    shrinkVertically(tween(minibarTransitionDuration)) { 0 } +
         slideOutVertically(tween(minibarTransitionDuration)) { it } +
         fadeOut(tween(minibarTransitionDuration))
 

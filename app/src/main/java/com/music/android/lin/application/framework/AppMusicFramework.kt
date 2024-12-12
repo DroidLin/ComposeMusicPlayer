@@ -1,9 +1,12 @@
 package com.music.android.lin.application.framework
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -56,8 +60,10 @@ import com.music.android.lin.application.music.playlist.ui.PlayListView
 import com.music.android.lin.application.music.single.ui.SingleMusicView
 import com.music.android.lin.application.settings.ui.AboutView
 import com.music.android.lin.application.settings.ui.AppSettingsHomeView
+import com.music.android.lin.application.util.OnNewIntent
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppMusicFramework(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
@@ -145,12 +151,13 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                 modifier = modifier
                     .fillMaxSize(),
             ) {
+                OnNewIntent(navController::handleDeepLink)
                 NavHost(
                     modifier = Modifier.matchParentSize(),
                     navController = navController,
                     startDestination = PageDefinition.SingleMusicView,
-                    enterTransition = { fadeIn(tween(500)) },
-                    exitTransition = { fadeOut(tween(500)) }
+                    enterTransition = { EnterTransition.None /*fadeIn(tween(500)) */ },
+                    exitTransition = { ExitTransition.None/*fadeOut(tween(500))*/ }
                 ) {
                     composable<PageDefinition.SingleMusicView>(
                         deepLinks = listOf(
@@ -221,7 +228,9 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                     composable<PageDefinition.PlayerView>(
                         deepLinks = listOf(
                             navDeepLink<PageDefinition.PlayerView>(basePath = PageDeepLinks.PATH_PLAYER)
-                        )
+                        ),
+                        enterTransition = { slideInVertically(animationSpec = spring(stiffness = Spring.StiffnessLow)) { it } },
+                        exitTransition = { slideOutVertically(animationSpec = spring(stiffness = Spring.StiffnessLow)) { it } }
                     ) {
                         PlayerView(
                             modifier = Modifier.fillMaxSize(),

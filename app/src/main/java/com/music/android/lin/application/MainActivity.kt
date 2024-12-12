@@ -13,6 +13,7 @@ import com.music.android.lin.application.framework.AppMaterialTheme
 import com.music.android.lin.application.framework.AppMusicFramework
 import com.music.android.lin.application.framework.isNightModeOnCompat
 import com.music.android.lin.application.framework.vm.AppFrameworkViewModel
+import com.music.android.lin.application.util.ActivityProvider
 import com.music.android.lin.application.util.LocalWindow
 import com.music.android.lin.application.util.SystemBarStyleComponent
 import com.music.android.lin.application.util.applyWindowBackgroundSettings
@@ -36,14 +37,16 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            CompositionLocalProvider(
-                LocalWindow provides window
-            ) {
-                SystemBarStyleComponent(!LocalConfiguration.current.isNightModeOnCompat)
-                KoinAndroidContext {
-                    AppMaterialTheme {
-                        AppFramework {
-                            AppMusicFramework(modifier = Modifier)
+            ActivityProvider {
+                CompositionLocalProvider(
+                    LocalWindow provides window
+                ) {
+                    SystemBarStyleComponent(!LocalConfiguration.current.isNightModeOnCompat)
+                    KoinAndroidContext {
+                        AppMaterialTheme {
+                            AppFramework {
+                                AppMusicFramework(modifier = Modifier)
+                            }
                         }
                     }
                 }

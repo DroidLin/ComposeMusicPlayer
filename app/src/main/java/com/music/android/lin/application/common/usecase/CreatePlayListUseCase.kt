@@ -4,8 +4,8 @@ import android.os.SystemClock
 import com.music.android.lin.application.music.component.CreatePlayListParameter
 import com.music.android.lin.player.database.MediaRepository
 import com.music.android.lin.player.metadata.MediaInfoPlayList
-import com.music.android.lin.player.metadata.PlayList
 import com.music.android.lin.player.metadata.PlayListType
+import com.music.android.lin.player.utils.ExtensionMap
 
 class CreatePlayListUseCase(
     private val mediaRepository: MediaRepository
@@ -20,7 +20,7 @@ class CreatePlayListUseCase(
             countOfPlayable = 0,
             description = "",
             mediaInfoList = emptyList(),
-            extensions = null,
+            extensions = ExtensionMap.EmptyExtension,
             updateTimeStamp = System.currentTimeMillis()
         )
         mediaRepository.insertPlayList(playList)

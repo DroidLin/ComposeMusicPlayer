@@ -8,6 +8,7 @@ import com.music.android.lin.player.metadata.MediaResource
 import com.music.android.lin.player.metadata.PlayListType
 import com.music.android.lin.player.metadata.PositionalPlayMediaResource
 import com.music.android.lin.player.service.MediaService
+import com.music.android.lin.player.utils.ExtensionMap
 
 class MediaResourceGeneratorUseCase(
     private val mediaService: MediaService,
@@ -59,7 +60,7 @@ class MediaResourceGeneratorUseCase(
                     description = "",
                     playListCover = "",
                     mediaInfoList = mediaInfoList,
-                    extensions = null,
+                    extensions = ExtensionMap.EmptyExtension,
                     updateTimeStamp = System.currentTimeMillis(),
                     countOfPlayable = mediaInfoList.size
                 ),

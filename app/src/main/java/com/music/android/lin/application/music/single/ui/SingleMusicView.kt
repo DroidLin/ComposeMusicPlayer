@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.android.lin.R
 import com.music.android.lin.application.common.ui.component.DataLoadingView
+import com.music.android.lin.application.common.ui.component.TopAppBarLayout
 import com.music.android.lin.application.common.ui.state.DataLoadState
 import com.music.android.lin.application.common.ui.vm.PlayViewModel
 import com.music.android.lin.application.common.usecase.MusicItem
@@ -97,7 +98,7 @@ private fun TopHeader(
     modifier: Modifier = Modifier,
     onDrawerIconPressed: () -> Unit = {},
 ) {
-    CenterAlignedTopAppBar(
+    TopAppBarLayout(
         modifier = modifier,
         title = {
             Text(

@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.music.android.lin.R
+import com.music.android.lin.application.common.ui.component.TopAppBarLayout
 import com.music.android.lin.application.framework.AppMaterialTheme
 
 @Composable
@@ -38,7 +39,7 @@ private fun PersonalTopHeader(
     modifier: Modifier = Modifier,
     onSettingsIconPressed: () -> Unit = {}
 ) {
-    TopAppBar(
+    TopAppBarLayout(
         modifier = modifier,
         title = {
             Text(

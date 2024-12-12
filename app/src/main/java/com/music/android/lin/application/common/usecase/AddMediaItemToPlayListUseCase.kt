@@ -8,6 +8,16 @@ class AddMediaItemToPlayListUseCase(
 ) {
 
     suspend fun addToPlayList(playListItem: PlayListItem, musicItem: MusicItem) {
-        mediaRepository.addMediaInfoToPlayList(playListId = playListItem.id, musicItem.mediaId)
+        mediaRepository.addMediaInfoToPlayList(
+            playListId = playListItem.id,
+            mediaInfoId = musicItem.mediaId
+        )
+    }
+
+    suspend fun addToPlayList(playListId: String, mediaInfoIdList: List<String>) {
+        mediaRepository.addMediaInfoToPlayList(
+            playListId = playListId,
+            mediaInfoIdList = mediaInfoIdList
+        )
     }
 }

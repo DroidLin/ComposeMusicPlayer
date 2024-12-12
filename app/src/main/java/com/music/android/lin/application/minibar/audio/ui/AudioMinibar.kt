@@ -1,5 +1,6 @@
 package com.music.android.lin.application.minibar.audio.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,7 +50,8 @@ fun AudioMinibar(
             .fillMaxWidth()
             .height(72.dp),
         onClick = minibarContentPressed,
-        color = Color.Transparent
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.inverseOnSurface)
     ) {
         Box(
             modifier = Modifier

@@ -18,7 +18,6 @@ import com.music.android.lin.application.common.usecase.MusicItem
 import com.music.android.lin.application.music.component.CreatePlayListParameter
 import com.music.android.lin.player.metadata.MediaInfo
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
@@ -47,7 +46,7 @@ class MediaRepositoryViewModel(
                 )
             }.toImmutableList()
         }
-        .stateIn(this.viewModelScope, SharingStarted.Lazily, DataLoadState.Loading)
+        .stateIn(this.ioViewModelScope, SharingStarted.Lazily, DataLoadState.Loading)
 
     suspend fun deleteMediaInfo(mediaInfoId: String): Boolean {
         return this.deleteMediaInfoUseCase.deleteMediaInfo(mediaInfoId)
@@ -62,8 +61,12 @@ class MediaRepositoryViewModel(
     }
 
     suspend fun doAddToPlayList(playListId: String, mediaInfoIdList: List<String>): Boolean {
-        delay(3000L)
-        return true
+        return kotlin.runCatching {
+            addMediaItemToPlayListUseCase.addToPlayList(
+                playListId = playListId,
+                mediaInfoIdList = mediaInfoIdList
+            )
+        }.isSuccess
     }
 
     suspend fun createPlayList(createPlayListParameter: CreatePlayListParameter) {

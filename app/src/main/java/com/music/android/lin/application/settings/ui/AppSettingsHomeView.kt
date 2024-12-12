@@ -1,6 +1,7 @@
 package com.music.android.lin.application.settings.ui
 
 import android.content.res.Configuration
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.android.lin.R
 import com.music.android.lin.application.common.ui.component.DataLoadingView
+import com.music.android.lin.application.common.ui.component.TopAppBarLayout
 import com.music.android.lin.application.common.ui.state.DataLoadState
 import com.music.android.lin.application.framework.AppMaterialTheme
 import com.music.android.lin.application.settings.model.SettingSection
@@ -139,7 +141,8 @@ private fun SettingsLazyColumn(
                 Surface(
                     modifier = Modifier
                         .fillParentMaxWidth()
-                        .padding(top = topMargin, start = 10.dp, end = 10.dp),
+                        .padding(horizontal = 16.dp)
+                        .padding(top = topMargin),
                     onClick = {
                         onSectionClick(item)
                     },
@@ -164,7 +167,7 @@ private fun SettingsLazyColumn(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopHeader(backPress: () -> Unit, modifier: Modifier = Modifier) {
-    CenterAlignedTopAppBar(
+    TopAppBarLayout(
         modifier = modifier,
         title = {
             Text(

@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.music.android.lin.R
 import com.music.android.lin.application.common.model.PlayListItem
 import com.music.android.lin.application.common.ui.component.DataLoadingView
+import com.music.android.lin.application.common.ui.component.TopAppBarLayout
 import com.music.android.lin.application.common.ui.vm.MediaRepositoryViewModel
 import com.music.android.lin.application.music.component.CommonPlayListItemView
 import com.music.android.lin.application.music.component.CreatePlayListBottomSheet
@@ -90,7 +91,7 @@ private fun TopHeader(
     goToCreatePlayList: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CenterAlignedTopAppBar(
+    TopAppBarLayout(
         modifier = modifier,
         title = {
             Text(

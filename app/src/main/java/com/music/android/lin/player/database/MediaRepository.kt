@@ -26,6 +26,8 @@ import com.music.android.lin.player.metadata.PlayListType
 import com.music.android.lin.player.metadata.PlayRecord
 import com.music.android.lin.player.metadata.PlayRecord.PlayRecordResourceType.Companion.playRecordResourceType
 import com.music.android.lin.player.metadata.RecentPlayItem
+import com.music.android.lin.player.metadata.sortBySortType
+import com.music.android.lin.player.metadata.sortType
 import com.music.android.lin.player.metadata.toImmutable
 import com.music.android.lin.player.metadata.toJson
 import com.music.android.lin.player.metadata.toMutable
@@ -86,7 +88,7 @@ interface MediaRepository {
 
     suspend fun addMediaInfoToPlayList(playListId: String, mediaInfoId: String)
 
-    suspend fun addMusicInfoToPlayList(playListId: String, musicInfoIdList: List<String>)
+    suspend fun addMediaInfoToPlayList(playListId: String, mediaInfoIdList: List<String>)
 
     suspend fun insertMediaInfo(mediaInfoList: List<MediaInfo>)
 
@@ -150,7 +152,10 @@ private class MediaRepositoryImpl constructor(
 
     override fun observableMusicInfoList(): Flow<List<MediaInfo>> {
         return this.musicInfoDao.fetchMusicInfoFlow()
-            .map { itemList -> itemList.map { item -> item.toMediaInfo() } }
+            .map { itemList ->
+                itemList.map { item -> item.toMediaInfo() }
+                    .sortedBy { it.updateTimeStamp }
+            }
     }
 
     override fun observableVideoInfoList(): Flow<List<MediaInfo>> {
@@ -237,7 +242,7 @@ private class MediaRepositoryImpl constructor(
                 }
             }.awaitAll().filterNotNull().toMutableList()
         }
-        return MediaInfoPlayList(
+        val mediaInfoPlayList = MediaInfoPlayList(
             id = this.id,
             type = PlayListType.fromCode(this.typeCode),
             name = this.name,
@@ -248,6 +253,7 @@ private class MediaRepositoryImpl constructor(
             updateTimeStamp = this.updateTimeStamp,
             countOfPlayable = mediaInfoWithOrder.size
         )
+        return mediaInfoPlayList.sortBySortType(sortType = mediaInfoPlayList.sortType)
     }
 
     private suspend fun LocalPlayList.toPlayList(): PlayList {
@@ -268,11 +274,10 @@ private class MediaRepositoryImpl constructor(
             id = this.id,
             mediaTitle = this.songTitle,
             mediaDescription = this.songDescription,
-            artists = this.artistsIdList.mapNotNull artistMapNotNulL@{ artistId ->
-                this@MediaRepositoryImpl.artistDao.getArtist(id = artistId)?.toArtist()
+            artists = this.artistsIdList.mapNotNull { artistId ->
+                artistDao.getArtist(id = artistId)?.toArtist()
             },
-            album = this@MediaRepositoryImpl.albumDao.getAlbum(albumId = this.albumId)?.toAlbum()
-                ?: Album,
+            album = albumDao.getAlbum(albumId = this.albumId)?.toAlbum() ?: Album,
             coverUri = this.cover?.takeIf { it.isNotEmpty() && it != "null" },
             sourceUri = this.songSource?.takeIf { it.isNotEmpty() && it != "null" },
             updateTimeStamp = this.updateTimeStamp,
@@ -363,10 +368,10 @@ private class MediaRepositoryImpl constructor(
         }.onFailure { it.printStackTrace() }
     }
 
-    override suspend fun addMusicInfoToPlayList(playListId: String, musicInfoIdList: List<String>) {
+    override suspend fun addMediaInfoToPlayList(playListId: String, mediaInfoIdList: List<String>) {
         val playList = this.queryPlayList(playListId)
         if (playList != null) {
-            this.addMusicInfoToPlayList(playList, musicInfoIdList)
+            this.addMusicInfoToPlayList(playList, mediaInfoIdList)
         }
     }
 

@@ -15,11 +15,33 @@ interface PlayList : Serializable {
 
     val playListCover: String?
 
-    val extensions: ExtensionMap?
+    val extensions: ExtensionMap
 
     val updateTimeStamp: Long
 
     val countOfPlayable: Int
+
+    enum class SortType(val value: Int) {
+        Default(0),
+        Title(1),
+        Artist(2),
+        AddOrder(3),
+        AddOrderDesc(4);
+
+        companion object {
+            @JvmStatic
+            fun fromValue(value: Int): SortType {
+                return when (value) {
+                    Default.value -> Default
+                    Title.value -> Title
+                    Artist.value -> Artist
+                    AddOrder.value -> AddOrder
+                    AddOrderDesc.value -> AddOrderDesc
+                    else -> Default
+                }
+            }
+        }
+    }
 }
 
 fun PlayList(
@@ -28,7 +50,7 @@ fun PlayList(
     name: String,
     playListCover: String?,
     description: String,
-    extensions: ExtensionMap?,
+    extensions: ExtensionMap,
     updateTimeStamp: Long,
     countOfPlayable: Int,
 ): PlayList {
@@ -51,7 +73,7 @@ private data class PlayListImpl(
     override val name: String,
     override val description: String,
     override val playListCover: String?,
-    override val extensions: ExtensionMap?,
+    override val extensions: ExtensionMap,
     override val updateTimeStamp: Long,
     override val countOfPlayable: Int,
 ) : PlayList {

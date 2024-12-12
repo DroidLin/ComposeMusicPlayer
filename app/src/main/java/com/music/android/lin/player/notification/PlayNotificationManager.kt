@@ -6,6 +6,7 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -14,6 +15,7 @@ import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Icon
 import android.media.session.MediaSession
+import android.net.Uri
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
@@ -44,6 +46,16 @@ internal class PlayNotificationManager constructor(
     private val context: Context get() = this.service
 
     private val notificationManagerCompat = NotificationManagerCompat.from(this.context)
+
+    private val launchPlayerViewPendingIntent = PendingIntent.getActivity(
+        this.context,
+        REQUEST_CODE_PENDING_INTENT,
+        Intent().also {
+            it.component = ComponentName(this.context.packageName, "com.music.android.lin.application.MainActivity")
+            it.data = Uri.parse("coco://app-deeplink.cn/player")
+        },
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
 
     private val skipToPreviousPendingIntent = PendingIntent.getBroadcast(
         this.context,
@@ -202,6 +214,7 @@ internal class PlayNotificationManager constructor(
                 "${mediaInfo.album.albumName} - ${mediaInfo.artists.joinToString(separator = "/") { it.name }}"
             )
             .setAutoCancel(false)
+            .setContentIntent(launchPlayerViewPendingIntent)
             .withPreviousAction()
             .apply {
                 if (isPlaying) {

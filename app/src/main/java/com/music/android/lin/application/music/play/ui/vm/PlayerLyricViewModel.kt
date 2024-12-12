@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.music.android.lin.application.common.ui.vm.ioViewModelScope
 import com.music.android.lin.application.music.play.domain.LRCLyricParser
 import com.music.android.lin.application.music.play.domain.LyricParser
 import com.music.android.lin.application.music.play.model.LyricInformation
@@ -36,5 +37,5 @@ class PlayerLyricViewModel constructor(
         }
         emit(lyricOutput)
     }
-        .stateIn(this.viewModelScope, SharingStarted.Lazily, null)
+        .stateIn(this.ioViewModelScope, SharingStarted.Lazily, null)
 }

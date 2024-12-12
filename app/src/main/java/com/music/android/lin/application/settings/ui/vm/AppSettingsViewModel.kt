@@ -3,15 +3,14 @@ package com.music.android.lin.application.settings.ui.vm
 import android.content.Context
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.music.android.lin.application.common.ui.state.DataLoadState
 import com.music.android.lin.application.common.ui.state.withDataLoadState
+import com.music.android.lin.application.common.ui.vm.ioViewModelScope
 import com.music.android.lin.application.settings.model.SettingSection
 import com.music.android.lin.application.settings.model.SettingSectionItem
 import com.music.android.lin.application.settings.model.SettingSectionType
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import org.jetbrains.annotations.TestOnly
@@ -24,7 +23,7 @@ internal class AppSettingsViewModel(private val applicationContext: Context) : V
 
     val settingsList = flowOf(prepareSettingSections())
         .withDataLoadState { it }
-        .stateIn(this.viewModelScope, SharingStarted.WhileSubscribed(5000), DataLoadState.Loading)
+        .stateIn(this.ioViewModelScope, SharingStarted.WhileSubscribed(5000), DataLoadState.Loading)
 }
 
 private fun prepareSettingSections(): List<SettingSection> {

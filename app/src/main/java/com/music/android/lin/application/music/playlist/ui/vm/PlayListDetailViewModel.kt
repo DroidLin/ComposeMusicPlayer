@@ -4,15 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.music.android.lin.R
 import com.music.android.lin.application.common.ui.state.DataLoadState
 import com.music.android.lin.application.common.ui.state.withDataLoadState
+import com.music.android.lin.application.common.ui.vm.ioViewModelScope
 import com.music.android.lin.application.common.usecase.FetchPlayListUseCase
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 
 @SuppressLint("StaticFieldLeak")
@@ -28,5 +25,5 @@ class PlayListDetailViewModel(
                 throw RuntimeException(message)
             } else it
         }
-        .stateIn(this.viewModelScope, SharingStarted.Lazily, DataLoadState.Loading)
+        .stateIn(this.ioViewModelScope, SharingStarted.Lazily, DataLoadState.Loading)
 }

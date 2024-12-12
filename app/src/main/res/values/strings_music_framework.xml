@@ -15,4 +15,6 @@
     <string name="string_more_options_delete_media">删除媒体文件</string>
     <string name="string_more_options_information">媒体信息</string>
     <string name="string_more_options_edit">编辑信息</string>
+
+    <string name="string_add_more_media">添加歌曲</string>
 </resources>

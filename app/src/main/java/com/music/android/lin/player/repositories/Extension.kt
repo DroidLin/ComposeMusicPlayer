@@ -1,6 +1,5 @@
 package com.music.android.lin.player.repositories
 
-import com.music.android.lin.player.utils.ExtensionMapImpl
 import com.music.android.lin.player.utils.ExtensionMap
 import com.music.android.lin.player.database.metadata.LocalMusicInfo
 import com.music.android.lin.player.database.metadata.LocalPlayList
@@ -32,7 +31,7 @@ internal fun JSONArray.toList(): List<Any> {
 }
 
 internal val LocalPlayList.extensionsMap: ExtensionMap
-    get() = ExtensionMapImpl(extensionsStr = extensionsStr)
+    get() = ExtensionMap(extensionsStr = extensionsStr)
 
 internal val LocalMusicInfo.artistsIdList: List<String>
     get() = artistIds.split(",")

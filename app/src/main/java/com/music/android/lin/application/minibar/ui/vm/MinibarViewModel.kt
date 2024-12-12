@@ -3,6 +3,7 @@ package com.music.android.lin.application.minibar.ui.vm
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.music.android.lin.application.common.ui.vm.ioViewModelScope
 import com.music.android.lin.application.minibar.ui.state.MinibarUiState
 import com.music.android.lin.player.metadata.MediaType
 import com.music.android.lin.player.service.MediaService
@@ -28,6 +29,6 @@ class MinibarViewModel(
                 } ?: ""
             )
         }
-        .stateIn(this.viewModelScope, SharingStarted.Lazily, MinibarUiState())
+        .stateIn(this.ioViewModelScope, SharingStarted.Lazily, MinibarUiState())
 
 }

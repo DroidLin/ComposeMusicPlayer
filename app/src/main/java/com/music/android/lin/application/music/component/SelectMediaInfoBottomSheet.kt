@@ -8,20 +8,27 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +41,8 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +50,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -71,8 +84,9 @@ fun SelectMediaInfoBottomSheet(
             modifier = modifier,
             onDismissRequest = dismissRequest,
             sheetState = sheetState,
+            containerColor = MaterialTheme.colorScheme.surface,
             dragHandle = null,
-            containerColor = MaterialTheme.colorScheme.surface
+            contentWindowInsets = { BottomSheetDefaults.windowInsets.add(WindowInsets.statusBars) }
         ) {
             val viewModel = koinViewModel<SelectMediaInfoViewModel>()
             val uiState = viewModel.selectableMusicItems.collectAsStateWithLifecycle()
@@ -80,7 +94,7 @@ fun SelectMediaInfoBottomSheet(
             val coroutineScope = rememberCoroutineScope()
 
             Column(
-                modifier = Modifier.fillMaxHeight(0.75f),
+                modifier = Modifier.fillMaxHeight(),
             ) {
                 val inSearchMode = remember { mutableStateOf(false) }
                 val launchLoading = remember { mutableStateOf(false) }
@@ -115,13 +129,20 @@ fun SelectMediaInfoBottomSheet(
                     enterSearchModePressed = { inSearchMode.value = true },
                     launchLoading = launchLoading,
                     completeButtonEnabled = completeButtonEnabled,
+                    closeBottomSheet = {
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            dismissRequest()
+                        }
+                    }
                 )
                 DataLoadingView(
                     modifier = Modifier.weight(1f),
                     state = uiState
                 ) { data ->
                     SelectList(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize(),
                         selectableItemList = data.data,
                         onMusicItemClick = viewModel::onMusicItemPressed,
                     )
@@ -135,28 +156,34 @@ fun SelectMediaInfoBottomSheet(
 fun SelectHeader(
     inSearchMode: State<Boolean>,
     searchInputState: State<String>,
-    onSearchValueChanged: (String) -> Unit,
     launchLoading: State<Boolean>,
     completeButtonEnabled: State<Boolean>,
+    closeBottomSheet: () -> Unit,
+    onSearchValueChanged: (String) -> Unit,
     dismissSearchMode: () -> Unit,
     completePressed: () -> Unit,
     enterSearchModePressed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AnimatedContent(
-        targetState = inSearchMode.value,
+        targetState = inSearchMode.value && !launchLoading.value,
         label = "select_header_animation",
         modifier = modifier,
         transitionSpec = {
             fadeIn() togetherWith fadeOut()
-        }
+        },
     ) { isInSearchMode ->
-        if (isInSearchMode && !launchLoading.value) {
+        if (isInSearchMode) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                val focusRequester = remember { FocusRequester() }
+                LaunchedEffect(focusRequester) {
+                    focusRequester.requestFocus()
+                }
                 IconButton(
                     onClick = dismissSearchMode
                 ) {
@@ -165,7 +192,8 @@ fun SelectHeader(
                 BasicTextField(
                     modifier = Modifier
                         .weight(1f)
-                        .height(40.dp),
+                        .height(40.dp)
+                        .focusRequester(focusRequester),
                     value = searchInputState.value,
                     onValueChange = onSearchValueChanged,
                     maxLines = 1,
@@ -183,6 +211,15 @@ fun SelectHeader(
                 modifier = Modifier
             ) {
                 IconButton(
+                    onClick = closeBottomSheet,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = null
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(
                     onClick = enterSearchModePressed,
                     enabled = !launchLoading.value
                 ) {
@@ -191,7 +228,6 @@ fun SelectHeader(
                         contentDescription = null
                     )
                 }
-                Spacer(modifier = Modifier.weight(1f))
                 Button(
                     onClick = completePressed,
                     enabled = !launchLoading.value && completeButtonEnabled.value
