@@ -51,7 +51,7 @@ fun AudioMinibar(
             .height(72.dp),
         onClick = minibarContentPressed,
         color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.inverseOnSurface)
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.inverseOnSurface.copy(alpha = 0.2f))
     ) {
         Box(
             modifier = Modifier

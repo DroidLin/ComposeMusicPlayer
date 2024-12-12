@@ -1,6 +1,5 @@
 package com.music.android.lin.application.framework
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.Spring
@@ -38,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -84,12 +84,7 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
         }
     }
 
-    // there is an issue in NavController#popBackStack while the function is called more than once at the same time,
-    // so we try to use BackPressDispatcher instead.
-    val backPressDispatcher = LocalOnBackPressedDispatcherOwner.current
-    val backPressed: () -> Unit = {
-        backPressDispatcher?.onBackPressedDispatcher?.onBackPressed()
-    }
+    val backPressed: () -> Unit = { navController.navigateUp() }
     val navigateToPage: (String) -> Unit = navigateToPage@{ route: String ->
         if (currentRoute == route) {
             return@navigateToPage
@@ -153,7 +148,9 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
             ) {
                 OnNewIntent(navController::handleDeepLink)
                 NavHost(
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier
+                        .matchParentSize()
+                        .zIndex(2f),
                     navController = navController,
                     startDestination = PageDefinition.SingleMusicView,
                     enterTransition = { EnterTransition.None /*fadeIn(tween(500)) */ },
@@ -266,7 +263,8 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
-                        .navigationBarsPadding(),
+                        .navigationBarsPadding()
+                        .zIndex(1f),
                     shouldShowMinibar = remember {
                         derivedStateOf {
                             currentRoute != PageDefinition.PlayerView::class.qualifiedName

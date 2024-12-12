@@ -21,13 +21,7 @@ import com.music.android.lin.application.framework.AppMaterialTheme
 @Composable
 fun AppFirstGuide(modifier: Modifier = Modifier, onComplete: () -> Unit) {
     val navController = rememberNavController()
-    // there is an issue in NavController#popBackStack while the function is called more than once at the same time,
-    // just like double press at the button.
-    // so we try to use BackPressDispatcher instead.
-    val backPressDispatcher = LocalOnBackPressedDispatcherOwner.current
-    val backPressed: () -> Unit = {
-        backPressDispatcher?.onBackPressedDispatcher?.onBackPressed()
-    }
+    val backPressed: () -> Unit = { navController.navigateUp() }
     NavHost(
         modifier = modifier.fillMaxSize(),
         navController = navController,
