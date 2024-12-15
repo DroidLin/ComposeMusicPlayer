@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -63,7 +62,6 @@ import com.music.android.lin.application.settings.ui.AppSettingsHomeView
 import com.music.android.lin.application.util.OnNewIntent
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppMusicFramework(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
@@ -122,7 +120,7 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                             NavigationDrawerItem(
                                 icon = {
                                     Icon(
-                                        modifier = Modifier.size(36.dp),
+                                        modifier = Modifier.size(24.dp),
                                         painter = painterResource(id = drawerType.drawableResId),
                                         contentDescription = null
                                     )
@@ -153,8 +151,8 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                         .zIndex(2f),
                     navController = navController,
                     startDestination = PageDefinition.SingleMusicView,
-                    enterTransition = { EnterTransition.None /*fadeIn(tween(500)) */ },
-                    exitTransition = { ExitTransition.None/*fadeOut(tween(500))*/ }
+                    enterTransition = { EnterTransition.None },
+                    exitTransition = { ExitTransition.None }
                 ) {
                     composable<PageDefinition.SingleMusicView>(
                         deepLinks = listOf(
@@ -227,7 +225,7 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                             navDeepLink<PageDefinition.PlayerView>(basePath = PageDeepLinks.PATH_PLAYER)
                         ),
                         enterTransition = { slideInVertically(animationSpec = spring(stiffness = Spring.StiffnessLow)) { it } },
-                        exitTransition = { slideOutVertically(animationSpec = spring(stiffness = Spring.StiffnessLow)) { it } }
+                        exitTransition = { slideOutVertically(animationSpec = spring(stiffness = Spring.StiffnessLow)) { it } },
                     ) {
                         PlayerView(
                             modifier = Modifier.fillMaxSize(),

@@ -51,6 +51,7 @@ import com.music.android.lin.application.music.play.model.LyricLine
 import com.music.android.lin.application.music.play.model.LyricOutput
 import com.music.android.lin.application.music.play.model.SimpleLineLyricOutput
 import com.music.android.lin.application.music.play.ui.util.binarySearchLine
+import com.music.android.lin.application.util.applicationAnimationSpec
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -147,7 +148,7 @@ class LyricViewState : DraggableState {
         val layoutInfo = layoutInfoState
         val drawScopeHeight = layoutInfo.drawScopeSize.height
         val topBounds = drawScopeHeight - layoutInfo.lyricContentHeight - (drawScopeHeight / 2f)
-        val bottomBounds = drawScopeHeight / 2f
+        val bottomBounds = drawScopeHeight / 4f
 
         val nextYOffset = (yOffset + delta).coerceIn(topBounds, bottomBounds)
         val cancel = nextYOffset == yOffset
@@ -317,7 +318,7 @@ private fun SimpleLineLyricView(
             first.value = false
         } else {
             launch { lyricViewState.animateToLine(indexOfCurrentLine) }
-            val animSpec = spring<Float>(stiffness = Spring.StiffnessLow)
+            val animSpec = applicationAnimationSpec<Float>()
             launch {
                 lyricViewState.anchorLyricLayoutInfoState
                     ?.animatable

@@ -34,6 +34,11 @@ fun PlayLyricsView(
     Column(
         modifier = modifier
     ) {
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(16.dp)
+        )
         PlayLyricInformationView(
             modifier = Modifier
                 .fillMaxWidth()

@@ -15,6 +15,7 @@ import com.music.android.lin.player.service.controller.PlayEventLoop
 import com.music.android.lin.player.service.controller.PlayEventLoopHost
 import com.music.android.lin.player.service.controller.PlayInfo
 import com.music.android.lin.player.service.controller.ProxyMediaController
+import com.music.android.lin.player.service.history.PlayHistoryPreference
 import com.music.android.lin.player.service.player.ExoMediaPlayer
 import com.music.android.lin.player.service.player.Player
 import com.music.android.lin.player.service.player.datasource.DataSource
@@ -78,7 +79,8 @@ class PlayModule {
         handler: Handler,
         @Qualifier(name = PlayerIdentifier.exoPlayer3)
         player: Player,
-    ): PlayEventLoopHost = PlayEventLoopHost(playInfo, mediaController, context, handler, player)
+        playHistoryPreference: PlayHistoryPreference
+    ): PlayEventLoopHost = PlayEventLoopHost(playInfo, mediaController, context, playHistoryPreference, handler, player)
 
     @Single
     internal fun mediaPlayingList(): MediaPlayingList = MediaPlayingList()
@@ -129,4 +131,13 @@ class PlayModule {
         coroutineScope: CoroutineScope
     ): PlayNotificationManager =
         PlayNotificationManager(service, mediaController, playInfo, coroutineScope)
+
+    @Single
+    internal fun playHistoryPreference(
+        @Qualifier(name = AppIdentifier.applicationContext)
+        context: Context,
+        playInfo: PlayInfo,
+        @Qualifier(name = PlayerIdentifier.playerCoroutineScope)
+        coroutineScope: CoroutineScope
+    ): PlayHistoryPreference = PlayHistoryPreference(context, playInfo, coroutineScope)
 }

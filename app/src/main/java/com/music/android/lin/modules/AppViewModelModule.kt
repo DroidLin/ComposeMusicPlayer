@@ -18,6 +18,7 @@ import com.music.android.lin.application.guide.ui.vm.MediaInformationScannerView
 import com.music.android.lin.application.minibar.ui.vm.MinibarViewModel
 import com.music.android.lin.application.music.component.vm.SelectMediaInfoViewModel
 import com.music.android.lin.application.music.play.domain.LyricParser
+import com.music.android.lin.application.music.play.ui.vm.PlayerListViewModel
 import com.music.android.lin.application.music.play.ui.vm.PlayerLyricViewModel
 import com.music.android.lin.application.music.play.ui.vm.PlayerPageViewModel
 import com.music.android.lin.application.music.playlist.ui.vm.PlayListDetailViewModel
@@ -141,4 +142,9 @@ internal class AppViewModelModule {
     internal fun selectMediaInfoViewModel(
         prepareMusicInfoUseCase: PrepareMusicInfoUseCase,
     ): SelectMediaInfoViewModel = SelectMediaInfoViewModel(prepareMusicInfoUseCase)
+
+    @Factory
+    internal fun playerListViewModel(
+        mediaService: MediaService
+    ): PlayerListViewModel = PlayerListViewModel(mediaService)
 }

@@ -54,7 +54,7 @@ fun CreatePlayListBottomSheet(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp),
+                .padding(horizontal = 16.dp),
         ) {
             Text(
                 modifier = Modifier.align(Alignment.CenterStart),
@@ -82,7 +82,8 @@ fun CreatePlayListBottomSheet(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 8.dp),
             value = inputText.value,
             onValueChange = { inputText.value = it },
             shape = MaterialTheme.shapes.large,

@@ -1,6 +1,7 @@
 package com.music.android.lin.application.music.component
 
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,6 +17,7 @@ import kotlinx.collections.immutable.ImmutableList
 fun CommonMediaItemView(
     musicInfoList: ImmutableList<MusicItem>,
     modifier: Modifier = Modifier,
+    lazyListState: LazyListState = rememberLazyListState(),
     onMusicItemPress: (MusicItem) -> Unit = {},
 ) {
     val sheetState = rememberMediaBottomSheetState(
@@ -27,6 +29,7 @@ fun CommonMediaItemView(
         MusicLazyColumn(
             musicInfoList = musicInfoList,
             modifier = modifier,
+            lazyListState = lazyListState,
             onMusicItemPress = onMusicItemPress,
             onMusicItemLongPress = sheetState::showMoreOptionsBottomSheet
         )
@@ -37,10 +40,10 @@ fun CommonMediaItemView(
 private fun MusicLazyColumn(
     musicInfoList: ImmutableList<MusicItem>,
     modifier: Modifier = Modifier,
+    lazyListState: LazyListState = rememberLazyListState(),
     onMusicItemPress: (MusicItem) -> Unit,
     onMusicItemLongPress: ((MusicItem) -> Unit)? = null,
 ) {
-    val lazyListState = rememberLazyListState()
     LazyColumn(
         modifier = modifier,
         state = lazyListState,

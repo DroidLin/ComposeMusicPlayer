@@ -29,31 +29,22 @@ fun AppFramework(content: @Composable () -> Unit) {
     val firstEnterGuideComplete by viewModel.firstGuideCompleted.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
-    AnimatedContent(
-        modifier = Modifier.fillMaxSize(),
-        targetState = firstEnterGuideComplete,
-        label = "firstEnterGuideAnimation",
-        contentAlignment = Alignment.Center,
-        transitionSpec = {
-            fadeIn() togetherWith fadeOut()
-        }
-    ) { firstGuideComplete ->
-        when {
-            firstGuideComplete == null -> Box(modifier = Modifier.fillMaxSize())
-            firstGuideComplete -> content()
-            else -> {
-                AppFirstGuide(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .imePadding()
-                        .navigationBarsPadding(),
-                    onComplete = {
-                        coroutineScope.launch {
-                            viewModel.operateFirstGuideComplete()
-                        }
+    val firstGuideComplete = firstEnterGuideComplete
+    when {
+        firstGuideComplete == null -> Box(modifier = Modifier.fillMaxSize())
+        firstGuideComplete -> content()
+        else -> {
+            AppFirstGuide(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding()
+                    .navigationBarsPadding(),
+                onComplete = {
+                    coroutineScope.launch {
+                        viewModel.operateFirstGuideComplete()
                     }
-                )
-            }
+                }
+            )
         }
     }
 }

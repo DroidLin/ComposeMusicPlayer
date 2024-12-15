@@ -27,13 +27,13 @@ enum class NavigationDrawerType(
     @StringRes val nameResId: Int,
     @DrawableRes val drawableResId: Int,
 ) {
-    SingleMusic(nameResId = R.string.string_drawer_name_single_music, drawableResId = R.drawable.ic_launcher_foreground),
+    SingleMusic(nameResId = R.string.string_drawer_name_single_music, drawableResId = R.drawable.ic_music),
     Album(nameResId = R.string.string_drawer_name_album, drawableResId = R.drawable.ic_launcher_foreground),
     Artist(nameResId = R.string.string_drawer_name_artist, drawableResId = R.drawable.ic_launcher_foreground),
-    PlayList(nameResId = R.string.string_drawer_name_playlist, drawableResId = R.drawable.ic_launcher_foreground),
+    PlayList(nameResId = R.string.string_drawer_name_playlist, drawableResId = R.drawable.ic_list),
     ScanMusic(nameResId = R.string.string_drawer_name_scan_music, drawableResId = R.drawable.ic_launcher_foreground),
-    Settings(nameResId = R.string.string_drawer_name_settings, drawableResId = R.drawable.ic_launcher_foreground),
-    About(nameResId = R.string.string_drawer_name_about_app, drawableResId = R.drawable.ic_launcher_foreground),
+    Settings(nameResId = R.string.string_drawer_name_settings, drawableResId = R.drawable.ic_setting),
+    About(nameResId = R.string.string_drawer_name_about_app, drawableResId = R.drawable.ic_about),
 }
 
  val NavigationDrawerType.pageDefinitionName: String?

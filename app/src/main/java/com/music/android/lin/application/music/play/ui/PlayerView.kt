@@ -3,7 +3,8 @@ package com.music.android.lin.application.music.play.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -79,7 +80,8 @@ fun PlayerView(
         backPressed = backPressed,
         seekToPosition = playViewModel::seekToPosition,
         updateSliderProgress = playerPageViewModel::handleSliderInput,
-        lyricOutput = lyricOutputState
+        lyricOutput = lyricOutputState,
+        switchPlayMode = playViewModel::changePlayMode
     )
 }
 
@@ -92,6 +94,7 @@ private fun PlayerHorizontalPagerView(
     playOrPauseButtonPressed: () -> Unit,
     skipToNextButtonPressed: () -> Unit,
     backPressed: () -> Unit,
+    switchPlayMode: () -> Unit,
     seekToPosition: (Long) -> Unit,
     updateSliderProgress: (Float, Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -148,7 +151,8 @@ private fun PlayerHorizontalPagerView(
                             playOrPauseButtonPressed = playOrPauseButtonPressed,
                             skipToNextButtonPressed = skipToNextButtonPressed,
                             seekToPosition = seekToPosition,
-                            updateSliderProgress = updateSliderProgress
+                            updateSliderProgress = updateSliderProgress,
+                            switchPlayMode = switchPlayMode
                         )
 
                         2 -> PlayLyricsView(
@@ -171,17 +175,8 @@ private fun PlayerHorizontalPagerView(
     }
 }
 
-private const val ContentSwitchDuration = 1500
-private const val backgroundAnimationDelayMillis = 0
-
-private val backgroundFloatAnimation = tween<Float>(
-    durationMillis = ContentSwitchDuration,
-    delayMillis = backgroundAnimationDelayMillis
-)
-private val backgroundColorAnimation = tween<Color>(
-    durationMillis = ContentSwitchDuration,
-    delayMillis = backgroundAnimationDelayMillis
-)
+private val backgroundFloatAnimation = spring<Float>(stiffness = Spring.StiffnessVeryLow)
+private val backgroundColorAnimation = spring<Color>(stiffness = Spring.StiffnessVeryLow)
 
 @Composable
 private fun PlayerBackground(

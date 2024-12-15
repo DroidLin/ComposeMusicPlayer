@@ -11,6 +11,7 @@ import com.music.android.lin.application.common.usecase.MediaResourceGeneratorUs
 import com.music.android.lin.application.common.usecase.MusicItem
 import com.music.android.lin.application.common.usecase.util.toMusicItem
 import com.music.android.lin.player.metadata.MediaInfo
+import com.music.android.lin.player.metadata.PlayMode
 import com.music.android.lin.player.service.MediaService
 import com.music.android.lin.player.service.controller.MediaController
 import kotlinx.coroutines.flow.SharingStarted
@@ -58,6 +59,17 @@ class PlayViewModel(
         } else {
             this.mediaController.playOrResume()
         }
+    }
+
+    fun changePlayMode() {
+        val currentPlayMode = this.playState.value.playMode
+        val nextPlayMode = when (currentPlayMode) {
+            PlayMode.Single, PlayMode.SingleLoop -> PlayMode.PlayListLoop
+            PlayMode.PlayListLoop -> PlayMode.Shuffle
+            PlayMode.Shuffle -> PlayMode.SingleLoop
+            else -> PlayMode.PlayListLoop
+        }
+        mediaController.setPlayMode(nextPlayMode)
     }
 
     fun startResource(playListId: String, musicItem: MusicItem) {

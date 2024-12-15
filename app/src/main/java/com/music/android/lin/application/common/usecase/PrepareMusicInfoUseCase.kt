@@ -23,7 +23,7 @@ internal class PrepareMusicInfoUseCase(
             }
             MusicItemSnapshot(
                 musicItemList = musicItemList.toImmutableList(),
-                mediaInfoList = musicInfoList.toImmutableList()
+                mediaInfoList = musicInfoList
             )
         }
 }
@@ -31,7 +31,7 @@ internal class PrepareMusicInfoUseCase(
 @Stable
 data class MusicItemSnapshot(
     val musicItemList: ImmutableList<MusicItem>,
-    val mediaInfoList: ImmutableList<MediaInfo>,
+    val mediaInfoList: List<MediaInfo>,
 )
 
 @Stable

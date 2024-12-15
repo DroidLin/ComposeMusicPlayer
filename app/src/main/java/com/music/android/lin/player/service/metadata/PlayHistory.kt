@@ -5,7 +5,7 @@ import com.music.android.lin.player.metadata.PlayMode
 import java.io.Serializable
 
 data class PlayHistory(
-    val mediaInfoPlayList: MediaInfoPlayList,
+    val mediaInfoPlayList: MediaInfoPlayList?,
     val indexOfCurrentPosition: Int,
     val playMode: PlayMode,
     val playingProgress: Long,

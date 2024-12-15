@@ -49,6 +49,7 @@ class MediaPlayingList internal constructor() : MediaList {
             PlayMode.PlayListLoop -> ListLoopMediaList()
             PlayMode.SingleLoop -> LoopMediaList()
             PlayMode.Single -> SingleMediaList()
+            PlayMode.Shuffle -> SingleMediaList()
             else -> ListLoopMediaList()
         }
     }

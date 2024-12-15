@@ -12,6 +12,7 @@ import com.music.android.lin.player.metadata.PlayMode
 import com.music.android.lin.player.metadata.command
 import com.music.android.lin.player.metadata.data
 import com.music.android.lin.player.service.PlayCommand
+import com.music.android.lin.player.service.history.PlayHistoryPreference
 import com.music.android.lin.player.service.metadata.PlayHistory
 import com.music.android.lin.player.service.player.Player
 import com.music.android.lin.player.service.readObject
@@ -43,6 +44,7 @@ internal class PlayEventLoopHost(
     override val playInfo: PlayInfo,
     override val mediaController: MediaController,
     private val context: Context,
+    private val historyPreference: PlayHistoryPreference,
     handler: Handler,
     player: Player
 ) : PlayEventLoop {
@@ -97,14 +99,8 @@ internal class PlayEventLoopHost(
         playMessage ?: return
         when (playMessage.command) {
             PlayCommand.PLAYER_INIT -> {
-                val directory = File(this.context.filesDir, "player")
-                val playHistory = if (directory.exists() || directory.mkdirs()) {
-                    val playHistoryFile = File(directory, "playHistory.data")
-                    if (playHistoryFile.exists()) {
-                        readObject<PlayHistory>(playHistoryFile)
-                    } else null
-                } else null
-                if (playHistory != null) {
+                val playHistory = historyPreference.playHistoryInPreference
+                if (playHistory?.mediaInfoPlayList != null) {
                     val mediaResource = CommonPlayMediaResource(
                         mediaInfoPlayList = playHistory.mediaInfoPlayList,
                         startPosition = playHistory.indexOfCurrentPosition,

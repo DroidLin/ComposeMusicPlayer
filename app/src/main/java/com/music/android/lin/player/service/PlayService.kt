@@ -37,7 +37,7 @@ const val KEY_PLAY_MESSAGE = "key_play_message"
 
 internal class PlayService : Service() {
 
-    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private var playEventLoop: PlayEventLoop? = null
     private val playMessageCommandCache = LinkedList<PlayMessageCommand>()

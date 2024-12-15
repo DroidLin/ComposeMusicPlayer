@@ -20,7 +20,6 @@ splashScreen = "1.0.1"
 navigation = "2.8.4"
 datastore = "1.1.1"
 kotlinSerialization = "1.6.3"
-adaptiveWindow = "1.0.0"
 
 kotinImmutableCollection = "0.3.8"
 
@@ -30,6 +29,10 @@ googleGmsServicePlugin = "4.4.2"
 firebaseBom = "33.6.0"
 firebaseCrashlytics = "3.0.2"
 firebasePerf = "1.4.2"
+
+adaptiveLayout = "1.1.0-alpha08"
+
+airbnbLottie = "6.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -76,9 +79,9 @@ splash-screen = { group = "androidx.core", name = "core-splashscreen", version.r
 kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 kotin-immutable-collection = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotinImmutableCollection" }
 
-material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive", version.ref = "adaptiveWindow" }
-material3-adaptive-layout = { group = "androidx.compose.material3.adaptive", name = "adaptive-layout", version.ref = "adaptiveWindow" }
-material3-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation", version.ref = "adaptiveWindow" }
+material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive", version.ref = "adaptiveLayout" }
+material3-adaptive-layout = { group = "androidx.compose.material3.adaptive", name = "adaptive-layout", version.ref = "adaptiveLayout" }
+material3-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation", version.ref = "adaptiveLayout" }
 
 palette = { group = "androidx.palette", name = "palette", version.ref = "palette"}
 
@@ -86,6 +89,8 @@ google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", ve
 google-firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 google-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 google-firebase-performance = { group = "com.google.firebase", name = "firebase-perf" }
+
+airbnb-lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "airbnbLottie"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

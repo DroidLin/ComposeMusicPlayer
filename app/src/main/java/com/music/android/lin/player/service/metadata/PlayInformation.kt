@@ -12,6 +12,7 @@ import java.io.Serializable
 data class PlayInformation(
     val mediaInfoPlayList: MediaInfoPlayList? = null,
     val mediaInfo: MediaInfo? = null,
+    val indexOfCurrentMediaInfo: Int = -1,
     val playMode: PlayMode = PlayMode.PlayListLoop,
     val playerMetadata: PlayerMetadata = PlayerMetadata()
 ) : Serializable {

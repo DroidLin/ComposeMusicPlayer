@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         val frameworkViewModel = getViewModel<AppFrameworkViewModel>()
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {
-            !AppKoin.mediaService.isConnected && frameworkViewModel.firstGuideCompleted.value != null
+            frameworkViewModel.firstGuideCompleted.value == null
         }
 
         setContent {

@@ -20,7 +20,8 @@ internal class BizPlayInfo(
             mediaInfoPlayList = mediaMetadata.mediaInfoPlayList,
             mediaInfo = mediaMetadata.mediaInfo,
             playMode = mediaMetadata.playMode,
-            playerMetadata = playerMetadata
+            playerMetadata = playerMetadata,
+            indexOfCurrentMediaInfo = mediaMetadata.indexOfCurrentMediaInfo
         )
     }.distinctUntilChanged()
 }

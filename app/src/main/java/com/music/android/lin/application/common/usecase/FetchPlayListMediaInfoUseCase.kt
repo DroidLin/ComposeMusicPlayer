@@ -21,7 +21,7 @@ class FetchPlayListMediaInfoUseCase(
             }
             MusicItemSnapshot(
                 musicItemList = musicItemList.toImmutableList(),
-                mediaInfoList = mediaInfoList.toImmutableList()
+                mediaInfoList = mediaInfoList
             )
         }
 }
