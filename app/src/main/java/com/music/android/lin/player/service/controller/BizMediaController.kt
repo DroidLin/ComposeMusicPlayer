@@ -41,16 +41,25 @@ class BizMediaController(
 
     override fun setPlayMode(playMode: PlayMode) {
         this.mediaList.setPlayMode(playMode)
+        this.player.sync()
     }
 
     override fun skipToPrevious() {
-        val currentMediaInfo = this.mediaList.prevMediaInfo
-        this.playResourceInner(currentMediaInfo, true)
+        this.skipToPrevious(fromUser = true)
+    }
+
+    override fun skipToPrevious(fromUser: Boolean) {
+        val previousMediaInfo = this.mediaList.tryGetPreviousMediaInfo(fromUser)
+        this.playResourceInner(previousMediaInfo, true)
     }
 
     override fun skipToNext() {
-        val currentMediaInfo = this.mediaList.nextMediaInfo
-        this.playResourceInner(currentMediaInfo, true)
+        this.skipToNext(fromUser = true)
+    }
+
+    override fun skipToNext(fromUser: Boolean) {
+        val nextMediaInfo = this.mediaList.tryGetNextMediaInfo(fromUser)
+        this.playResourceInner(nextMediaInfo, true)
     }
 
     override fun release() {

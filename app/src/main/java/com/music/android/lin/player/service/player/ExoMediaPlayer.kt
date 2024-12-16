@@ -7,14 +7,12 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.modules.applicationContext
-import com.music.android.lin.player.service.controller.MediaController
 import com.music.android.lin.player.service.metadata.PlayerMetadata
 import com.music.android.lin.player.service.player.datasource.DataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import org.koin.core.annotation.Singleton
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -120,6 +118,10 @@ internal class ExoMediaPlayer(
         this.updatePlayerMetadata()
     }
 
+    override fun sync() {
+        this.updatePlayerMetadata()
+    }
+
     override fun stop() {
         this.exoPlayer.stop()
         this.updatePlayerMetadata()
@@ -142,6 +144,8 @@ internal class ExoMediaPlayer(
             it.copy(
                 contentProgress = this.contentProgress,
                 contentDuration = this.contentDuration,
+                volume = this.exoPlayer.volume,
+                isPlaying = this.exoPlayer.isPlaying,
             )
         }
     }

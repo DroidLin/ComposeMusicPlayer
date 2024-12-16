@@ -151,8 +151,6 @@ fun AppMusicFramework(modifier: Modifier = Modifier) {
                         .zIndex(2f),
                     navController = navController,
                     startDestination = PageDefinition.SingleMusicView,
-                    enterTransition = { EnterTransition.None },
-                    exitTransition = { ExitTransition.None }
                 ) {
                     composable<PageDefinition.SingleMusicView>(
                         deepLinks = listOf(

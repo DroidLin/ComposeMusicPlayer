@@ -29,6 +29,11 @@ sealed interface Player {
 
     fun seekToPosition(position: Long)
 
+    /**
+     * sync player state and dispatch to all over the world.
+     */
+    fun sync()
+
     fun stop()
 
     fun release()

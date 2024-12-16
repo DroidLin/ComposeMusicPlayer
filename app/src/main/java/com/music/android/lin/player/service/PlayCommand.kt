@@ -21,4 +21,5 @@ internal object PlayCommand {
     const val PLAY_RESOURCE = 14
     const val ATTACH_MEDIA_INTERFACE_HANDLE = 15
     const val UPDATE_PLAY_INFORMATION = 16
+    const val SYNC_PLAY_METADATA = 17
 }

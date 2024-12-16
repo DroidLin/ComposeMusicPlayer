@@ -17,8 +17,10 @@ interface MediaController {
     fun stop()
 
     fun skipToPrevious()
+    fun skipToPrevious(fromUser: Boolean)
 
     fun skipToNext()
+    fun skipToNext(fromUser: Boolean)
 
     fun release()
 

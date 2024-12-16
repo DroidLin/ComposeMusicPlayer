@@ -10,4 +10,6 @@ import kotlinx.coroutines.flow.Flow
 interface PlayInfo {
 
     val information: Flow<PlayInformation>
+
+    fun synchronize()
 }

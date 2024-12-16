@@ -53,6 +53,7 @@ internal class PlayNotificationManager constructor(
         Intent().also {
             it.component = ComponentName(this.context.packageName, "com.music.android.lin.application.MainActivity")
             it.data = Uri.parse("coco://app-deeplink.cn/player")
+            it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         },
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
@@ -77,6 +78,7 @@ internal class PlayNotificationManager constructor(
         withActionAndEncryptCategory(ACTION_MUSIC_CONTROLLER_PLAY),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
+
 
     private val skipToNextPendingIntent = PendingIntent.getBroadcast(
         this.context,

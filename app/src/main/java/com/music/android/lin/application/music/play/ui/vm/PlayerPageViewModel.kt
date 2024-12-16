@@ -15,6 +15,7 @@ import com.music.android.lin.application.music.play.ui.util.pickColorAndTransfor
 import com.music.android.lin.player.notification.fetchBlurImageAsPainter
 import com.music.android.lin.player.notification.fetchImageAsBitmap
 import com.music.android.lin.player.service.MediaService
+import com.music.android.lin.player.service.PlayCommand
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.onFailure
@@ -43,6 +44,7 @@ class PlayerPageViewModel(
 
     val playerState = flow {
         supervisorScope {
+            mediaService.runCommand(PlayCommand.SYNC_PLAY_METADATA) {}
             val channel = produce {
                 mediaService.information.collect { send(it) }
             }

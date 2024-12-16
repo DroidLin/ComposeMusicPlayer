@@ -61,6 +61,7 @@ internal class PlayEventLoopHost(
     private val playerListener = object : Player.Listener {
         override fun onPlayEnd() {
             val message = PlayMessage.ofCommand(PlayCommand.SKIP_TO_NEXT)
+            message.data = false
             dispatchMessage(message)
         }
     }
@@ -106,6 +107,7 @@ internal class PlayEventLoopHost(
                         startPosition = playHistory.indexOfCurrentPosition,
                         autoStart = false
                     )
+                    this.mediaController.setPlayMode(playHistory.playMode)
                     this.mediaController.playMediaResource(mediaResource)
                     this.mediaController.seekToPosition(playHistory.playingProgress)
                 }
@@ -113,8 +115,8 @@ internal class PlayEventLoopHost(
 
             PlayCommand.PAUSE -> this.mediaController.pause()
             PlayCommand.PLAY_OR_RESUME -> this.mediaController.playOrResume()
-            PlayCommand.SKIP_TO_NEXT -> this.mediaController.skipToNext()
-            PlayCommand.SKIP_TO_PREV -> this.mediaController.skipToPrevious()
+            PlayCommand.SKIP_TO_NEXT -> this.mediaController.skipToNext(playMessage.data as? Boolean ?: true)
+            PlayCommand.SKIP_TO_PREV -> this.mediaController.skipToPrevious(playMessage.data as? Boolean ?: true)
             PlayCommand.SET_VOLUME -> this.mediaController.setVolume(playMessage.data as Float)
             PlayCommand.SEEK_TO_POSITION -> this.mediaController.seekToPosition(playMessage.data as Long)
             PlayCommand.PLAYER_STOP -> this.mediaController.stop()
@@ -124,6 +126,7 @@ internal class PlayEventLoopHost(
                 val mediaResource = playMessage.data as MediaResource
                 this.mediaController.playMediaResource(mediaResource)
             }
+            PlayCommand.SYNC_PLAY_METADATA -> this.playInfo.synchronize()
         }
     }
 

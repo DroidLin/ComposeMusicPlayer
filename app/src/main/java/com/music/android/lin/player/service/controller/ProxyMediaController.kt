@@ -35,8 +35,20 @@ class ProxyMediaController(
         dispatchPlayerMessage(PlayCommand.SKIP_TO_PREV)
     }
 
+    override fun skipToPrevious(fromUser: Boolean) {
+        dispatchPlayerMessage(PlayCommand.SKIP_TO_PREV) {
+            data = fromUser
+        }
+    }
+
     override fun skipToNext() {
         dispatchPlayerMessage(PlayCommand.SKIP_TO_NEXT)
+    }
+
+    override fun skipToNext(fromUser: Boolean) {
+        dispatchPlayerMessage(PlayCommand.SKIP_TO_NEXT) {
+            data = fromUser
+        }
     }
 
     override fun seekToPosition(position: Long) {

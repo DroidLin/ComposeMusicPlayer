@@ -3,10 +3,13 @@ package com.music.android.lin.player.service.controller
 import com.music.android.lin.player.service.metadata.PlayInformation
 import com.music.android.lin.player.service.player.Player
 import com.music.android.lin.player.service.playlist.MediaPlayingList
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 
+@OptIn(FlowPreview::class)
 internal class BizPlayInfo(
     private val player: Player,
     private val mediaList: MediaPlayingList,
@@ -23,5 +26,11 @@ internal class BizPlayInfo(
             playerMetadata = playerMetadata,
             indexOfCurrentMediaInfo = mediaMetadata.indexOfCurrentMediaInfo
         )
-    }.distinctUntilChanged()
+    }
+        .distinctUntilChanged()
+        .debounce(16L)
+
+    override fun synchronize() {
+        this.player.sync()
+    }
 }

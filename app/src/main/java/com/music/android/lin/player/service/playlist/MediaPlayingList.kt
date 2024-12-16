@@ -8,17 +8,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-/**
- * @author: liuzhongao
- * @since: 2024/10/23 21:34
- */
-class MediaPlayingList internal constructor() : MediaList {
+class MediaPlayingList {
 
     private val mutableMetadata = MutableStateFlow(MediaListMetadata())
     val metadata = this.mutableMetadata.asStateFlow()
 
-    private var mediaList: MediaList = ListLoopMediaList()
-    private var indexOfCurrentPosition: Int
+    private var mediaList: MediaList = ListLoop(this)
+    var indexOfCurrentPosition: Int
         set(value) {
             this.mutableMetadata.update {
                 it.copy(indexOfCurrentMediaInfo = value)
@@ -26,9 +22,9 @@ class MediaPlayingList internal constructor() : MediaList {
         }
         get() = this.mutableMetadata.value.indexOfCurrentMediaInfo
 
-    override var mediaInfoPlayList: MediaInfoPlayList? = null
+    var mediaInfoPlayList: MediaInfoPlayList? = null
 
-    override val mediaInfo: MediaInfo?
+    val mediaInfo: MediaInfo?
         get() {
             val playList = this.mediaInfoPlayList ?: return null
             val currentPosition = this@MediaPlayingList.indexOfCurrentPosition
@@ -38,80 +34,37 @@ class MediaPlayingList internal constructor() : MediaList {
             return playList.mediaInfoList[currentPosition]
         }
 
-    override val prevMediaInfo: MediaInfo?
-        get() = this.mediaList.prevMediaInfo
-    override val nextMediaInfo: MediaInfo?
-        get() = this.mediaList.nextMediaInfo
+    fun tryGetPreviousMediaInfo(fromUser: Boolean): MediaInfo? {
+        return this.mediaList.tryGetPreviousMediaInfo(fromUser)
+    }
+
+    fun tryGetNextMediaInfo(fromUser: Boolean): MediaInfo? {
+        return this.mediaList.tryGetNextMediaInfo(fromUser)
+    }
 
     fun setPlayMode(playMode: PlayMode) {
         this.mutableMetadata.update { it.copy(playMode = playMode) }
         this.mediaList = when (playMode) {
-            PlayMode.PlayListLoop -> ListLoopMediaList()
-            PlayMode.SingleLoop -> LoopMediaList()
-            PlayMode.Single -> SingleMediaList()
-            PlayMode.Shuffle -> SingleMediaList()
-            else -> ListLoopMediaList()
+            PlayMode.PlayListLoop -> ListLoop(this)
+            PlayMode.SingleLoop -> SingleLoop(this)
+            PlayMode.Single -> Single(this)
+            PlayMode.Shuffle -> Shuffle(this)
+            else -> ListLoop(this)
         }
     }
 
     fun setResource(mediaInfoPlayList: MediaInfoPlayList, indexOfCurrentPosition: Int) {
         this.mediaInfoPlayList = mediaInfoPlayList
         this.indexOfCurrentPosition = indexOfCurrentPosition
-        this.syncCurrentMediaInfo()
-        this.mutableMetadata.update { it.copy(mediaInfoPlayList = mediaInfoPlayList) }
+        this.mutableMetadata.update {
+            it.copy(
+                mediaInfoPlayList = mediaInfoPlayList,
+                mediaInfo = this.mediaInfo
+            )
+        }
     }
 
-    private fun syncCurrentMediaInfo() {
+    internal fun syncCurrentMediaInfo() {
         this.mutableMetadata.update { it.copy(mediaInfo = this.mediaInfo) }
-    }
-
-    private inner class ListLoopMediaList : MediaListParent(this) {
-        override val prevMediaInfo: MediaInfo?
-            get() {
-                val playList = this.mediaInfoPlayList ?: return null
-                val currentPosition = this@MediaPlayingList.indexOfCurrentPosition
-                if (currentPosition !in playList.mediaInfoList.indices) {
-                    return null
-                }
-                var newPosition = currentPosition - 1
-                if (newPosition !in playList.mediaInfoList.indices) {
-                    newPosition += playList.mediaInfoList.size
-                }
-                newPosition %= playList.mediaInfoList.size
-                this@MediaPlayingList.indexOfCurrentPosition = newPosition
-                this@MediaPlayingList.syncCurrentMediaInfo()
-                return playList.mediaInfoList[newPosition]
-            }
-        override val nextMediaInfo: MediaInfo?
-            get() {
-                val playList = this.mediaInfoPlayList ?: return null
-                val currentPosition = this@MediaPlayingList.indexOfCurrentPosition
-                if (currentPosition !in playList.mediaInfoList.indices) {
-                    return null
-                }
-                var newPosition = currentPosition + 1
-                if (newPosition !in playList.mediaInfoList.indices) {
-                    newPosition += playList.mediaInfoList.size
-                }
-                newPosition %= playList.mediaInfoList.size
-                this@MediaPlayingList.indexOfCurrentPosition = newPosition
-                this@MediaPlayingList.syncCurrentMediaInfo()
-                return playList.mediaInfoList[newPosition]
-            }
-    }
-
-    private inner class LoopMediaList : MediaListParent(this) {
-        override val prevMediaInfo: MediaInfo? get() = this.mediaInfo
-        override val nextMediaInfo: MediaInfo? get() = this.mediaInfo
-    }
-
-    private inner class SingleMediaList : MediaListParent(this) {
-        override val nextMediaInfo: MediaInfo? = null
-        override val prevMediaInfo: MediaInfo? = null
-    }
-
-    internal abstract class MediaListParent(private val rawMediaList: MediaList) : MediaList {
-        final override val mediaInfoPlayList: MediaInfoPlayList? get() = this.rawMediaList.mediaInfoPlayList
-        override val mediaInfo: MediaInfo? get() = this.rawMediaList.mediaInfo
     }
 }

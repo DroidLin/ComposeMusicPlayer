@@ -28,7 +28,6 @@ interface MediaService {
 
     fun runCommand(
         command: Int,
-        async: Boolean = true,
         customParams: PlayMessage.() -> Unit
     ): PlayMessage
 }
@@ -76,7 +75,6 @@ private class MediaServiceProcessor(context: Context) : MediaService {
 
     override fun runCommand(
         command: Int,
-        async: Boolean,
         customParams: PlayMessage.() -> Unit
     ): PlayMessage {
         val function = this.mediaServiceInterface::dispatch

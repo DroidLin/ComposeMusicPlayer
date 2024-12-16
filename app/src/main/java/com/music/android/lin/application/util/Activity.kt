@@ -1,5 +1,8 @@
 package com.music.android.lin.application.util
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
@@ -24,3 +27,15 @@ fun OnNewIntent(
         onDispose { activity.removeOnNewIntentListener(onNewIntent) }
     }
 }
+
+val Context.activity: Activity?
+    get() {
+        if (this is Activity) return this
+        var context: Context? = this
+        while (context != null && context !is Activity) {
+            if (context is ContextWrapper) {
+                context = context.baseContext
+            }
+        }
+        return context as? Activity
+    }

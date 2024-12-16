@@ -26,4 +26,24 @@ class ColorFilterPainter(
             draw(size = size, colorFilter = overrideColorFilter)
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ColorFilterPainter
+
+        if (painter != other.painter) return false
+        if (overrideColorFilter != other.overrideColorFilter) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = painter.hashCode()
+        result = 31 * result + (overrideColorFilter?.hashCode() ?: 0)
+        return result
+    }
+
+
 }

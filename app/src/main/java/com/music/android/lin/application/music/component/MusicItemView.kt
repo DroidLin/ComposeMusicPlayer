@@ -71,8 +71,9 @@ fun MusicItemView(
             Surface(
                 shape = MaterialTheme.shapes.small
             ) {
+                val contentColor = LocalContentColor.current
                 val pictureBrokenPainter = painterResource(R.drawable.ic_broken_img)
-                    .tintPainter(LocalContentColor.current)
+                    .tintPainter(contentColor)
                 if (musicItem.musicCover.isNullOrEmpty()) {
                     Icon(
                         modifier = Modifier
@@ -82,7 +83,7 @@ fun MusicItemView(
                     )
                 } else {
                     val picturePainter = painterResource(R.drawable.ic_placeholder_img)
-                        .tintPainter(LocalContentColor.current)
+                        .tintPainter(contentColor)
                     AsyncImage(
                         modifier = Modifier
                             .size(56.dp),
