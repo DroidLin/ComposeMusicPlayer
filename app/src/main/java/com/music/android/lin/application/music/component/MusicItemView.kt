@@ -74,7 +74,6 @@ fun MusicItemView(
                 shape = MaterialTheme.shapes.small,
                 color = Color.Transparent
             ) {
-                val contentColor = LocalContentColor.current
                 if (musicItem.musicCover.isNullOrEmpty()) {
                     Surface(
                         modifier = Modifier
@@ -82,6 +81,7 @@ fun MusicItemView(
                         color = MaterialTheme.colorScheme.primaryContainer,
                     ) {}
                 } else {
+                    val contentColor = MaterialTheme.colorScheme.primaryContainer
                     val fallbackPainter = remember(contentColor) { ColorPainter(contentColor) }
                     AsyncImage(
                         modifier = Modifier
