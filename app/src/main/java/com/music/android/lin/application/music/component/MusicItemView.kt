@@ -21,7 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -69,30 +71,27 @@ fun MusicItemView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                shape = MaterialTheme.shapes.small
+                shape = MaterialTheme.shapes.small,
+                color = Color.Transparent
             ) {
                 val contentColor = LocalContentColor.current
-                val pictureBrokenPainter = painterResource(R.drawable.ic_broken_img)
-                    .tintPainter(contentColor)
                 if (musicItem.musicCover.isNullOrEmpty()) {
-                    Icon(
+                    Surface(
                         modifier = Modifier
                             .size(56.dp),
-                        painter = pictureBrokenPainter,
-                        contentDescription = null
-                    )
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                    ) {}
                 } else {
-                    val picturePainter = painterResource(R.drawable.ic_placeholder_img)
-                        .tintPainter(contentColor)
+                    val fallbackPainter = remember(contentColor) { ColorPainter(contentColor) }
                     AsyncImage(
                         modifier = Modifier
                             .size(56.dp),
                         model = musicItem.musicCover,
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
-                        placeholder = picturePainter,
-                        fallback = picturePainter,
-                        error = pictureBrokenPainter,
+                        error = fallbackPainter,
+                        fallback = fallbackPainter,
+                        placeholder = fallbackPainter
                     )
                 }
             }

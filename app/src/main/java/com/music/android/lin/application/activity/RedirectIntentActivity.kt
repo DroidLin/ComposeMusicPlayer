@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.music.android.lin.application.MainActivity
-import com.music.android.lin.modules.AppKoin
-import com.music.android.lin.modules.mainActivity
 
 /**
  * @author liuzhongao

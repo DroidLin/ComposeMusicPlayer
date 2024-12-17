@@ -1,6 +1,7 @@
 package com.music.android.lin.application.music.single.ui
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,14 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +40,7 @@ import com.music.android.lin.application.common.ui.vm.PlayViewModel
 import com.music.android.lin.application.common.usecase.MusicItem
 import com.music.android.lin.application.common.usecase.MusicItemSnapshot
 import com.music.android.lin.application.framework.AppMaterialTheme
+import com.music.android.lin.application.music.component.AnchorToTargetActionButton
 import com.music.android.lin.application.music.component.CommonMediaItemView
 import com.music.android.lin.application.music.single.ui.vm.FakeMusicItemData
 import com.music.android.lin.application.music.single.ui.vm.SingleMusicViewModel
@@ -96,25 +98,6 @@ private fun ContentMusicView(
             state = state,
         ) { data: DataLoadState.Data<MusicItemSnapshot> ->
             val coroutineScope = rememberCoroutineScope()
-            val showAnchorButton = remember(data) {
-                derivedStateOf {
-                    data.data.musicItemList.find { it.mediaId == playState.value.musicItem?.mediaId } != null
-                }
-            }
-            val anchorToTarget: () -> Unit =
-                remember(coroutineScope, data, lazyListState, playState) {
-                    {
-                        coroutineScope.launch {
-                            val indexOfCurrentMediaInfo =
-                                data.data.musicItemList.indexOfFirst { musicInfo ->
-                                    musicInfo.mediaId == playState.value.musicItem?.mediaId
-                                }
-                            if (indexOfCurrentMediaInfo in data.data.musicItemList.indices) {
-                                lazyListState.fastScrollToItem(indexOfCurrentMediaInfo)
-                            }
-                        }
-                    }
-                }
             Column(
                 modifier = Modifier.matchParentSize(),
             ) {
@@ -137,8 +120,23 @@ private fun ContentMusicView(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(horizontal = 16.dp, vertical = 16.dp),
-                        showAnchorButton = showAnchorButton,
-                        anchorToTarget = anchorToTarget
+                        showAnchorButton = remember(data) {
+                            derivedStateOf {
+                                data.data.musicItemList.find { it.mediaId == playState.value.musicItem?.mediaId } != null
+                            }
+                        },
+                        anchorToTarget = {
+                            coroutineScope.launch {
+                                val indexOfCurrentMediaInfo =
+                                    data.data.musicItemList.indexOfFirst { musicInfo ->
+                                        musicInfo.mediaId == playState.value.musicItem?.mediaId
+                                    }
+                                if (indexOfCurrentMediaInfo in data.data.musicItemList.indices) {
+                                    lazyListState.fastScrollToItem(indexOfCurrentMediaInfo)
+                                }
+                            }
+                        },
+                        shouldHideContent = remember { derivedStateOf { lazyListState.isScrollInProgress } }
                     )
                 }
             }
@@ -170,22 +168,6 @@ private fun TopHeader(
             }
         }
     )
-}
-
-@Composable
-fun AnchorToTargetActionButton(
-    showAnchorButton: State<Boolean>,
-    anchorToTarget: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    if (showAnchorButton.value) {
-        FloatingActionButton(
-            modifier = modifier,
-            onClick = anchorToTarget
-        ) {
-            Icon(Icons.Default.MyLocation, "anchor to target media info.")
-        }
-    }
 }
 
 
