@@ -35,11 +35,22 @@ object AppKoin {
         noinline parameters: ParametersDefinition? = null,
     ): T = getInner(T::class, qualifier, parameters)
 
+    inline fun <reified T : Any> getOrNull(
+        qualifier: Qualifier? = null,
+        noinline parameters: ParametersDefinition? = null,
+    ): T? = getInnerOrNull(T::class, qualifier, parameters)
+
     fun <T : Any> getInner(
         clazz: KClass<T>,
         qualifier: Qualifier? = null,
         parameters: ParametersDefinition? = null,
     ): T = koin.get(clazz, qualifier, parameters)
+
+    fun <T : Any> getInnerOrNull(
+        clazz: KClass<T>,
+        qualifier: Qualifier? = null,
+        parameters: ParametersDefinition? = null,
+    ): T? = koin.getOrNull(clazz, qualifier, parameters)
 
     fun loadModules(modules: List<Module>) {
         koin.loadModules(modules)

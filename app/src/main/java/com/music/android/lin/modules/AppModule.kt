@@ -13,7 +13,7 @@ import org.koin.core.annotation.Module
         AppDatabaseModule::class,
         AppUseCaseModule::class,
         AppViewModelModule::class,
-        AppScannerModule::class
+        AppScannerModule::class,
     ]
 )
 internal object AppModule

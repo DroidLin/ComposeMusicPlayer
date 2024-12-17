@@ -47,52 +47,69 @@ internal class PlayNotificationManager constructor(
 
     private val notificationManagerCompat = NotificationManagerCompat.from(this.context)
 
-    private val launchPlayerViewPendingIntent = PendingIntent.getActivity(
-        this.context,
-        REQUEST_CODE_PENDING_INTENT,
-        Intent().also {
-            it.component = ComponentName(this.context.packageName, "com.music.android.lin.application.MainActivity")
-            it.data = Uri.parse("coco://app-deeplink.cn/player")
-            it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        },
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    )
+    private val launchIntent: Intent
+        get() {
+            val intent = Intent().also {
+                it.component = ComponentName(
+                    this.context.packageName,
+                    "com.music.android.lin.application.activity.RedirectIntentActivity"
+                )
+                it.data = Uri.parse("coco://app-deeplink.cn/player")
+                it.setAction(Intent.ACTION_MAIN)
+                it.addCategory(Intent.CATEGORY_LAUNCHER)
+            }
+            return intent
+        }
 
-    private val skipToPreviousPendingIntent = PendingIntent.getBroadcast(
-        this.context,
-        REQUEST_CODE_PENDING_INTENT,
-        withActionAndEncryptCategory(ACTION_MUSIC_CONTROLLER_SKIP_TO_PREVIOUS),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    )
+    private val launchPlayerViewPendingIntent: PendingIntent
+        get() = PendingIntent.getActivity(
+            this.context,
+            REQUEST_CODE_PENDING_INTENT,
+            launchIntent,
+            (PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        )
 
-    private val pausePendingIntent = PendingIntent.getBroadcast(
-        this.context,
-        REQUEST_CODE_PENDING_INTENT,
-        withActionAndEncryptCategory(ACTION_MUSIC_CONTROLLER_PAUSE),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    )
+    private val skipToPreviousPendingIntent: PendingIntent
+        get() = PendingIntent.getBroadcast(
+            this.context,
+            REQUEST_CODE_PENDING_INTENT,
+            withActionAndEncryptCategory(ACTION_MUSIC_CONTROLLER_SKIP_TO_PREVIOUS),
+            (PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        )
 
-    private val playPendingIntent = PendingIntent.getBroadcast(
-        this.context,
-        REQUEST_CODE_PENDING_INTENT,
-        withActionAndEncryptCategory(ACTION_MUSIC_CONTROLLER_PLAY),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    )
+    private val pausePendingIntent: PendingIntent
+        get() = PendingIntent.getBroadcast(
+            this.context,
+            REQUEST_CODE_PENDING_INTENT,
+            withActionAndEncryptCategory(ACTION_MUSIC_CONTROLLER_PAUSE),
+            (PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        )
+
+    private val playPendingIntent: PendingIntent
+        get() = PendingIntent.getBroadcast(
+            this.context,
+            REQUEST_CODE_PENDING_INTENT,
+            withActionAndEncryptCategory(ACTION_MUSIC_CONTROLLER_PLAY),
+            (PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        )
 
 
-    private val skipToNextPendingIntent = PendingIntent.getBroadcast(
-        this.context,
-        REQUEST_CODE_PENDING_INTENT,
-        withActionAndEncryptCategory(ACTION_MUSIC_CONTROLLER_SKIP_TO_NEXT),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    )
+    private val skipToNextPendingIntent: PendingIntent
+        get() = PendingIntent.getBroadcast(
+            this.context,
+            REQUEST_CODE_PENDING_INTENT,
+            withActionAndEncryptCategory(ACTION_MUSIC_CONTROLLER_SKIP_TO_NEXT),
+            (PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        )
 
     private val notificationControllerBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val action = intent?.action ?: return
-            val verificationId = intent.getStringExtra(KEY_BROADCAST_NOTIFICATION_INTENT_VERIFICATION) ?: return
-            val isIdValid = verificationId.startsWith(this@PlayNotificationManager.context.packageName)
-                    && verificationId.endsWith(MEDIA_NOTIFICATION_ID.toString())
+            val verificationId =
+                intent.getStringExtra(KEY_BROADCAST_NOTIFICATION_INTENT_VERIFICATION) ?: return
+            val isIdValid =
+                verificationId.startsWith(this@PlayNotificationManager.context.packageName)
+                        && verificationId.endsWith(MEDIA_NOTIFICATION_ID.toString())
             if (!isIdValid) {
                 return
             }
@@ -141,13 +158,24 @@ internal class PlayNotificationManager constructor(
         intentFilter.addAction(ACTION_MUSIC_CONTROLLER_PLAY)
         intentFilter.addAction(ACTION_MUSIC_CONTROLLER_SKIP_TO_NEXT)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            this.context.registerReceiver(this.notificationControllerBroadcastReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+            this.context.registerReceiver(
+                this.notificationControllerBroadcastReceiver,
+                intentFilter,
+                Context.RECEIVER_NOT_EXPORTED
+            )
         } else {
-            this.context.registerReceiver(this.notificationControllerBroadcastReceiver, intentFilter)
+            this.context.registerReceiver(
+                this.notificationControllerBroadcastReceiver,
+                intentFilter
+            )
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            service.startForeground(MEDIA_NOTIFICATION_ID, buildEmptyNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+            service.startForeground(
+                MEDIA_NOTIFICATION_ID,
+                buildEmptyNotification(),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+            )
         } else {
             service.startForeground(MEDIA_NOTIFICATION_ID, buildEmptyNotification())
         }
@@ -231,6 +259,7 @@ internal class PlayNotificationManager constructor(
                     .setMediaSession(this.mediaSessionToken)
                     .setShowActionsInCompactView(0, 1, 2)
             )
+            .setAutoCancel(true)
             .setSmallIcon(R.drawable.ic_media_indicator)
             .setLargeIcon(loadLargeIcon(mediaInfo = mediaInfo))
             .setPriority(Notification.PRIORITY_DEFAULT)
@@ -253,16 +282,20 @@ internal class PlayNotificationManager constructor(
         }
     }
 
-    private suspend fun loadCoverBitmap(mediaInfo: MediaInfo): Bitmap? = withContext(Dispatchers.IO) {
-        kotlin.runCatching {
-            fetchImageAsBitmap(imageResourceUrl = mediaInfo.coverUri)
-        }.onFailure { it.printStackTrace() }.getOrNull()
-    }
+    private suspend fun loadCoverBitmap(mediaInfo: MediaInfo): Bitmap? =
+        withContext(Dispatchers.IO) {
+            kotlin.runCatching {
+                fetchImageAsBitmap(imageResourceUrl = mediaInfo.coverUri)
+            }.onFailure { it.printStackTrace() }.getOrNull()
+        }
 
     private fun Notification.Builder.withPreviousAction() = apply {
         addAction(
             Notification.Action.Builder(
-                Icon.createWithResource(this@PlayNotificationManager.context, R.drawable.ic_skip_previous),
+                Icon.createWithResource(
+                    this@PlayNotificationManager.context,
+                    R.drawable.ic_skip_previous
+                ),
                 "previous",
                 this@PlayNotificationManager.skipToPreviousPendingIntent
             ).build()
@@ -292,7 +325,10 @@ internal class PlayNotificationManager constructor(
     private fun Notification.Builder.withNextAction() = apply {
         addAction(
             Notification.Action.Builder(
-                Icon.createWithResource(this@PlayNotificationManager.context, R.drawable.ic_skip_next),
+                Icon.createWithResource(
+                    this@PlayNotificationManager.context,
+                    R.drawable.ic_skip_next
+                ),
                 "next",
                 this@PlayNotificationManager.skipToNextPendingIntent
             ).build()
@@ -301,7 +337,10 @@ internal class PlayNotificationManager constructor(
 
     private fun withActionAndEncryptCategory(action: String): Intent {
         return withActionIntent(action = action) {
-            putExtra(KEY_BROADCAST_NOTIFICATION_INTENT_VERIFICATION, "${context.packageName}.$MEDIA_NOTIFICATION_ID")
+            putExtra(
+                KEY_BROADCAST_NOTIFICATION_INTENT_VERIFICATION,
+                "${context.packageName}.$MEDIA_NOTIFICATION_ID"
+            )
         }
     }
 
@@ -328,6 +367,6 @@ internal class PlayNotificationManager constructor(
         private const val ACTION_MUSIC_CONTROLLER_SKIP_TO_NEXT =
             "action_music_controller_skip_to_next"
 
-        private const val REQUEST_CODE_PENDING_INTENT = 0x325
+        private const val REQUEST_CODE_PENDING_INTENT = 0x324
     }
 }

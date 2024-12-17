@@ -1,13 +1,13 @@
 package com.music.android.lin.application
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.fragment.app.FragmentActivity
 import com.music.android.lin.application.framework.AppFramework
 import com.music.android.lin.application.framework.AppMaterialTheme
 import com.music.android.lin.application.framework.AppMusicFramework
@@ -17,12 +17,10 @@ import com.music.android.lin.application.util.ActivityProvider
 import com.music.android.lin.application.util.LocalWindow
 import com.music.android.lin.application.util.SystemBarStyleComponent
 import com.music.android.lin.application.util.applyWindowBackgroundSettings
-import com.music.android.lin.modules.AppKoin
-import com.music.android.lin.modules.mediaService
 import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
