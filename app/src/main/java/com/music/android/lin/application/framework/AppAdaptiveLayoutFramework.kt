@@ -19,7 +19,7 @@ fun AppAdaptiveLayoutFramework(
     modifier: Modifier = Modifier
 ) {
     val windowAdaptiveInfo = currentWindowAdaptiveInfo()
-    val navigator = rememberListDetailPaneScaffoldNavigator(
+    val navigator = rememberListDetailPaneScaffoldNavigator<Any>(
         scaffoldDirective = calculatePaneScaffoldDirective(windowAdaptiveInfo)
     )
     WindowInfoProvider(
