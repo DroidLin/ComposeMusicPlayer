@@ -7,6 +7,8 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,6 +45,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
+import com.music.android.lin.application.PageDeepLinks
+import com.music.android.lin.application.PageDefinition
 import com.music.android.lin.application.common.ui.state.PlayState
 import com.music.android.lin.application.common.ui.vm.PlayViewModel
 import com.music.android.lin.application.music.play.model.LyricOutput
@@ -54,6 +61,25 @@ import com.music.android.lin.application.music.play.ui.vm.PlayerPageViewModel
 import com.music.android.lin.application.util.SystemBarStyleComponent
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+
+fun NavGraphBuilder.playerView(
+    backPressed: () -> Unit
+) {
+    composable<PageDefinition.PlayerView>(
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = PageDeepLinks.PATH_PLAYER
+            }
+        ),
+        enterTransition = { slideInVertically(animationSpec = spring(stiffness = Spring.StiffnessLow)) { it } },
+        exitTransition = { slideOutVertically(animationSpec = spring(stiffness = Spring.StiffnessLow)) { it } },
+    ) {
+        PlayerView(
+            modifier = Modifier.fillMaxSize(),
+            backPressed = backPressed,
+        )
+    }
+}
 
 @Composable
 fun PlayerView(

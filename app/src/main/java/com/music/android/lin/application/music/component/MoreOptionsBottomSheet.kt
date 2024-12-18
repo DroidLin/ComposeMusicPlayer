@@ -66,7 +66,7 @@ fun MoreOptionsBottomSheet(
             when (type) {
                 OperationType.Delete -> {
                     deleteOperation {
-                        launch {
+                        coroutineScope.launch {
                             sheetState.hide()
                             dismissRequest()
                         }

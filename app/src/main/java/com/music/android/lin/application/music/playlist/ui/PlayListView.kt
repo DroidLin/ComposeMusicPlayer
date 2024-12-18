@@ -1,7 +1,9 @@
 package com.music.android.lin.application.music.playlist.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -19,15 +21,35 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.music.android.lin.R
+import com.music.android.lin.application.PageDefinition
 import com.music.android.lin.application.common.model.PlayListItem
 import com.music.android.lin.application.common.ui.component.DataLoadingView
 import com.music.android.lin.application.common.ui.component.TopAppBarLayout
 import com.music.android.lin.application.common.ui.vm.MediaRepositoryViewModel
+import com.music.android.lin.application.minibar.ui.minibarHeightPadding
 import com.music.android.lin.application.music.component.CommonPlayListItemView
 import com.music.android.lin.application.music.component.CreatePlayListBottomSheet
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+
+fun NavGraphBuilder.playListView(
+    backPressed: () -> Unit,
+    goToPlayListDetail: (PlayListItem) -> Unit,
+) {
+    composable<PageDefinition.PlayList> {
+        PlayListView(
+            modifier = Modifier
+                .fillMaxSize()
+                .minibarHeightPadding()
+                .navigationBarsPadding(),
+            backPressed = backPressed,
+            goToPlayListDetail = goToPlayListDetail
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
