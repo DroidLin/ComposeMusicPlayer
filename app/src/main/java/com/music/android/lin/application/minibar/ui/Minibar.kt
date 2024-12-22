@@ -51,6 +51,7 @@ fun Minibar(
         playButtonPressed = playViewModel::playButtonPressed,
         playListButtonPressed = {},
         audioMinibarContentPressed = navigateToPlayView,
+        videoMinibarContentPressed = {},
         modifier = modifier.anchorMinibarContainer(),
     )
 }
@@ -62,6 +63,7 @@ private fun MinibarContent(
     playButtonPressed: () -> Unit,
     playListButtonPressed: () -> Unit,
     audioMinibarContentPressed: () -> Unit,
+    videoMinibarContentPressed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val showMinibar = remember {

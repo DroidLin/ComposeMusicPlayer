@@ -2,6 +2,7 @@ package com.music.android.lin.application.music.play.ui.vm
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.music.android.lin.application.common.ui.vm.ioViewModelScope
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 
 @SuppressLint("StaticFieldLeak")
+@Stable
 class PlayerLyricViewModel constructor(
     private val context: Context,
     private val lyricParser: LyricParser

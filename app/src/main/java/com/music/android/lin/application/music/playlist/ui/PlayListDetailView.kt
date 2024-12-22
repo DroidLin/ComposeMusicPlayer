@@ -2,7 +2,9 @@ package com.music.android.lin.application.music.playlist.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -16,7 +18,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -26,9 +31,14 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
+import androidx.navigation.compose.composable
 import com.music.android.lin.R
 import com.music.android.lin.application.common.model.MediaInfoPlayListItem
 import com.music.android.lin.application.common.ui.component.DataLoadingView
@@ -38,28 +48,53 @@ import com.music.android.lin.application.common.ui.state.PlayState
 import com.music.android.lin.application.common.ui.vm.MediaRepositoryViewModel
 import com.music.android.lin.application.common.ui.vm.PlayViewModel
 import com.music.android.lin.application.common.usecase.MusicItem
+import com.music.android.lin.application.minibar.ui.minibarHeightPadding
 import com.music.android.lin.application.music.component.AnchorToTargetActionButton
 import com.music.android.lin.application.music.component.CommonMediaItemView
 import com.music.android.lin.application.music.component.SelectMediaInfoBottomSheet
 import com.music.android.lin.application.music.playlist.ui.vm.PlayListDetailViewModel
 import com.music.android.lin.application.util.fastScrollToItem
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
+
+@Stable
+@Serializable
+data class PlayListDetail(
+    val id: String,
+)
+
+fun NavController.navigateToPlayListDetail(playListId: String, navOptions: NavOptions? = null) {
+    this.navigate(route = PlayListDetail(playListId), navOptions = navOptions)
+}
+
+fun NavGraphBuilder.playListDetail(
+    backPressed: () -> Unit,
+) {
+    composable<PlayListDetail> {
+        PlayListDetailView(
+            modifier = Modifier
+                .fillMaxSize()
+                .minibarHeightPadding()
+                .navigationBarsPadding(),
+            backPressed = backPressed,
+            showBackButton = true
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayListDetailView(
-    playListId: String,
+internal fun PlayListDetailView(
+    showBackButton: Boolean,
     backPressed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val playViewModel = koinViewModel<PlayViewModel>()
     val playState = playViewModel.playState.collectAsStateWithLifecycle()
 
-    val playListDetailViewModel = koinViewModel<PlayListDetailViewModel>() {
-        parametersOf(playListId)
-    }
+    val playListDetailViewModel = koinViewModel<PlayListDetailViewModel>()
+    val playListId = playListDetailViewModel.playListId
     val musicInfoState = playListDetailViewModel.playList.collectAsStateWithLifecycle()
     val showSelectMediaInfoBottomSheet = remember { mutableStateOf(false) }
     val mediaRepositoryViewModel = koinViewModel<MediaRepositoryViewModel>()
@@ -68,10 +103,11 @@ fun PlayListDetailView(
     PlayListDetailContentView(
         backPressed = backPressed,
         musicInfoState = musicInfoState,
-        startResource = { playViewModel.startResource(playListId, it) },
         modifier = modifier,
+        startResource = { playViewModel.startResource(playListId, it) },
         addMoreMedia = { showSelectMediaInfoBottomSheet.value = true },
         playState = playState,
+        showBackButton = showBackButton
     )
     SelectMediaInfoBottomSheet(
         show = showSelectMediaInfoBottomSheet,
@@ -85,10 +121,12 @@ fun PlayListDetailView(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayListDetailContentView(
     backPressed: () -> Unit,
     addMoreMedia: () -> Unit,
+    showBackButton: Boolean,
     musicInfoState: State<DataLoadState>,
     playState: State<PlayState>,
     startResource: (MusicItem) -> Unit,
@@ -108,16 +146,20 @@ fun PlayListDetailContentView(
             Column(
                 modifier = Modifier.matchParentSize(),
             ) {
+                val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
                 TopHeader(
                     title = data.data.name,
                     modifier = Modifier.fillMaxWidth(),
                     backPressed = backPressed,
-                    addMoreMedia = addMoreMedia
+                    addMoreMedia = addMoreMedia,
+                    showBackButton = showBackButton,
+                    scrollBehavior = scrollBehavior,
                 )
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
                 ) {
                     CommonMediaItemView(
                         musicInfoList = remember(data) { data.data.musicInfoList },
@@ -157,9 +199,11 @@ fun PlayListDetailContentView(
 @Composable
 private fun TopHeader(
     title: String,
+    showBackButton: Boolean,
     backPressed: () -> Unit,
     addMoreMedia: () -> Unit,
     modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     TopAppBarLayout(
         modifier = modifier,
@@ -170,14 +214,16 @@ private fun TopHeader(
             )
         },
         navigationIcon = {
-            IconButton(
-                onClick = backPressed
-            ) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            if (showBackButton) {
+                IconButton(
+                    onClick = backPressed
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         },
         actions = {
@@ -197,7 +243,8 @@ private fun TopHeader(
                 onDismissRequest = { showPopup.value = false },
                 addMoreMedia = addMoreMedia
             )
-        }
+        },
+        scrollBehavior = scrollBehavior,
     )
 }
 

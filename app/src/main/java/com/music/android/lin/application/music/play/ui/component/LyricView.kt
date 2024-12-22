@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -53,11 +54,9 @@ import com.music.android.lin.application.music.play.model.SimpleLineLyricOutput
 import com.music.android.lin.application.music.play.ui.util.binarySearchLine
 import com.music.android.lin.application.util.applicationAnimationSpec
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicInteger
 
 private val EmptyLyricMeasureResult = LyricTextMeasureResult(
@@ -231,7 +230,6 @@ class LyricViewState : DraggableState {
         }
         isFling = false
     }
-
 }
 
 @Composable
@@ -243,17 +241,17 @@ fun rememberLyricViewState(): LyricViewState {
 
 @Composable
 fun LyricView(
-    currentPosition: State<Long>,
-    lyricOutput: State<LyricOutput?>,
+    currentPosition: Long,
+    lyricOutput: LyricOutput?,
     lyricViewState: LyricViewState = rememberLyricViewState(),
     lyricColor: LyricColors = LyricColors.defaultColor(),
     modifier: Modifier = Modifier,
 ) {
-    when (val output = lyricOutput.value) {
+    when (lyricOutput) {
         is SimpleLineLyricOutput -> SimpleLineLyricView(
             currentPosition = currentPosition,
             modifier = modifier,
-            lyricOutput = output,
+            lyricOutput = lyricOutput,
             lyricViewState = lyricViewState,
             lyricColor = lyricColor,
         )
@@ -266,12 +264,13 @@ private const val FontScale = 22f / 16f
 
 @Composable
 private fun SimpleLineLyricView(
-    currentPosition: State<Long>,
+    currentPosition: Long,
     lyricOutput: SimpleLineLyricOutput,
     lyricColor: LyricColors = LyricColors.defaultColor(),
     lyricViewState: LyricViewState = rememberLyricViewState(),
     modifier: Modifier = Modifier,
 ) {
+    val currentPositionState = rememberUpdatedState(currentPosition)
     val textMeasurer = rememberTextMeasurer()
     val primaryContentColor = LocalContentColor.current
     val secondaryContentColor = primaryContentColor.copy(alpha = 0.75f)
@@ -280,12 +279,11 @@ private fun SimpleLineLyricView(
     val lastLine = remember(lyricOutput) { mutableIntStateOf(-1) }
     val currentLine = remember(lyricOutput) {
         derivedStateOf {
-            lyricOutput.entries.binarySearchLine(currentPosition.value)
+            lyricOutput.entries.binarySearchLine(currentPositionState.value)
         }
     }
 
     val first = remember(lyricOutput) { mutableStateOf(true) }
-
     LaunchedEffect(currentLine.value) {
         // wait until lyric measurement and layout is ready.
         while (lyricViewState.layoutInfoState.measureLyricTextResult.isEmpty() || lyricViewState.anchorLyricLayoutInfoState == null) {

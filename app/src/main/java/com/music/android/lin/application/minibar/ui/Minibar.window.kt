@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.Dp
 import com.music.android.lin.application.common.ui.component.padding
 
 private val LocalMinibarConfig =
-    compositionLocalOf<Minibar> { throw NotImplementedError("not implemented") }
+    compositionLocalOf<Minibar> { Minibar() }
 
 @Composable
 fun MinibarSizeContainer(content: @Composable () -> Unit) {

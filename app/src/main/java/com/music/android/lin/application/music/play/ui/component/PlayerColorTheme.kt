@@ -8,12 +8,12 @@ import com.music.android.lin.application.music.play.ui.state.PlayerColorScheme
 
 @Composable
 fun PlayerColorTheme(
-    playerColorScheme: State<PlayerColorScheme>,
+    playerColorScheme: PlayerColorScheme,
     content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
         values = arrayOf(
-            LocalContentColor provides playerColorScheme.value.textColor,
+            LocalContentColor provides playerColorScheme.textColor,
         ),
         content = content
     )

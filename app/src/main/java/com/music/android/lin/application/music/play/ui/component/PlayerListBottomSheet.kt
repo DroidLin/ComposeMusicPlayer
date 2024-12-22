@@ -1,4 +1,4 @@
-package com.music.android.lin.application.music.play.ui
+package com.music.android.lin.application.music.play.ui.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api

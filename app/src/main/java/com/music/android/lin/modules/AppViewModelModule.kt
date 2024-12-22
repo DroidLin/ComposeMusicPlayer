@@ -118,10 +118,11 @@ internal class AppViewModelModule {
 
     @Factory
     internal fun playListDetailViewModel(
+        savedStateHandle: SavedStateHandle,
         @Qualifier(name = AppIdentifier.applicationContext)
         context: Context,
         fetchPlayListUseCase: FetchPlayListUseCase,
-    ): PlayListDetailViewModel = PlayListDetailViewModel(context, fetchPlayListUseCase)
+    ): PlayListDetailViewModel = PlayListDetailViewModel(savedStateHandle, context, fetchPlayListUseCase)
 
     @Factory
     internal fun playerPageViewModel(

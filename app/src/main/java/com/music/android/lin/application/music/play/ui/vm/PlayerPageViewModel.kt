@@ -1,6 +1,7 @@
 package com.music.android.lin.application.music.play.ui.vm
 
 import android.annotation.SuppressLint
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -34,6 +35,7 @@ import java.util.logging.Logger
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @SuppressLint("StaticFieldLeak")
+@Stable
 class PlayerPageViewModel(
     private val mediaService: MediaService,
     private val logger: Logger,

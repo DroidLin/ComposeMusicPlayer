@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">CoCo</string>
-
+    <string name="app_name">NiaMusic</string>
 
     <string name="string_play_service_notification_channel_name">音乐播放</string>
     <string name="string_play_service_notification_channel_description">播放通知专用的通知渠道</string>

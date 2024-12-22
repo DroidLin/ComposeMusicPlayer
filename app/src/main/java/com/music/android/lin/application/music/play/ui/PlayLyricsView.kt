@@ -9,9 +9,6 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -21,13 +18,12 @@ import com.music.android.lin.application.music.play.model.LyricOutput
 import com.music.android.lin.application.music.play.ui.component.LyricView
 import com.music.android.lin.application.music.play.ui.component.LyricViewState
 import com.music.android.lin.application.music.play.ui.component.rememberLyricViewState
-import com.music.android.lin.application.music.play.ui.state.PlayerInformationState
 
 @Composable
 fun PlayLyricsView(
-    currentPosition: State<Long>,
-    playState: State<PlayState>,
-    lyricOutput: State<LyricOutput?>,
+    currentPosition: Long,
+    playState: PlayState,
+    lyricOutput: LyricOutput?,
     lyricViewState: LyricViewState = rememberLyricViewState(),
     modifier: Modifier = Modifier,
 ) {
@@ -43,14 +39,8 @@ fun PlayLyricsView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
-            informationState = remember {
-                derivedStateOf {
-                    PlayerInformationState(
-                        title = playState.value.musicItem?.musicName ?: "",
-                        subTitle = playState.value.musicItem?.musicDescription ?: ""
-                    )
-                }
-            },
+            title = playState.musicItem?.musicName ?: "",
+            subTitle = playState.musicItem?.musicDescription ?: "",
         )
         Spacer(
             modifier = Modifier
@@ -71,14 +61,15 @@ fun PlayLyricsView(
 
 @Composable
 private fun PlayLyricInformationView(
-    informationState: State<PlayerInformationState>,
+    title: String,
+    subTitle: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
     ) {
         Text(
-            text = informationState.value.title,
+            text = title,
             style = MaterialTheme.typography.titleLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -90,7 +81,7 @@ private fun PlayLyricInformationView(
                 .height(8.dp)
         )
         Text(
-            text = informationState.value.subTitle,
+            text = subTitle,
             style = MaterialTheme.typography.bodyLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

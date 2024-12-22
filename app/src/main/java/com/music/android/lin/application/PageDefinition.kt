@@ -23,39 +23,5 @@ internal object PageDefinition {
 
     @Stable
     @Serializable
-    data object AppMain
-
-    @Stable
-    @Serializable
-    data object PersonalInformation
-
-    @Stable
-    @Serializable
-    data object SingleMusicView
-
-    @Stable
-    @Serializable
-    data object AlbumView
-
-    @Stable
-    @Serializable
-    data object SettingsView
-
-    @Stable
-    @Serializable
-    data object AboutView
-
-    @Stable
-    @Serializable
     data object PlayerView
-
-    @Stable
-    @Serializable
-    data object PlayList
-
-    @Stable
-    @Serializable
-    data class PlayListDetail(
-        val id: String
-    )
 }

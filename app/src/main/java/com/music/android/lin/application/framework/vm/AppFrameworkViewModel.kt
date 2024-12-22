@@ -5,13 +5,9 @@ import androidx.compose.runtime.Stable
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.music.android.lin.application.common.ui.vm.ioViewModelScope
 import com.music.android.lin.application.util.dataStore
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 
 /**
  * @author: liuzhongao
@@ -23,9 +19,13 @@ internal class AppFrameworkViewModel(private val applicationContext: Context) : 
     private val dataStore = this.applicationContext.dataStore
 
     val firstGuideCompleted = this.dataStore.data
-        .map { it[firstEnterGuideCompletedKey] ?: false }
+        .map {
+            val complete = it[firstEnterGuideCompletedKey] ?: false
+            if (complete) {
+                FrameworkUiState.NiaApp
+            } else FrameworkUiState.Setup
+        }
         .distinctUntilChanged()
-        .stateIn(this.ioViewModelScope, SharingStarted.Eagerly, null)
 
     suspend fun operateFirstGuideComplete() {
         dataStore.edit {
@@ -36,4 +36,11 @@ internal class AppFrameworkViewModel(private val applicationContext: Context) : 
     companion object {
         private val firstEnterGuideCompletedKey = booleanPreferencesKey("firstEnterGuideCompleted")
     }
+}
+
+sealed class FrameworkUiState {
+
+    data object Loading : FrameworkUiState()
+    data object Setup : FrameworkUiState()
+    data object NiaApp : FrameworkUiState()
 }

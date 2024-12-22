@@ -2,9 +2,11 @@ package com.music.android.lin.application.music.play.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -13,9 +15,13 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -31,9 +37,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,15 +50,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
-import androidx.navigation.navDeepLink
-import com.music.android.lin.application.PageDeepLinks
-import com.music.android.lin.application.PageDefinition
-import com.music.android.lin.application.common.ui.state.PlayState
 import com.music.android.lin.application.common.ui.vm.PlayViewModel
-import com.music.android.lin.application.music.play.model.LyricOutput
 import com.music.android.lin.application.music.play.ui.component.PlayerColorTheme
+import com.music.android.lin.application.music.play.ui.component.PlayerPageColumn
+import com.music.android.lin.application.music.play.ui.component.PlayerPageViewType
+import com.music.android.lin.application.music.play.ui.component.calculatePlayerPageViewType
 import com.music.android.lin.application.music.play.ui.state.PlayerColorScheme
 import com.music.android.lin.application.music.play.ui.state.PlayerState
 import com.music.android.lin.application.music.play.ui.vm.PlayerLyricViewModel
@@ -62,142 +63,202 @@ import com.music.android.lin.application.util.SystemBarStyleComponent
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
-fun NavGraphBuilder.playerView(
-    backPressed: () -> Unit
+@Composable
+fun PlayerView(
+    show: Boolean,
+    backPressed: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    composable<PageDefinition.PlayerView>(
-        deepLinks = listOf(
-            navDeepLink {
-                uriPattern = PageDeepLinks.PATH_PLAYER
-            }
-        ),
-        enterTransition = { slideInVertically(animationSpec = spring(stiffness = Spring.StiffnessLow)) { it } },
-        exitTransition = { slideOutVertically(animationSpec = spring(stiffness = Spring.StiffnessLow)) { it } },
+    BackHandler(
+        enabled = show,
+        onBack = backPressed
+    )
+    AnimatedVisibility(
+        visible = show,
+        enter = slideInVertically(tween(500)) { it },
+        exit = slideOutVertically(tween(500)) { it },
+        label = "player_view_enter_exit_animation",
+        modifier = modifier,
     ) {
         PlayerView(
-            modifier = Modifier.fillMaxSize(),
             backPressed = backPressed,
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }
 
 @Composable
-fun PlayerView(
+internal fun PlayerView(
     backPressed: () -> Unit,
     modifier: Modifier = Modifier,
+    playViewModel: PlayViewModel = koinViewModel(),
+    playerPageViewModel: PlayerPageViewModel = koinViewModel(),
+    lyricViewModel: PlayerLyricViewModel = koinViewModel(),
+    playerPageViewType: PlayerPageViewType = calculatePlayerPageViewType(currentWindowAdaptiveInfo()),
 ) {
-    val playViewModel = koinViewModel<PlayViewModel>()
-    val playState = playViewModel.playState.collectAsStateWithLifecycle()
-
-    val playerPageViewModel = koinViewModel<PlayerPageViewModel>()
-    val playerState = playerPageViewModel.playerState.collectAsState()
-
-    val lyricViewModel = koinViewModel<PlayerLyricViewModel>()
-    val lyricOutputState = lyricViewModel.lyricOutput.collectAsState()
+    val playState by playViewModel.playState.collectAsStateWithLifecycle()
+    val playerState by playerPageViewModel.playerState.collectAsStateWithLifecycle()
+    val lyricOutputState by lyricViewModel.lyricOutput.collectAsStateWithLifecycle()
 
     SystemBarStyleComponent(isLightMode = false)
-    PlayerHorizontalPagerView(
+    PlayerBackgroundScaffold(
         modifier = modifier,
         playerState = playerState,
-        playState = playState,
-        skipToPrevButtonPressed = playViewModel::skipToPrev,
-        playOrPauseButtonPressed = playViewModel::playButtonPressed,
-        skipToNextButtonPressed = playViewModel::skipToNext,
-        backPressed = backPressed,
-        seekToPosition = playViewModel::seekToPosition,
-        updateSliderProgress = playerPageViewModel::handleSliderInput,
-        lyricOutput = lyricOutputState,
-        switchPlayMode = playViewModel::changePlayMode
-    )
+    ) {
+        if (playerPageViewType == PlayerPageViewType.Phone) {
+            PlayerPortraitView(
+                backPressed = backPressed,
+                playerViewContent = {
+                    PlayerCoverContentView(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        playerState = playerState,
+                        playState = playState,
+                        skipToPrevButtonPressed = playViewModel::skipToPrev,
+                        playOrPauseButtonPressed = playViewModel::playButtonPressed,
+                        skipToNextButtonPressed = playViewModel::skipToNext,
+                        seekToPosition = playViewModel::seekToPosition,
+                        updateSliderProgress = playerPageViewModel::handleSliderInput,
+                        switchPlayMode = playViewModel::changePlayMode,
+                    )
+                },
+                lyricContent = {
+                    PlayLyricsView(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        currentPosition = (playerState.progress * playerState.currentDuration).toLong(),
+                        lyricOutput = lyricOutputState,
+                        playState = playState
+                    )
+                }
+            )
+        } else if (playerPageViewType == PlayerPageViewType.Tablet) {
+            PlayerTabletView(
+                playerViewContent = {
+                    TabletPlayerCoverContentView(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        playerState = playerState,
+                        playState = playState,
+                        skipToPrevButtonPressed = playViewModel::skipToPrev,
+                        playOrPauseButtonPressed = playViewModel::playButtonPressed,
+                        skipToNextButtonPressed = playViewModel::skipToNext,
+                        seekToPosition = playViewModel::seekToPosition,
+                        updateSliderProgress = playerPageViewModel::handleSliderInput,
+                        switchPlayMode = playViewModel::changePlayMode,
+                    )
+                },
+                lyricContent = {
+                    TabletPlayerLyricView(
+                        modifier = Modifier
+                            .matchParentSize(),
+                        currentPosition = (playerState.progress * playerState.currentDuration).toLong(),
+                        lyricOutput = lyricOutputState,
+                    )
+                }
+            )
+        }
+    }
 }
 
 @Composable
-private fun PlayerHorizontalPagerView(
-    playState: State<PlayState>,
-    playerState: State<PlayerState>,
-    lyricOutput: State<LyricOutput?>,
-    skipToPrevButtonPressed: () -> Unit,
-    playOrPauseButtonPressed: () -> Unit,
-    skipToNextButtonPressed: () -> Unit,
-    backPressed: () -> Unit,
-    switchPlayMode: () -> Unit,
-    seekToPosition: (Long) -> Unit,
-    updateSliderProgress: (Float, Boolean) -> Unit,
+private fun PlayerBackgroundScaffold(
+    playerState: PlayerState,
     modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
-    val playerColorScheme = remember { derivedStateOf { playerState.value.colorScheme } }
-    val pagerState = rememberPagerState(1) { 3 }
-    val backHandlerEnable by remember {
-        derivedStateOf {
-            pagerState.currentPage != 1
-        }
-    }
-    val coroutineScope = rememberCoroutineScope()
-    BackHandler(enabled = backHandlerEnable) {
-        coroutineScope.launch {
-            pagerState.animateScrollToPage(1)
-        }
-    }
-    PlayerColorTheme(playerColorScheme = playerColorScheme) {
+    PlayerColorTheme(playerColorScheme = playerState.colorScheme) {
         Box(
             modifier = modifier
         ) {
             PlayerBackground(
                 modifier = Modifier.matchParentSize(),
-                playCover = remember {
-                    derivedStateOf {
-                        playerState.value.mediaBackgroundPainter
-                    }
-                },
-                backgroundColorState = playerColorScheme
+                playCover = playerState.mediaBackgroundPainter,
+                backgroundColorState = playerState.colorScheme
             )
             Column(
                 modifier = Modifier
                     .matchParentSize()
                     .statusBarsPadding()
-                    .navigationBarsPadding()
-            ) {
-                PlayerHeader(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = HeaderHorizontalPadding),
-                    backPressed = backPressed,
-                )
-                HorizontalPager(
-                    modifier = Modifier.weight(1f),
-                    state = pagerState,
-                ) { pageIndex ->
-                    when (pageIndex) {
-                        1 -> PlayerCoverContentView(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            playerState = playerState,
-                            playState = playState,
-                            skipToPrevButtonPressed = skipToPrevButtonPressed,
-                            playOrPauseButtonPressed = playOrPauseButtonPressed,
-                            skipToNextButtonPressed = skipToNextButtonPressed,
-                            seekToPosition = seekToPosition,
-                            updateSliderProgress = updateSliderProgress,
-                            switchPlayMode = switchPlayMode
-                        )
+                    .navigationBarsPadding(),
+                content = content,
+            )
+        }
+    }
+}
 
-                        2 -> PlayLyricsView(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            currentPosition = remember {
-                                derivedStateOf {
-                                    (playerState.value.progress * playerState.value.currentDuration).toLong()
-                                }
-                            },
-                            lyricOutput = lyricOutput,
-                            playState = playState
-                        )
-
-                        else -> Box(modifier = Modifier.fillMaxSize())
-                    }
-                }
+@Composable
+fun PlayerPortraitView(
+    backPressed: () -> Unit,
+    playerViewContent: @Composable () -> Unit,
+    lyricContent: @Composable () -> Unit,
+    extraPaneContent: (@Composable () -> Unit)? = null,
+    modifier: Modifier = Modifier,
+) {
+    val initPage = PlayerPageColumn.PlayerView
+    val playerPageColumns = remember { PlayerPageColumn.entries.toList() }
+    val pagerState = rememberPagerState(initPage.index) { playerPageColumns.size }
+    val backHandlerEnable by remember {
+        derivedStateOf {
+            playerPageColumns[pagerState.currentPage] != initPage
+        }
+    }
+    val coroutineScope = rememberCoroutineScope()
+    BackHandler(enabled = backHandlerEnable && !pagerState.isScrollInProgress) {
+        coroutineScope.launch {
+            pagerState.animateScrollToPage(
+                page = 1,
+                animationSpec = spring(stiffness = Spring.StiffnessLow)
+            )
+        }
+    }
+    Column(
+        modifier = modifier
+    ) {
+        PlayerHeader(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = HeaderHorizontalPadding),
+            backPressed = backPressed,
+        )
+        HorizontalPager(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            state = pagerState,
+        ) { pageIndex ->
+            val pageColumn = playerPageColumns[pageIndex]
+            when (pageColumn) {
+                PlayerPageColumn.PlayerView -> playerViewContent()
+                PlayerPageColumn.LyricView -> lyricContent()
+                PlayerPageColumn.ExtraView -> extraPaneContent?.invoke()
+                else -> Box(modifier = Modifier.fillMaxSize())
             }
         }
+    }
+}
+
+@Composable
+fun PlayerTabletView(
+    playerViewContent: @Composable BoxScope.() -> Unit,
+    lyricContent: @Composable BoxScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+            content = playerViewContent
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+            content = lyricContent
+        )
     }
 }
 
@@ -206,12 +267,12 @@ private val backgroundColorAnimation = spring<Color>(stiffness = Spring.Stiffnes
 
 @Composable
 private fun PlayerBackground(
-    playCover: State<Painter?>,
-    backgroundColorState: State<PlayerColorScheme>,
+    playCover: Painter?,
+    backgroundColorState: PlayerColorScheme,
     modifier: Modifier = Modifier,
 ) {
     val backgroundMaskColor = animateColorAsState(
-        targetValue = backgroundColorState.value.backgroundMaskColor,
+        targetValue = backgroundColorState.backgroundMaskColor,
         label = "background_mask_animation",
         animationSpec = backgroundColorAnimation
     )
@@ -224,7 +285,7 @@ private fun PlayerBackground(
     ) {
         AnimatedContent(
             modifier = Modifier.matchParentSize(),
-            targetState = playCover.value,
+            targetState = playCover,
             label = "player_background_animation",
             transitionSpec = {
                 fadeIn(backgroundFloatAnimation) togetherWith

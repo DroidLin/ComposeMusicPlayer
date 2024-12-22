@@ -73,8 +73,7 @@ internal class AppUseCaseModule {
         @Qualifier(name = AppIdentifier.applicationContext)
         context: Context,
         mediaRepository: MediaRepository,
-        playListId: String,
-    ): FetchPlayListUseCase = FetchPlayListUseCase(context, mediaRepository, playListId)
+    ): FetchPlayListUseCase = FetchPlayListUseCase(context, mediaRepository)
 
     @Factory
     internal fun resourceGeneratorUseCase(

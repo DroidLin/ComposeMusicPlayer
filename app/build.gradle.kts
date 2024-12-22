@@ -37,6 +37,7 @@ android {
         }
         debug {
             applicationIdSuffix = ".debug"
+            versionNameSuffix = ".debug"
             signingConfig = signingConfigs["debug"]
         }
     }
@@ -138,7 +139,6 @@ dependencies {
     implementation(libs.material3.adaptive)
     implementation(libs.material3.adaptive.layout)
     implementation(libs.material3.adaptive.navigation)
-    implementation(libs.material3.adaptive.navigation.navigationSuite)
 
     // palette
     implementation(libs.palette)

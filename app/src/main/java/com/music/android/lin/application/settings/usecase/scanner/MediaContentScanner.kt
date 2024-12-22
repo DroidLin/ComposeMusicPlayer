@@ -1,13 +1,10 @@
 package com.music.android.lin.application.settings.usecase.scanner
 
 import android.content.Context
-import com.music.android.lin.modules.AppIdentifier
 import com.music.android.lin.player.metadata.Album
 import com.music.android.lin.player.metadata.Artist
 import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.metadata.MediaType
-import org.koin.core.annotation.Factory
-import org.koin.core.annotation.Named
 
 interface MediaContentScanner {
 

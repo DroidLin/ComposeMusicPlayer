@@ -12,10 +12,9 @@ import kotlinx.coroutines.flow.map
 class FetchPlayListUseCase(
     private val context: Context,
     private val mediaRepository: MediaRepository,
-    playListId: String
 ) {
 
-    val playList = this.mediaRepository.observableMediaInfoPlayList(playListId)
+    fun fetchPlayList(playListId: String) = this.mediaRepository.observableMediaInfoPlayList(playListId)
         .map { playList ->
             if (playList != null) {
                 val languageContext = ContextCompat.getContextForLanguage(this.context)

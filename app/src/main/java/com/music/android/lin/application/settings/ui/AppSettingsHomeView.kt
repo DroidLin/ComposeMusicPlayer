@@ -1,7 +1,6 @@
 package com.music.android.lin.application.settings.ui
 
 import android.content.res.Configuration
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +12,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -33,11 +32,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
+import androidx.navigation.compose.composable
 import com.music.android.lin.R
 import com.music.android.lin.application.common.ui.component.DataLoadingView
 import com.music.android.lin.application.common.ui.component.TopAppBarLayout
 import com.music.android.lin.application.common.ui.state.DataLoadState
 import com.music.android.lin.application.framework.AppMaterialTheme
+import com.music.android.lin.application.minibar.ui.minibarHeightPadding
 import com.music.android.lin.application.settings.model.SettingSection
 import com.music.android.lin.application.settings.model.SettingSectionItem
 import com.music.android.lin.application.settings.model.SettingSectionType
@@ -45,21 +49,50 @@ import com.music.android.lin.application.settings.ui.component.ResetConfirmDialo
 import com.music.android.lin.application.settings.ui.component.SettingItemViewHolder
 import com.music.android.lin.application.settings.ui.vm.AppSettingsViewModel
 import com.music.android.lin.application.settings.ui.vm.fakeData
+import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
+
+@Stable
+@Serializable
+data object Settings
+
+fun NavController.navigateToSettings(navOptions: NavOptions? = null) {
+    navigate(route = Settings, navOptions = navOptions)
+}
+
+fun NavGraphBuilder.settingsView(
+    navigateToAbout: () -> Unit,
+    backPressed: () -> Unit,
+    showBackButton: Boolean = false,
+) {
+    composable<Settings> {
+        AppSettingsHomeView(
+            modifier = Modifier
+                .fillMaxSize()
+                .minibarHeightPadding()
+                .navigationBarsPadding(),
+            backPressed = backPressed,
+            goToAboutView = navigateToAbout,
+            showBackButton = showBackButton,
+        )
+    }
+}
 
 @Composable
 fun AppSettingsHomeView(
+    showBackButton: Boolean,
     modifier: Modifier = Modifier,
-    backPress: () -> Unit = {},
+    backPressed: () -> Unit = {},
     goToAboutView: () -> Unit = {},
 ) {
     val viewModel = koinViewModel<AppSettingsViewModel>()
     val dataLoadState = viewModel.settingsList.collectAsStateWithLifecycle()
     var showResetConfirmDialog by remember { mutableStateOf(false) }
     ContentSettingsView(
+        showBackButton = showBackButton,
         modifier = modifier
             .navigationBarsPadding(),
-        backPress = backPress,
+        backPress = backPressed,
         state = dataLoadState,
         onSectionClick = { settingSectionItem ->
             when (settingSectionItem.itemType) {
@@ -78,10 +111,11 @@ fun AppSettingsHomeView(
 
 @Composable
 private fun ContentSettingsView(
+    showBackButton: Boolean,
     state: State<DataLoadState>,
     backPress: () -> Unit = {},
     onSectionClick: (SettingSectionItem) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
@@ -95,7 +129,10 @@ private fun ContentSettingsView(
             Column(
                 modifier = Modifier.matchParentSize(),
             ) {
-                TopHeader(backPress = backPress)
+                TopHeader(
+                    showBackButton = showBackButton,
+                    backPress = backPress
+                )
                 SettingsLazyColumn(
                     data = data,
                     modifier = Modifier.weight(1f),
@@ -166,7 +203,11 @@ private fun SettingsLazyColumn(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopHeader(backPress: () -> Unit, modifier: Modifier = Modifier) {
+private fun TopHeader(
+    showBackButton: Boolean,
+    backPress: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     TopAppBarLayout(
         modifier = modifier,
         title = {
@@ -176,14 +217,16 @@ private fun TopHeader(backPress: () -> Unit, modifier: Modifier = Modifier) {
             )
         },
         navigationIcon = {
-            IconButton(
-                onClick = backPress
-            ) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            if (showBackButton) {
+                IconButton(
+                    onClick = backPress
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
     )
@@ -193,7 +236,7 @@ private fun TopHeader(backPress: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 private fun HeaderPreview(modifier: Modifier = Modifier) {
     AppMaterialTheme {
-        TopHeader(backPress = {})
+        TopHeader(showBackButton = false, backPress = {})
     }
 }
 
@@ -202,6 +245,7 @@ private fun HeaderPreview(modifier: Modifier = Modifier) {
 private fun AppSettingsPreview(modifier: Modifier = Modifier) {
     AppMaterialTheme {
         ContentSettingsView(
+            showBackButton = false,
             backPress = {},
             modifier = Modifier.fillMaxSize(),
             state = remember {

@@ -2,57 +2,40 @@ package com.music.android.lin.application
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
-import com.music.android.lin.application.framework.AppFramework
-import com.music.android.lin.application.framework.AppMaterialTheme
-import com.music.android.lin.application.framework.AppMusicFramework
+import com.music.android.lin.application.framework.NiaApp
 import com.music.android.lin.application.framework.isNightModeOnCompat
-import com.music.android.lin.application.framework.vm.AppFrameworkViewModel
+import com.music.android.lin.application.framework.rememberNiaAppState
 import com.music.android.lin.application.util.ActivityProvider
 import com.music.android.lin.application.util.LocalWindow
 import com.music.android.lin.application.util.SystemBarStyleComponent
-import com.music.android.lin.application.util.applyWindowBackgroundSettings
-import org.koin.androidx.compose.KoinAndroidContext
-import org.koin.androidx.viewmodel.ext.android.getViewModel
+import com.music.android.lin.application.util.setTransparentBackground
 
 class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        window.applyWindowBackgroundSettings()
-
-        super.onCreate(savedInstanceState)
-
-        val frameworkViewModel = getViewModel<AppFrameworkViewModel>()
         val splashScreen = installSplashScreen()
-        splashScreen.setKeepOnScreenCondition {
-            frameworkViewModel.firstGuideCompleted.value == null
-        }
-
+        super.onCreate(savedInstanceState)
+        splashScreen.setKeepOnScreenCondition { false }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.setTransparentBackground()
         setContent {
+            val appState = rememberNiaAppState()
             ActivityProvider {
-                CompositionLocalProvider(
-                    LocalWindow provides window
-                ) {
+                CompositionLocalProvider(LocalWindow provides window) {
                     SystemBarStyleComponent(!LocalConfiguration.current.isNightModeOnCompat)
-                    KoinAndroidContext {
-                        AppMaterialTheme {
-                            AppFramework {
-                                AppMusicFramework(modifier = Modifier)
-                            }
-                        }
-                    }
+                    NiaApp(
+                        appState = appState,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 }

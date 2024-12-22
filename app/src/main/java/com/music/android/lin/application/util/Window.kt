@@ -7,7 +7,6 @@ import android.view.View
 import android.view.Window
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 
 val LocalWindow = compositionLocalOf<Window> { error("Not Provide Window") }
@@ -15,7 +14,7 @@ val LocalWindow = compositionLocalOf<Window> { error("Not Provide Window") }
 val Window.isLightSystemBar: Boolean
     get() = this.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR == View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
-fun Window.applyWindowBackgroundSettings() {
+fun Window.setTransparentBackground() {
     val colorDrawable = ColorDrawable(Color.TRANSPARENT)
     setBackgroundDrawable(colorDrawable)
 }

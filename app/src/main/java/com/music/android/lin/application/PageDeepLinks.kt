@@ -20,4 +20,6 @@ object PageDeepLinks {
     const val PATH_SETTINGS = "$SCHEME://$DEEPLINK_DOMAIN/settings"
     const val PATH_ABOUT = "$SCHEME://$DEEPLINK_DOMAIN/about"
     const val PATH_PLAYER = "$SCHEME://$DEEPLINK_DOMAIN/player"
+    const val PATH_SEARCH = "$SCHEME://$DEEPLINK_DOMAIN/search"
+    const val PATH_HOME_PAGE = "$SCHEME://$DEEPLINK_DOMAIN/home"
 }

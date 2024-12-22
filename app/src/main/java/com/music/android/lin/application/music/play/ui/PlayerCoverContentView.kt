@@ -1,11 +1,5 @@
 package com.music.android.lin.application.music.play.ui
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -18,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -28,7 +20,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,16 +38,15 @@ import com.music.android.lin.application.music.play.model.formatAudioTimestamp
 import com.music.android.lin.application.music.play.ui.component.PlayButton
 import com.music.android.lin.application.music.play.ui.component.PlayerPageSeekbarTrack
 import com.music.android.lin.application.music.play.ui.state.PlayerColorScheme
-import com.music.android.lin.application.music.play.ui.state.PlayerInformationState
 import com.music.android.lin.application.music.play.ui.state.PlayerState
 import com.music.android.lin.player.metadata.PlayMode
 
-private val ContentHorizontalPadding = 32.dp
+internal val ContentHorizontalPadding = 32.dp
 
 @Composable
 fun PlayerCoverContentView(
-    playState: State<PlayState>,
-    playerState: State<PlayerState>,
+    playState: PlayState,
+    playerState: PlayerState,
     skipToPrevButtonPressed: () -> Unit,
     playOrPauseButtonPressed: () -> Unit,
     skipToNextButtonPressed: () -> Unit,
@@ -65,7 +55,6 @@ fun PlayerCoverContentView(
     updateSliderProgress: (Float, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val playerColorScheme = remember { derivedStateOf { playerState.value.colorScheme } }
     Column(
         modifier = modifier,
     ) {
@@ -78,9 +67,7 @@ fun PlayerCoverContentView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = ContentHorizontalPadding),
-            playCover = remember {
-                derivedStateOf { playerState.value.mediaCoverPainter }
-            },
+            playCover = playerState.mediaCoverPainter,
         )
         Spacer(
             modifier = Modifier
@@ -91,14 +78,8 @@ fun PlayerCoverContentView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = ContentHorizontalPadding),
-            informationState = remember {
-                derivedStateOf {
-                    PlayerInformationState(
-                        title = playState.value.musicItem?.musicName ?: "",
-                        subTitle = playState.value.musicItem?.musicDescription ?: ""
-                    )
-                }
-            },
+            title = playState.musicItem?.musicName ?: "",
+            subTitle = playState.musicItem?.musicDescription ?: "",
         )
         Spacer(
             modifier = Modifier
@@ -109,11 +90,11 @@ fun PlayerCoverContentView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = ContentHorizontalPadding),
-            progress = remember { derivedStateOf { playerState.value.progress } },
-            currentDuration = remember { derivedStateOf { playerState.value.currentDuration } },
+            progress = playerState.progress,
+            currentDuration = playerState.currentDuration,
             seekToPosition = seekToPosition,
             updateSliderProgress = updateSliderProgress,
-            playerColorScheme = playerColorScheme
+            playerColorScheme = playerState.colorScheme
         )
         Spacer(
             modifier = Modifier
@@ -124,8 +105,8 @@ fun PlayerCoverContentView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = ContentHorizontalPadding),
-            isPlayingState = remember { derivedStateOf { playState.value.isPlaying } },
-            playModeState = remember { derivedStateOf { playState.value.playMode } },
+            isPlaying = playState.isPlaying,
+            playMode = playState.playMode,
             skipToPrevButtonPressed = skipToPrevButtonPressed,
             playOrPauseButtonPressed = playOrPauseButtonPressed,
             skipToNextButtonPressed = skipToNextButtonPressed,
@@ -140,21 +121,20 @@ fun PlayerCoverContentView(
 }
 
 @Composable
-private fun PlayerCover(
-    playCover: State<Painter?>,
+fun PlayerCover(
+    playCover: Painter?,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
             .aspectRatio(1f, true)
     ) {
-        val playCoverPainter = playCover.value
-        if (playCoverPainter != null) {
+        if (playCover != null) {
             Image(
                 modifier = Modifier
                     .matchParentSize()
                     .clip(shape = MaterialTheme.shapes.large),
-                painter = playCoverPainter,
+                painter = playCover,
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
             )
@@ -166,14 +146,15 @@ private fun PlayerCover(
 
 @Composable
 private fun PlayerInformationView(
-    informationState: State<PlayerInformationState>,
+    title: String,
+    subTitle: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
     ) {
         Text(
-            text = informationState.value.title,
+            text = title,
             style = MaterialTheme.typography.headlineMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -185,7 +166,7 @@ private fun PlayerInformationView(
                 .height(12.dp)
         )
         Text(
-            text = informationState.value.subTitle,
+            text = subTitle,
             style = MaterialTheme.typography.bodyLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -197,9 +178,9 @@ private fun PlayerInformationView(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerProgressView(
-    progress: State<Float>,
-    currentDuration: State<Long>,
-    playerColorScheme: State<PlayerColorScheme>,
+    progress: Float,
+    currentDuration: Long,
+    playerColorScheme: PlayerColorScheme,
     updateSliderProgress: (Float, Boolean) -> Unit,
     seekToPosition: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -208,16 +189,16 @@ fun PlayerProgressView(
         modifier = modifier
     ) {
         val colors = SliderDefaults.colors(
-            thumbColor = playerColorScheme.value.slideBarActiveColor,
-            activeTrackColor = playerColorScheme.value.slideBarActiveColor,
-            activeTickColor = playerColorScheme.value.slideBarActiveColor,
-            inactiveTrackColor = playerColorScheme.value.slideBarInactiveColor,
-            inactiveTickColor = playerColorScheme.value.slideBarInactiveColor,
-            disabledThumbColor = playerColorScheme.value.slideBarInactiveColor,
-            disabledActiveTrackColor = playerColorScheme.value.slideBarInactiveColor,
-            disabledActiveTickColor = playerColorScheme.value.slideBarInactiveColor,
-            disabledInactiveTrackColor = playerColorScheme.value.slideBarInactiveColor,
-            disabledInactiveTickColor = playerColorScheme.value.slideBarInactiveColor,
+            thumbColor = playerColorScheme.slideBarActiveColor,
+            activeTrackColor = playerColorScheme.slideBarActiveColor,
+            activeTickColor = playerColorScheme.slideBarActiveColor,
+            inactiveTrackColor = playerColorScheme.slideBarInactiveColor,
+            inactiveTickColor = playerColorScheme.slideBarInactiveColor,
+            disabledThumbColor = playerColorScheme.slideBarInactiveColor,
+            disabledActiveTrackColor = playerColorScheme.slideBarInactiveColor,
+            disabledActiveTickColor = playerColorScheme.slideBarInactiveColor,
+            disabledInactiveTrackColor = playerColorScheme.slideBarInactiveColor,
+            disabledInactiveTickColor = playerColorScheme.slideBarInactiveColor,
         )
         val interactionSource = remember { MutableInteractionSource() }
         val inTouchMode = remember { mutableStateOf(false) }
@@ -226,14 +207,14 @@ fun PlayerProgressView(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(16.dp),
-            value = progress.value,
+            value = progress,
             onValueChange = {
                 valueProgressRecord.value = it
                 inTouchMode.value = true
                 updateSliderProgress(it, true)
             },
             onValueChangeFinished = {
-                seekToPosition((valueProgressRecord.value * currentDuration.value).toLong())
+                seekToPosition((valueProgressRecord.value * currentDuration).toLong())
                 updateSliderProgress(-1f, false)
                 inTouchMode.value = false
             },
@@ -251,25 +232,15 @@ fun PlayerProgressView(
             }
         )
         Row {
-            val currentProgressText = remember {
-                derivedStateOf {
-                    formatAudioTimestamp((progress.value * currentDuration.value).toLong())
-                }
-            }
-            val currentDurationText = remember {
-                derivedStateOf {
-                    formatAudioTimestamp(currentDuration.value)
-                }
-            }
             Text(
                 modifier = Modifier,
-                text = currentProgressText.value,
+                text = formatAudioTimestamp((progress * currentDuration).toLong()),
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 modifier = Modifier,
-                text = currentDurationText.value,
+                text = formatAudioTimestamp(currentDuration),
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -278,8 +249,8 @@ fun PlayerProgressView(
 
 @Composable
 private fun PlayControlPanel(
-    isPlayingState: State<Boolean>,
-    playModeState: State<PlayMode>,
+    isPlaying: Boolean,
+    playMode: PlayMode,
     skipToPrevButtonPressed: () -> Unit,
     playOrPauseButtonPressed: () -> Unit,
     skipToNextButtonPressed: () -> Unit,
@@ -288,17 +259,14 @@ private fun PlayControlPanel(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(
-            space = 16.dp,
-            alignment = Alignment.CenterHorizontally
-        ),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         PlayButton(
             onClick = switchPlayMode,
             modifier = Modifier.size(42.dp)
         ) {
-            val resourceId = when (playModeState.value) {
+            val resourceId = when (playMode) {
                 PlayMode.Single, PlayMode.SingleLoop -> R.drawable.ic_single_cycle
                 PlayMode.PlayListLoop -> R.drawable.ic_list
                 PlayMode.Shuffle -> R.drawable.ic_random
@@ -324,26 +292,18 @@ private fun PlayControlPanel(
             onClick = playOrPauseButtonPressed,
             modifier = Modifier
         ) {
-            AnimatedContent(
-                targetState = isPlayingState.value,
-                label = "is_playing_or_pause_button_animation",
-                transitionSpec = {
-                    (scaleIn(initialScale = 0.5f) + fadeIn()) togetherWith (scaleOut(targetScale = 0.5f) + fadeOut())
-                }
-            ) { isPlaying ->
-                if (isPlaying) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_pause),
-                        contentDescription = null,
-                        modifier = Modifier.size(56.dp)
-                    )
-                } else {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_play),
-                        contentDescription = null,
-                        modifier = Modifier.size(56.dp)
-                    )
-                }
+            if (isPlaying) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_pause),
+                    contentDescription = null,
+                    modifier = Modifier.size(56.dp)
+                )
+            } else {
+                Icon(
+                    painter = painterResource(R.drawable.ic_play),
+                    contentDescription = null,
+                    modifier = Modifier.size(56.dp)
+                )
             }
         }
         PlayButton(
