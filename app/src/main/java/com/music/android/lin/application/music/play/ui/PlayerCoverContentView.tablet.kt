@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -95,11 +96,13 @@ private fun TabletPlayControlPanel(
             onClick = switchPlayMode,
             modifier = Modifier.size(42.dp)
         ) {
-            val resourceId = when (playMode) {
-                PlayMode.Single, PlayMode.SingleLoop -> R.drawable.ic_single_cycle
-                PlayMode.PlayListLoop -> R.drawable.ic_list
-                PlayMode.Shuffle -> R.drawable.ic_random
-                else -> R.drawable.ic_list
+            val resourceId = remember(playMode) {
+                when (playMode) {
+                    PlayMode.Single, PlayMode.SingleLoop -> R.drawable.ic_single_cycle
+                    PlayMode.PlayListLoop -> R.drawable.ic_list
+                    PlayMode.Shuffle -> R.drawable.ic_random
+                    else -> R.drawable.ic_list
+                }
             }
             Icon(
                 painter = painterResource(resourceId),

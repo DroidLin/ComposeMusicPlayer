@@ -103,7 +103,8 @@ internal fun PlayerView(
     SystemBarStyleComponent(isLightMode = false)
     PlayerBackgroundScaffold(
         modifier = modifier,
-        playerState = playerState,
+        colorScheme = playerState.colorScheme,
+        backgroundPainter = playerState.mediaBackgroundPainter,
     ) {
         if (playerPageViewType == PlayerPageViewType.Phone) {
             PlayerPortraitView(
@@ -163,18 +164,19 @@ internal fun PlayerView(
 
 @Composable
 private fun PlayerBackgroundScaffold(
-    playerState: PlayerState,
+    colorScheme: PlayerColorScheme,
+    backgroundPainter: Painter?,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    PlayerColorTheme(playerColorScheme = playerState.colorScheme) {
+    PlayerColorTheme(playerColorScheme = colorScheme) {
         Box(
             modifier = modifier
         ) {
             PlayerBackground(
                 modifier = Modifier.matchParentSize(),
-                playCover = playerState.mediaBackgroundPainter,
-                backgroundColorState = playerState.colorScheme
+                playCover = backgroundPainter,
+                backgroundColorState = colorScheme
             )
             Column(
                 modifier = Modifier

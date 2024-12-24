@@ -59,6 +59,7 @@ fun NiaApplicationScaffold(
                     }
                 )
             },
+            modifier = modifier,
             content = content
         )
     }

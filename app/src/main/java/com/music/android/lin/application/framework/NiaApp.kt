@@ -1,6 +1,5 @@
 package com.music.android.lin.application.framework
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -14,17 +13,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -35,7 +31,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,6 +55,7 @@ import com.music.android.lin.application.settings.ui.navigateToAboutScreen
 import com.music.android.lin.application.settings.ui.settingsView
 import org.koin.androidx.compose.KoinAndroidContext
 
+@Stable
 enum class NavigationDrawerType {
     PhoneDrawer,
     TabletDrawer
@@ -83,6 +79,7 @@ internal fun calculateNavigationDrawerType(windowAdaptiveInfo: WindowAdaptiveInf
 @Composable
 fun NiaApp(
     appState: NiaAppState,
+    windowAdaptiveInfo: WindowAdaptiveInfo,
     modifier: Modifier = Modifier,
 ) {
     KoinAndroidContext {
@@ -91,7 +88,7 @@ fun NiaApp(
                 NiaApp(
                     appState = appState,
                     modifier = Modifier.fillMaxSize(),
-                    windowAdaptiveInfo = currentWindowAdaptiveInfo(),
+                    windowAdaptiveInfo = windowAdaptiveInfo,
                     openMusicPlayerScreen = this::openAudioPlayerScreen
                 )
             }
@@ -148,10 +145,11 @@ fun GlobalPopupScaffold(
     }
 }
 
-private val enterTransition = slideInHorizontally(tween(500)) { it / 3 } + fadeIn(tween(500))
-private val exitTransition = slideOutHorizontally(tween(500)) { -it / 3 } + fadeOut(tween(500))
-private val popEnterTransition = slideInHorizontally(tween(500)) { -it / 3 } + fadeIn(tween(500))
-private val popExitTransition = slideOutHorizontally(tween(500)) { it / 3 } + fadeOut(tween(500))
+private const val durationMills = 700
+private val enterTransition = slideInHorizontally(tween(durationMills)) { it / 4 } + fadeIn(tween(durationMills))
+private val exitTransition = slideOutHorizontally(tween(durationMills)) { -it / 4 } + fadeOut(tween(durationMills))
+private val popEnterTransition = slideInHorizontally(tween(durationMills)) { -it / 4 } + fadeIn(tween(durationMills))
+private val popExitTransition = slideOutHorizontally(tween(durationMills)) { it / 4 } + fadeOut(tween(durationMills))
 
 @Composable
 private fun NiaApp(
@@ -167,7 +165,7 @@ private fun NiaApp(
     NiaApplicationScaffold(
         drawerState = appState.drawerState,
         modifier = modifier,
-        drawerType = calculateNavigationDrawerType(windowAdaptiveInfo),
+        drawerType = drawerType,
         drawerContent = {
             NiaAppNavigationDrawer(
                 appState = appState,
@@ -180,15 +178,12 @@ private fun NiaApp(
         val navController = appState.navController
         MinibarSizeContainer {
             Box(
-                modifier = Modifier
+                modifier = Modifier.fillMaxSize()
             ) {
                 NavHost(
                     modifier = Modifier
                         .fillMaxSize()
-                        .graphicsLayer {
-                            clip = true
-                            compositingStrategy = CompositingStrategy.Offscreen
-                        },
+                        .graphicsLayer { clip = true },
                     navController = navController,
                     startDestination = SimpleMusicView,
                     enterTransition = { enterTransition },
@@ -247,8 +242,8 @@ fun ColumnScope.NiaAppNavigationDrawer(
 
     val currentDestination = appState.currentDestination
     TopLevelDestination.entries.forEach { topLevelDestination ->
-        key(topLevelDestination) {
-            val isSelected = currentDestination.isRouteInHierarchy(topLevelDestination.baseRoute)
+        val isSelected = currentDestination.isRouteInHierarchy(topLevelDestination.baseRoute)
+        key(topLevelDestination, isSelected) {
             NavigationDrawerItem(
                 label = {
                     Text(text = stringResource(topLevelDestination.titleResId))

@@ -3,6 +3,7 @@ package com.music.android.lin.application
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -32,7 +33,8 @@ class MainActivity : FragmentActivity() {
                     SystemBarStyleComponent(!LocalConfiguration.current.isNightModeOnCompat)
                     NiaApp(
                         appState = appState,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        windowAdaptiveInfo = currentWindowAdaptiveInfo()
                     )
                 }
             }

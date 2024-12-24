@@ -4,6 +4,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,7 @@ fun rememberNiaAppState(
     }
 }
 
+@Stable
 class NiaAppState(
     val navController: NavHostController,
     val drawerState: DrawerState,
@@ -56,6 +58,9 @@ class NiaAppState(
         }
 
     fun navigateTopLevelDestination(destination: TopLevelDestination) = closeDrawer {
+        if (navController.currentDestination.isRouteInHierarchy(destination.baseRoute)) {
+            return@closeDrawer
+        }
         val navOptions = navOptions {
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true
