@@ -55,6 +55,17 @@
             </intent-filter>
         </activity>
 
+        <receiver
+            android:name=".widget.receiver.NiaAppWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/app_widget_information" />
+        </receiver>
+
         <service
             android:name=".player.service.PlayService"
             android:exported="false"

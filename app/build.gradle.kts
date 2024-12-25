@@ -12,7 +12,7 @@ plugins {
 android {
     namespace = "com.music.android.lin"
     compileSdk = 35
-
+    buildToolsVersion = "34.0.0"
     defaultConfig {
         applicationId = "com.music.android.lin"
         minSdk = 24
@@ -68,7 +68,6 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    buildToolsVersion = "34.0.0"
 }
 
 composeCompiler {
@@ -151,4 +150,8 @@ dependencies {
 
     // lottie
     implementation(libs.airbnb.lottie)
+
+    // glance
+    implementation(libs.glance.widget)
+    implementation(libs.glance.material3)
 }

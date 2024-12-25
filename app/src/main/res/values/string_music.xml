@@ -13,4 +13,6 @@
     <string name="string_create_playlist_complete">完成</string>
 
     <string name="string_select_media_info_complete">完成</string>
+
+    <string name="string_unknown_music_name">未知歌曲</string>
 </resources>

@@ -34,10 +34,9 @@ fun NiaApplicationScaffold(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f)
-                                .verticalScroll(state = rememberScrollState())
-                        ) {
-                            drawerContent()
-                        }
+                                .verticalScroll(state = rememberScrollState()),
+                            content = drawerContent
+                        )
                     }
                 )
             },
@@ -52,10 +51,9 @@ fun NiaApplicationScaffold(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f)
-                                .verticalScroll(state = rememberScrollState())
-                        ) {
-                            drawerContent()
-                        }
+                                .verticalScroll(state = rememberScrollState()),
+                            content = drawerContent
+                        )
                     }
                 )
             },

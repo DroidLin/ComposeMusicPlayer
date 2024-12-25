@@ -219,7 +219,7 @@ private fun NiaApp(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ColumnScope.NiaAppNavigationDrawer(
+fun NiaAppNavigationDrawer(
     appState: NiaAppState,
     drawerType: NavigationDrawerType = calculateNavigationDrawerType(currentWindowAdaptiveInfo()),
     openMusicPlayerScreen: () -> Unit = {},

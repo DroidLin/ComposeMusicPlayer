@@ -28,6 +28,7 @@ import com.music.android.lin.application.settings.usecase.SaveMediaInfoUseCase
 import com.music.android.lin.application.settings.usecase.ScanAndroidContentUseCase
 import com.music.android.lin.player.service.MediaService
 import com.music.android.lin.player.service.controller.MediaController
+import com.music.android.lin.widget.ui.vm.GlancePlayerViewModel
 import kotlinx.coroutines.CoroutineScope
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
@@ -99,6 +100,13 @@ internal class AppViewModelModule {
         mediaController: MediaController,
     ): PlayViewModel =
         PlayViewModel(context, mediaResourceGeneratorUseCase, mediaService, mediaController)
+
+    @Factory
+    internal fun glancePlayerViewModel(
+        @Qualifier(name = AppIdentifier.applicationContext)
+        context: Context,
+        mediaService: MediaService,
+    ): GlancePlayerViewModel = GlancePlayerViewModel(context, mediaService)
 
     @Factory
     internal fun mediaRepositoryViewModel(

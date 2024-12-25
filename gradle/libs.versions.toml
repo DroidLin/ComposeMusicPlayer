@@ -34,6 +34,8 @@ adaptiveLayout = "1.0.0"
 
 airbnbLottie = "6.6.1"
 
+glance = "1.1.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -93,6 +95,9 @@ google-firebase-analytics = { group = "com.google.firebase", name = "firebase-an
 google-firebase-performance = { group = "com.google.firebase", name = "firebase-perf" }
 
 airbnb-lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "airbnbLottie"}
+
+glance-widget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance"}
+glance-material3 = { group = "androidx.glance", name = "glance-material3", version.ref = "glance"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
