@@ -50,7 +50,7 @@ private fun MusicLazyColumn(
     ) {
         items(
             items = musicInfoList,
-            contentType = { it::class.qualifiedName },
+            contentType = { "music_item" },
             key = { it.mediaId }
         ) { musicItem ->
             MusicItemView(

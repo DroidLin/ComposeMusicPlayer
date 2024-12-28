@@ -6,9 +6,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,12 +15,14 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -33,13 +34,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.music.android.lin.R
 import com.music.android.lin.application.common.ui.component.TopAppBarLayout
 import com.music.android.lin.application.framework.vm.TopLevelDestination
+import com.music.android.lin.application.guide.ui.completeSetupAndReturn
+import com.music.android.lin.application.guide.ui.mediaInformationScannerView
+import com.music.android.lin.application.guide.ui.navigateToMediaInformationScanner
+import com.music.android.lin.application.guide.ui.navigateToPermissionTestAndAcquire
+import com.music.android.lin.application.guide.ui.permissionTestAndAcquireView
+import com.music.android.lin.application.guide.ui.welcomeGuideView
 import com.music.android.lin.application.minibar.ui.Minibar
 import com.music.android.lin.application.minibar.ui.MinibarSizeContainer
 import com.music.android.lin.application.minibar.ui.TabletMinibar
@@ -75,6 +81,7 @@ internal fun calculateNavigationDrawerType(windowAdaptiveInfo: WindowAdaptiveInf
     }
 }
 
+private val WindowInsetsNone = WindowInsets(0, 0, 0, 0)
 
 @Composable
 fun NiaApp(
@@ -85,12 +92,24 @@ fun NiaApp(
     KoinAndroidContext {
         AppMaterialTheme {
             GlobalPopupScaffold(modifier = modifier) {
-                NiaApp(
-                    appState = appState,
-                    modifier = Modifier.fillMaxSize(),
-                    windowAdaptiveInfo = windowAdaptiveInfo,
-                    openMusicPlayerScreen = this::openAudioPlayerScreen
-                )
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    NiaApp(
+                        modifier = Modifier
+                            .matchParentSize(),
+                        appState = appState,
+                        windowAdaptiveInfo = windowAdaptiveInfo,
+                        openMusicPlayerScreen = this@GlobalPopupScaffold::openAudioPlayerScreen,
+                        showAppGuideMessage = appState::showAppGuideMessage
+                    )
+                    SnackbarHost(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .navigationBarsPadding(),
+                        hostState = appState.snackbarHostState
+                    )
+                }
             }
         }
     }
@@ -156,11 +175,18 @@ private fun NiaApp(
     appState: NiaAppState,
     windowAdaptiveInfo: WindowAdaptiveInfo,
     modifier: Modifier = Modifier,
+    showAppGuideMessage: () -> Unit = {},
     openMusicPlayerScreen: () -> Unit = {},
     openVideoPlayerScreen: () -> Unit = {},
 ) {
     val drawerType = remember(windowAdaptiveInfo) {
         calculateNavigationDrawerType(windowAdaptiveInfo)
+    }
+    val shouldShowAppGuide by appState.shouldShowSetupGuide.collectAsState(initial = false)
+    LaunchedEffect(shouldShowAppGuide) {
+        if (shouldShowAppGuide) {
+            showAppGuideMessage()
+        }
     }
     NiaApplicationScaffold(
         drawerState = appState.drawerState,
@@ -191,6 +217,18 @@ private fun NiaApp(
                     popEnterTransition = { popEnterTransition },
                     popExitTransition = { popExitTransition },
                 ) {
+                    welcomeGuideView(
+                        goNext = navController::navigateToPermissionTestAndAcquire
+                    ) {
+                        permissionTestAndAcquireView(
+                            goNext = navController::navigateToMediaInformationScanner,
+                            backPress = navController::navigateUp
+                        )
+                        mediaInformationScannerView(
+                            backPress = navController::navigateUp,
+                            onComplete = appState::onAppSetupComplete
+                        )
+                    }
                     simpleMusicScreen(backPressed = navController::navigateUp)
                     albumView()
                     aboutScreen(backPressed = navController::navigateUp)
@@ -209,8 +247,8 @@ private fun NiaApp(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
                         .navigationBarsPadding(),
-                    shouldShowMinibar = remember { derivedStateOf { drawerType == NavigationDrawerType.PhoneDrawer } },
-                    navigateToPlayView = openMusicPlayerScreen
+                    shouldShowMinibar = drawerType == NavigationDrawerType.PhoneDrawer && appState.shouldShowMinibar,
+                    navigateToPlayView = openMusicPlayerScreen,
                 )
             }
         }
@@ -258,19 +296,6 @@ fun NiaAppNavigationDrawer(
                     }
                     Icon(imageVector = imageVector, contentDescription = null)
                 }
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun NavigationDrawerPreview() {
-    AppMaterialTheme {
-        Column {
-            NiaAppNavigationDrawer(
-                appState = rememberNiaAppState(),
-                drawerType = NavigationDrawerType.PhoneDrawer
             )
         }
     }

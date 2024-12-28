@@ -69,8 +69,7 @@ fun NavGraphBuilder.settingsView(
         AppSettingsHomeView(
             modifier = Modifier
                 .fillMaxSize()
-                .minibarHeightPadding()
-                .navigationBarsPadding(),
+                .minibarHeightPadding(),
             backPressed = backPressed,
             goToAboutView = navigateToAbout,
             showBackButton = showBackButton,
@@ -90,8 +89,7 @@ fun AppSettingsHomeView(
     var showResetConfirmDialog by remember { mutableStateOf(false) }
     ContentSettingsView(
         showBackButton = showBackButton,
-        modifier = modifier
-            .navigationBarsPadding(),
+        modifier = modifier,
         backPress = backPressed,
         state = dataLoadState,
         onSectionClick = { settingSectionItem ->

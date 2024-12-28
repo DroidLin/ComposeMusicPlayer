@@ -23,14 +23,13 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.music.android.lin.R
+import com.music.android.lin.application.common.ui.component.NiaSubComposeImage
 import com.music.android.lin.application.framework.AppMaterialTheme
 import com.music.android.lin.application.minibar.ui.state.MinibarUiState
 import com.music.android.lin.player.metadata.MediaType
@@ -96,8 +95,8 @@ private fun MinibarCoverImage(
         shape = MaterialTheme.shapes.small,
         color = MaterialTheme.colorScheme.secondaryContainer
     ) {
-        AsyncImage(
-            model = imageUrl.value,
+        NiaSubComposeImage(
+            url = imageUrl.value,
             contentDescription = "",
             contentScale = ContentScale.Crop,
         )

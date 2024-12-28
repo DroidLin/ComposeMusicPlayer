@@ -38,7 +38,7 @@ private val minibarExitAnimation =
 
 @Composable
 fun Minibar(
-    shouldShowMinibar: State<Boolean>,
+    shouldShowMinibar: Boolean,
     navigateToPlayView: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -58,7 +58,7 @@ fun Minibar(
 
 @Composable
 private fun MinibarContent(
-    shouldShowMinibar: State<Boolean>,
+    shouldShowMinibar: Boolean,
     uiState: State<MinibarUiState>,
     playButtonPressed: () -> Unit,
     playListButtonPressed: () -> Unit,
@@ -68,12 +68,12 @@ private fun MinibarContent(
 ) {
     val showMinibar = remember {
         derivedStateOf {
-            uiState.value.mediaType != MediaType.Unsupported && shouldShowMinibar.value
+            uiState.value.mediaType != MediaType.Unsupported
         }
     }
     AnimatedVisibility(
         modifier = modifier,
-        visible = showMinibar.value,
+        visible = showMinibar.value && shouldShowMinibar,
         label = "minibar_visibility_animation",
         enter = minibarEnterAnimation,
         exit = minibarExitAnimation

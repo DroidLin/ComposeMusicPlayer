@@ -23,7 +23,6 @@ fun NavGraphBuilder.albumView() {
             modifier = Modifier
                 .fillMaxSize()
                 .minibarHeightPadding()
-                .navigationBarsPadding()
         )
     }
 }

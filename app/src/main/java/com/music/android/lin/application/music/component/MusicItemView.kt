@@ -1,6 +1,8 @@
 package com.music.android.lin.application.music.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -15,20 +17,20 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter.State
+import coil3.compose.SubcomposeAsyncImageScope
+import com.music.android.lin.application.common.ui.component.NiaSubComposeImage
 import com.music.android.lin.application.common.usecase.MediaQuality
 import com.music.android.lin.application.common.usecase.MusicItem
 import com.music.android.lin.application.framework.AppMaterialTheme
@@ -44,7 +46,6 @@ fun MusicItemView(
 ) {
     Surface(
         modifier = modifier
-            .graphicsLayer(shape = MaterialTheme.shapes.medium, clip = true)
             .combinedClickable(
                 enabled = true,
                 onClickLabel = "music_item_click",
@@ -53,7 +54,7 @@ fun MusicItemView(
                 onDoubleClick = null,
                 onClick = onClick,
                 role = Role.Button,
-                indication = ripple(),
+                indication = LocalIndication.current,
                 interactionSource = remember { MutableInteractionSource() }
             ),
         color = if (isSelected) {
@@ -77,17 +78,27 @@ fun MusicItemView(
                         color = MaterialTheme.colorScheme.primaryContainer,
                     ) {}
                 } else {
-                    val contentColor = MaterialTheme.colorScheme.primaryContainer
-                    val fallbackPainter = remember(contentColor) { ColorPainter(contentColor) }
-                    AsyncImage(
+                    val placeholder: @Composable (SubcomposeAsyncImageScope.(State) -> Unit) =
+                        remember {
+                            {
+                                val contentColor = MaterialTheme.colorScheme.primaryContainer
+                                val fallbackPainter =
+                                    remember(contentColor) { ColorPainter(contentColor) }
+                                Image(
+                                    painter = fallbackPainter,
+                                    modifier = Modifier.matchParentSize(),
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+                    NiaSubComposeImage(
                         modifier = Modifier
                             .size(56.dp),
-                        model = musicItem.musicCover,
+                        url = musicItem.musicCover,
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
-                        error = fallbackPainter,
-                        fallback = fallbackPainter,
-                        placeholder = fallbackPainter
+                        error = placeholder,
+                        loading = placeholder,
                     )
                 }
             }

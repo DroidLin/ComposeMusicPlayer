@@ -15,10 +15,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
 import java.util.LinkedList
 import kotlin.time.Duration.Companion.minutes
 
-private const val MEDIA_COVER_DIR = "mediaCoverCache"
+private const val MEDIA_COVER_DIR = "mediaCover"
 private const val ALBUM_COVER_BASE_CONTENT_URI = "content://media/external/audio/albumart"
 
 private val Context.albumCacheDir: File
@@ -67,28 +68,43 @@ suspend fun Context.fetchAlbumInformation(albumId: String): MediaAlbumCursor {
     val externalMediaContentUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
     val sortOrder = MediaStore.Audio.Albums.DEFAULT_SORT_ORDER
     return withContext(Dispatchers.IO) {
-        contentResolver.query(externalMediaContentUri, null, "${MediaStore.Audio.Albums.ALBUM_ID} = ${albumId}", null, sortOrder)
-            ?.use { rawCursor ->
-                if (!rawCursor.moveToNext()) return@use null
-                val id = rawCursor.getStringByColumnName(MediaStore.Audio.Albums.ALBUM_ID) ?: ""
-                val name = rawCursor.getStringByColumnName(MediaStore.Audio.Albums.ALBUM) ?: ""
-                val date = rawCursor.getLongByColumnName(MediaStore.Audio.Albums.FIRST_YEAR) ?: 0L
-                val numberOfSong = rawCursor.getIntByColumnName(MediaStore.Audio.Albums.NUMBER_OF_SONGS) ?: 0
-                val coverUri = decodeAlbumCover(albumId)
-                MediaAlbumCursor(
-                    id = id,
-                    name = name,
-                    date = date,
-                    numberOfSong = numberOfSong,
-                    cover = coverUri
-                )
-            } ?: MediaAlbumCursor(id = albumId, name = "", date = 0L, numberOfSong = 0, cover = "")
+        if (albumCacheDir.exists() || albumCacheDir.mkdirs()) {
+            contentResolver.query(externalMediaContentUri, null, "${MediaStore.Audio.Albums.ALBUM_ID} = ${albumId}", null, sortOrder)
+                ?.use { rawCursor ->
+                    if (!rawCursor.moveToNext()) return@use null
+                    val id = rawCursor.getStringByColumnName(MediaStore.Audio.Albums.ALBUM_ID) ?: ""
+                    val name = rawCursor.getStringByColumnName(MediaStore.Audio.Albums.ALBUM) ?: ""
+                    val date = rawCursor.getLongByColumnName(MediaStore.Audio.Albums.FIRST_YEAR) ?: 0L
+                    val numberOfSong = rawCursor.getIntByColumnName(MediaStore.Audio.Albums.NUMBER_OF_SONGS) ?: 0
+                    val coverUri = decodeAlbumCover(albumId)
+                    MediaAlbumCursor(
+                        id = id,
+                        name = name,
+                        date = date,
+                        numberOfSong = numberOfSong,
+                        cover = coverUri
+                    )
+                } ?: MediaAlbumCursor(id = albumId, name = "", date = 0L, numberOfSong = 0, cover = "")
+        } else throw RuntimeException("Can`t read or write external storage.")
     }
 }
 
-private fun Context.decodeAlbumCover(albumId: String): String {
-    val coverUri = Uri.parse(ALBUM_COVER_BASE_CONTENT_URI).buildUpon().appendPath(albumId).build()
-    return coverUri.toString()
+private suspend fun Context.decodeAlbumCover(albumId: String): String = withContext(Dispatchers.IO) {
+    kotlin.runCatching {
+        val coverUri = Uri.parse(ALBUM_COVER_BASE_CONTENT_URI).buildUpon().appendPath(albumId).build()
+        contentResolver.openInputStream(coverUri)?.use { inputStream ->
+            val cacheFile = File(albumCacheDir, "media_album_${albumId}")
+            FileOutputStream(cacheFile).use { outputStream ->
+                val byteArray = ByteArray(1024)
+                var count = -1
+                while (inputStream.read(byteArray).also { count = it } != -1) {
+                    outputStream.write(byteArray, 0, count)
+                }
+                outputStream.flush()
+            }
+            cacheFile.absolutePath
+        }
+    }.getOrNull() ?: ""
 }
 
 suspend fun Context.fetchArtistInformation(artistId: String): List<MediaArtistCursor> {

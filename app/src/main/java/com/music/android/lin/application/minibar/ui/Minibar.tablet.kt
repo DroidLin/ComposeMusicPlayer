@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
+import com.music.android.lin.application.common.ui.component.NiaSubComposeImage
 import com.music.android.lin.application.common.ui.vm.PlayViewModel
 import com.music.android.lin.application.framework.AppMaterialTheme
 import com.music.android.lin.application.minibar.ui.state.MinibarUiState
@@ -118,8 +118,8 @@ private fun TabletMinibarImage(
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.inversePrimary
     ) {
-        AsyncImage(
-            model = imageUri,
+        NiaSubComposeImage(
+            url = imageUri,
             contentDescription = "",
             contentScale = ContentScale.Crop,
         )

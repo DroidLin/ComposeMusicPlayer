@@ -92,6 +92,8 @@ interface MediaRepository {
 
     suspend fun insertMediaInfo(mediaInfoList: List<MediaInfo>)
 
+    suspend fun upsertMediaInfo(mediaInfoList: List<MediaInfo>)
+
     suspend fun deleteMediaInfoFromPlayList(
         mediaInfoPlayList: MediaInfoPlayList,
         musicInfoIdList: List<String>,
@@ -376,6 +378,19 @@ private class MediaRepositoryImpl constructor(
     }
 
     override suspend fun insertMediaInfo(mediaInfoList: List<MediaInfo>) {
+        this.mediaDatabase.withTransaction {
+            mediaInfoList.forEach { musicInfo ->
+                val artists = musicInfo.artists
+                artists.forEach { artist ->
+                    this.artistDao.upsert(artist = artist.toLocalArtist())
+                }
+                this.albumDao.upsert(album = musicInfo.album.toLocalAlbum())
+                this.musicInfoDao.upsert(musicInfo = musicInfo.toLocalMusicInfo())
+            }
+        }
+    }
+
+    override suspend fun upsertMediaInfo(mediaInfoList: List<MediaInfo>) {
         this.mediaDatabase.withTransaction {
             mediaInfoList.forEach { musicInfo ->
                 val artists = musicInfo.artists

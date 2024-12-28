@@ -8,6 +8,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
+import org.koin.ksp.generated.defaultModule
 import org.koin.ksp.generated.module
 import kotlin.reflect.KClass
 
@@ -27,6 +28,7 @@ object AppKoin {
         startKoin {
             properties(properties)
             modules(AppModule.module)
+            defaultModule()
         }
     }
 

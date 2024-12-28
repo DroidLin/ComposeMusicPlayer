@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import com.music.android.lin.player.database.metadata.LocalMusicInfo
 import kotlinx.coroutines.flow.Flow
 
@@ -21,6 +22,9 @@ internal interface MusicInfoDao {
 
     @Insert(entity = LocalMusicInfo::class, onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(musicInfo: LocalMusicInfo)
+
+    @Upsert(entity = LocalMusicInfo::class)
+    suspend fun upsert(musicInfo: LocalMusicInfo)
 
     @Delete(entity = LocalMusicInfo::class)
     suspend fun delete(musicInfo: LocalMusicInfo): Int

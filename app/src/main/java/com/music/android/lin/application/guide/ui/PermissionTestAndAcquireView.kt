@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,6 +37,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,9 +53,38 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.music.android.lin.R
 import com.music.android.lin.application.framework.AppMaterialTheme
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+
+@Stable
+@Serializable
+data object PermissionTestAndAcquire
+
+fun NavController.navigateToPermissionTestAndAcquire() {
+    navigate(PermissionTestAndAcquire) {
+        launchSingleTop = true
+    }
+}
+
+fun NavGraphBuilder.permissionTestAndAcquireView(
+    goNext: () -> Unit,
+    backPress: () -> Unit,
+) {
+    composable<PermissionTestAndAcquire> {
+        PermissionTestAndAcquireView(
+            backPress = backPress,
+            goNext = goNext,
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding()
+        )
+    }
+}
 
 private val checkPermissionGranted: Context.(String) -> Boolean = { permission ->
     ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED

@@ -49,7 +49,7 @@ class MediaInformationScannerViewModel(
 
     fun confirmSave(scanningState: ScanningState.Data) {
         viewModelScope.launch {
-            saveMediaInfoUseCase.saveMediaInfo(scanningState.mediaInfoList)
+            saveMediaInfoUseCase.upsertMediaInfo(scanningState.mediaInfoList)
         }.invokeOnCompletion {
             this._uiState.update { it.copy(scanningState = ScanningState.Complete) }
         }
@@ -57,6 +57,7 @@ class MediaInformationScannerViewModel(
 
     private suspend fun proceedScanner(handle: suspend () -> List<MediaInfo>) {
         val dataResult = kotlin.runCatching { handle() }
+            .onFailure { it.printStackTrace() }
         if (dataResult.isFailure) {
             this._uiState.update {
                 it.copy(

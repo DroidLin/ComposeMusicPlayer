@@ -27,19 +27,6 @@ fun AppFirstGuide(modifier: Modifier = Modifier, onComplete: () -> Unit) {
         navController = navController,
         startDestination = PageDefinition.Welcome
     ) {
-        composable<PageDefinition.Welcome>(
-            deepLinks = listOf(
-                navDeepLink<PageDefinition.Welcome>(basePath = PageDeepLinks.PATH_GUIDE_WELCOME)
-            )
-        ) {
-            WelcomeGuideView(
-                skipToNext = {
-                    navController.navigate(PageDefinition.PermissionTestAndAcquire) {
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
         composable<PageDefinition.PermissionTestAndAcquire>(
             deepLinks = listOf(
                 navDeepLink<PageDefinition.PermissionTestAndAcquire>(basePath = PATH_GUIDE_PERMISSION_AND_ACQUIRE)

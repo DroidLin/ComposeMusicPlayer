@@ -22,13 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.music.android.lin.R
 import com.music.android.lin.application.common.model.PlayListItem
+import com.music.android.lin.application.common.ui.component.NiaImage
 import com.music.android.lin.application.common.ui.component.tintPainter
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -65,10 +64,10 @@ fun PlayListItemView(
                     .tintPainter(LocalContentColor.current)
                 val pictureBrokenPainter = painterResource(R.drawable.ic_broken_img)
                     .tintPainter(LocalContentColor.current)
-                AsyncImage(
+                NiaImage(
                     modifier = Modifier
                         .size(56.dp),
-                    model = playList.playListCover,
+                    url = playList.playListCover,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     placeholder = picturePainter,

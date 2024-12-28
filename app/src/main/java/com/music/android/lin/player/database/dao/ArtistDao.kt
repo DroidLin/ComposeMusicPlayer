@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import com.music.android.lin.player.database.metadata.LocalArtist
 
 /**
@@ -20,6 +21,9 @@ internal interface ArtistDao {
 
     @Insert(entity = LocalArtist::class, onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(artist: LocalArtist)
+
+    @Upsert(entity = LocalArtist::class)
+    suspend fun upsert(artist: LocalArtist)
 
     @Delete(entity = LocalArtist::class)
     suspend fun delete(artist: LocalArtist)

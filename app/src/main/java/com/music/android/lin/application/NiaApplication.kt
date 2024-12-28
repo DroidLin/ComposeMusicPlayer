@@ -1,6 +1,7 @@
 package com.music.android.lin.application
 
 import android.app.Application
+import com.music.android.lin.application.images.setupImageFactories
 import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.modules.mediaService
 
@@ -10,5 +11,6 @@ internal class NiaApplication : Application() {
         super.onCreate()
         AppKoin.init(this)
         AppKoin.mediaService.initService()
+        setupImageFactories()
     }
 }

@@ -13,10 +13,12 @@ import androidx.fragment.app.FragmentActivity
 import com.music.android.lin.application.framework.NiaApp
 import com.music.android.lin.application.framework.isNightModeOnCompat
 import com.music.android.lin.application.framework.rememberNiaAppState
+import com.music.android.lin.application.repositories.AppSetupRepository
 import com.music.android.lin.application.util.ActivityProvider
 import com.music.android.lin.application.util.LocalWindow
 import com.music.android.lin.application.util.SystemBarStyleComponent
 import com.music.android.lin.application.util.setTransparentBackground
+import com.music.android.lin.modules.AppKoin
 
 class MainActivity : FragmentActivity() {
 
@@ -25,9 +27,12 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         splashScreen.setKeepOnScreenCondition { false }
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        val appSetupRepository: AppSetupRepository = AppKoin.get()
         window.setTransparentBackground()
         setContent {
-            val appState = rememberNiaAppState()
+            val appState = rememberNiaAppState(
+                appSetupRepository = appSetupRepository
+            )
             ActivityProvider {
                 CompositionLocalProvider(LocalWindow provides window) {
                     SystemBarStyleComponent(!LocalConfiguration.current.isNightModeOnCompat)
