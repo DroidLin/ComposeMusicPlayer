@@ -9,9 +9,9 @@ import com.music.android.lin.application.common.usecase.FetchPlayListMediaInfoUs
 import com.music.android.lin.application.common.usecase.FetchPlayListUseCase
 import com.music.android.lin.application.common.usecase.PrepareMusicInfoUseCase
 import com.music.android.lin.application.common.usecase.MediaResourceGeneratorUseCase
-import com.music.android.lin.application.settings.usecase.SaveMediaInfoUseCase
-import com.music.android.lin.application.settings.usecase.ScanAndroidContentUseCase
-import com.music.android.lin.application.settings.usecase.scanner.MediaContentScanner
+import com.music.android.lin.application.pages.settings.usecase.SaveMediaInfoUseCase
+import com.music.android.lin.application.pages.settings.usecase.ScanAndroidContentUseCase
+import com.music.android.lin.application.pages.settings.usecase.scanner.MediaContentScanner
 import com.music.android.lin.player.database.MediaRepository
 import com.music.android.lin.player.repositories.DatabaseService
 import com.music.android.lin.player.service.MediaService

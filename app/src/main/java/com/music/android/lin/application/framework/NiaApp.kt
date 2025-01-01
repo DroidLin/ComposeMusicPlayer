@@ -39,26 +39,29 @@ import androidx.navigation.compose.NavHost
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.music.android.lin.R
 import com.music.android.lin.application.common.ui.component.TopAppBarLayout
-import com.music.android.lin.application.framework.vm.TopLevelDestination
-import com.music.android.lin.application.guide.ui.completeSetupAndReturn
-import com.music.android.lin.application.guide.ui.mediaInformationScannerView
-import com.music.android.lin.application.guide.ui.navigateToMediaInformationScanner
-import com.music.android.lin.application.guide.ui.navigateToPermissionTestAndAcquire
-import com.music.android.lin.application.guide.ui.permissionTestAndAcquireView
-import com.music.android.lin.application.guide.ui.welcomeGuideView
-import com.music.android.lin.application.minibar.ui.Minibar
-import com.music.android.lin.application.minibar.ui.MinibarSizeContainer
-import com.music.android.lin.application.minibar.ui.TabletMinibar
-import com.music.android.lin.application.music.album.ui.albumView
-import com.music.android.lin.application.music.play.ui.PlayerView
-import com.music.android.lin.application.music.playlist.ui.navigateToPlayListDetail
-import com.music.android.lin.application.music.playlist.ui.playListDetail
-import com.music.android.lin.application.music.playlist.ui.playListView
-import com.music.android.lin.application.music.single.ui.SimpleMusicView
-import com.music.android.lin.application.music.single.ui.simpleMusicScreen
-import com.music.android.lin.application.settings.ui.aboutScreen
-import com.music.android.lin.application.settings.ui.navigateToAboutScreen
-import com.music.android.lin.application.settings.ui.settingsView
+import com.music.android.lin.application.framework.model.TopLevelDestination
+import com.music.android.lin.application.pages.guide.ui.mediaInformationScannerView
+import com.music.android.lin.application.pages.guide.ui.navigateToMediaInformationScanner
+import com.music.android.lin.application.pages.guide.ui.navigateToPermissionTestAndAcquire
+import com.music.android.lin.application.pages.guide.ui.permissionTestAndAcquireView
+import com.music.android.lin.application.pages.guide.ui.welcomeGuideView
+import com.music.android.lin.application.pages.minibar.ui.Minibar
+import com.music.android.lin.application.pages.minibar.ui.TabletMinibar
+import com.music.android.lin.application.pages.music.album.ui.albumView
+import com.music.android.lin.application.pages.music.edit.ui.editMediaInfoView
+import com.music.android.lin.application.pages.music.edit.ui.navigateToEditMediaInfo
+import com.music.android.lin.application.pages.music.store.ui.mediaStoreScreen
+import com.music.android.lin.application.pages.music.store.ui.navigateToMediaStore
+import com.music.android.lin.application.pages.music.play.ui.PlayerView
+import com.music.android.lin.application.pages.music.playlist.ui.navigateToPlayListDetail
+import com.music.android.lin.application.pages.music.playlist.ui.playListDetail
+import com.music.android.lin.application.pages.music.playlist.ui.playListView
+import com.music.android.lin.application.pages.music.single.ui.SimpleMusicView
+import com.music.android.lin.application.pages.music.single.ui.simpleMusicScreen
+import com.music.android.lin.application.pages.settings.ui.aboutScreen
+import com.music.android.lin.application.pages.settings.ui.navigateToAboutScreen
+import com.music.android.lin.application.pages.settings.ui.scanMediaContentView
+import com.music.android.lin.application.pages.settings.ui.settingsView
 import org.koin.androidx.compose.KoinAndroidContext
 
 @Stable
@@ -155,7 +158,6 @@ fun GlobalPopupScaffold(
     ) {
         val globalPopupScope = rememberGlobalPopupScope()
         globalPopupScope.content()
-
         PlayerView(
             show = globalPopupScope.audioPlayerScreenOn,
             backPressed = globalPopupScope::closeAudioPlayerScreen,
@@ -202,55 +204,73 @@ private fun NiaApp(
         }
     ) {
         val navController = appState.navController
-        MinibarSizeContainer {
-            Box(
-                modifier = Modifier.fillMaxSize()
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            NavHost(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer { clip = true },
+                navController = navController,
+                startDestination = SimpleMusicView,
+                enterTransition = { enterTransition },
+                exitTransition = { exitTransition },
+                popEnterTransition = { popEnterTransition },
+                popExitTransition = { popExitTransition },
             ) {
-                NavHost(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer { clip = true },
-                    navController = navController,
-                    startDestination = SimpleMusicView,
-                    enterTransition = { enterTransition },
-                    exitTransition = { exitTransition },
-                    popEnterTransition = { popEnterTransition },
-                    popExitTransition = { popExitTransition },
+                welcomeGuideView(
+                    goNext = navController::navigateToPermissionTestAndAcquire
                 ) {
-                    welcomeGuideView(
-                        goNext = navController::navigateToPermissionTestAndAcquire
-                    ) {
-                        permissionTestAndAcquireView(
-                            goNext = navController::navigateToMediaInformationScanner,
-                            backPress = navController::navigateUp
-                        )
-                        mediaInformationScannerView(
-                            backPress = navController::navigateUp,
-                            onComplete = appState::onAppSetupComplete
-                        )
-                    }
-                    simpleMusicScreen(backPressed = navController::navigateUp)
-                    albumView()
-                    aboutScreen(backPressed = navController::navigateUp)
-                    settingsView(
-                        navigateToAbout = navController::navigateToAboutScreen,
-                        backPressed = navController::navigateUp
+                    permissionTestAndAcquireView(
+                        goNext = navController::navigateToMediaInformationScanner,
+                        backPress = navController::navigateUp
                     )
-                    playListView(
-                        backPressed = navController::navigateUp,
-                        goToPlayListDetail = navController::navigateToPlayListDetail
+                    mediaInformationScannerView(
+                        backPress = navController::navigateUp,
+                        onComplete = appState::onAppSetupComplete
                     )
-                    playListDetail(backPressed = navController::navigateUp)
                 }
-                Minibar(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .navigationBarsPadding(),
-                    shouldShowMinibar = drawerType == NavigationDrawerType.PhoneDrawer && appState.shouldShowMinibar,
-                    navigateToPlayView = openMusicPlayerScreen,
+                simpleMusicScreen(
+                    backPressed = navController::navigateUp,
+                    editMediaInfo = navController::navigateToEditMediaInfo
+                )
+                albumView()
+                aboutScreen(
+                    backPressed = navController::navigateUp,
+                    showBackButton = true,
+                )
+                settingsView(
+                    navigateToAbout = navController::navigateToAboutScreen,
+                    backPressed = navController::navigateUp,
+                    navigateToMediaScanner = navController::navigateToMediaStore
+                )
+                playListView(
+                    backPressed = navController::navigateUp,
+                    goToPlayListDetail = navController::navigateToPlayListDetail
+                )
+                playListDetail(
+                    backPressed = navController::navigateUp,
+                    editMediaInfo = navController::navigateToEditMediaInfo
+                )
+                scanMediaContentView(
+                    backPressed = navController::navigateUp
+                )
+                mediaStoreScreen(
+                    showBackButton = true,
+                    backPressed = navController::navigateUp
+                )
+                editMediaInfoView(
+                    backPress = navController::navigateUp
                 )
             }
+            Minibar(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .navigationBarsPadding(),
+                shouldShowMinibar = drawerType == NavigationDrawerType.PhoneDrawer && appState.shouldShowMinibar,
+                navigateToPlayView = openMusicPlayerScreen,
+            )
         }
     }
 }

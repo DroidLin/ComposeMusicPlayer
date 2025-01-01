@@ -3,6 +3,7 @@ package com.music.android.lin.application.common.ui.vm
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext
 
@@ -16,7 +17,7 @@ val ViewModel.ioViewModelScope: CoroutineScope
     }
 
 private fun createIOViewModelScope(): ClosableCoroutineScope {
-    val dispatcher = Dispatchers.IO
+    val dispatcher = Dispatchers.IO + SupervisorJob()
     return ClosableCoroutineScope(dispatcher)
 }
 

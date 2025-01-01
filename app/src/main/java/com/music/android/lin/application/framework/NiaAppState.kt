@@ -1,5 +1,6 @@
 package com.music.android.lin.application.framework
 
+import android.content.Intent
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.SnackbarHostState
@@ -18,15 +19,15 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.music.android.lin.application.framework.vm.TopLevelDestination
-import com.music.android.lin.application.guide.ui.WelcomeGuide
-import com.music.android.lin.application.guide.ui.completeSetupAndReturn
-import com.music.android.lin.application.guide.ui.navigateToWelcomeSetup
-import com.music.android.lin.application.music.playlist.ui.navigateToPlayList
-import com.music.android.lin.application.music.single.ui.navigateToSimpleMusicView
+import com.music.android.lin.application.framework.model.TopLevelDestination
+import com.music.android.lin.application.framework.router.Router
+import com.music.android.lin.application.pages.guide.ui.WelcomeGuide
+import com.music.android.lin.application.pages.guide.ui.completeSetupAndReturn
+import com.music.android.lin.application.pages.guide.ui.navigateToWelcomeSetup
+import com.music.android.lin.application.pages.music.playlist.ui.navigateToPlayList
+import com.music.android.lin.application.pages.music.single.ui.navigateToSimpleMusicView
+import com.music.android.lin.application.pages.settings.ui.navigateToSettings
 import com.music.android.lin.application.repositories.AppSetupRepository
-import com.music.android.lin.application.settings.ui.navigateToAboutScreen
-import com.music.android.lin.application.settings.ui.navigateToSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -81,6 +82,11 @@ class NiaAppState(
         @Composable
         get() = !currentDestination.isRouteInHierarchy(WelcomeGuide::class)
 
+    fun handleNewIntent(intent: Intent) {
+        coroutineScope.launch { Router.handleIntent(intent) }
+            .invokeOnCompletion { navController.handleDeepLink(intent) }
+    }
+
     fun navigateTopLevelDestination(destination: TopLevelDestination) = closeDrawer {
         if (navController.currentDestination.isRouteInHierarchy(destination.baseRoute)) {
             return@closeDrawer
@@ -96,9 +102,9 @@ class NiaAppState(
             TopLevelDestination.Music -> navController.navigateToSimpleMusicView(navOptions)
 //            TopLevelDestination.Musician -> navController.navigateToSimpleMusicView(navOptions)
             TopLevelDestination.PlayList -> navController.navigateToPlayList(navOptions)
-//            TopLevelDestination.Scan -> navController.navigateToSimpleMusicView(navOptions)
+//            TopLevelDestination.Scan -> navController.navigateToScanMediaContent(navOptions)
             TopLevelDestination.Setting -> navController.navigateToSettings(navOptions)
-            TopLevelDestination.About -> navController.navigateToAboutScreen(navOptions)
+//            TopLevelDestination.About -> navController.navigateToAboutScreen(navOptions)
             else -> {}
         }
     }
@@ -131,7 +137,10 @@ internal fun NiaAppState.showAppGuideMessage() {
             actionLabel = "OK",
             withDismissAction = true,
         )
-        if (interactResult == SnackbarResult.Dismissed) return@launch
+        if (interactResult == SnackbarResult.Dismissed) {
+            setAppGuideInitialized(true)
+            return@launch
+        }
         navController.navigateToWelcomeSetup()
     }
 }

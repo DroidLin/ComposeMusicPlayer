@@ -15,7 +15,7 @@ import com.music.android.lin.application.common.usecase.CreatePlayListUseCase
 import com.music.android.lin.application.common.usecase.DeleteMediaInfoUseCase
 import com.music.android.lin.application.common.usecase.FetchMyPlayListUseCase
 import com.music.android.lin.application.common.usecase.MusicItem
-import com.music.android.lin.application.music.component.CreatePlayListParameter
+import com.music.android.lin.application.pages.music.component.CreatePlayListParameter
 import com.music.android.lin.player.metadata.MediaInfo
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted

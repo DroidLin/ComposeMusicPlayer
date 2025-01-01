@@ -44,6 +44,21 @@ interface MediaInfo : Serializable {
     }
 }
 
+fun MediaInfo(mediaInfo: MediaInfo): MediaInfo {
+    return MediaInfo(
+        id = mediaInfo.id,
+        mediaTitle = mediaInfo.mediaTitle,
+        mediaDescription = mediaInfo.mediaDescription,
+        artists = mediaInfo.artists,
+        album = mediaInfo.album,
+        coverUri = mediaInfo.coverUri,
+        sourceUri = mediaInfo.sourceUri,
+        updateTimeStamp = mediaInfo.updateTimeStamp,
+        mediaType = mediaInfo.mediaType,
+        mediaExtras = mediaInfo.mediaExtras,
+    )
+}
+
 fun MediaInfo(
     id: String,
     mediaTitle: String,

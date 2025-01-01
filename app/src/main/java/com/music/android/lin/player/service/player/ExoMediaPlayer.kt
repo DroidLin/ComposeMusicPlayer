@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Handler
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.exoplayer.ExoPlayer
 import com.music.android.lin.modules.AppKoin
 import com.music.android.lin.modules.applicationContext
@@ -41,6 +42,12 @@ internal class ExoMediaPlayer(
 
         override fun onVolumeChanged(volume: Float) {
             this@ExoMediaPlayer.metadataFlow.update { it.copy(volume = volume) }
+        }
+
+        override fun onPlayerError(error: PlaybackException) {
+        }
+
+        override fun onPlayerErrorChanged(error: PlaybackException?) {
         }
     }
 

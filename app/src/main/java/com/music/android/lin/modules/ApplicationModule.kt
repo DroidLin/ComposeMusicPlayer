@@ -1,7 +1,7 @@
 package com.music.android.lin.modules
 
 import android.content.Context
-import com.music.android.lin.application.music.play.domain.LyricParser
+import com.music.android.lin.application.pages.music.play.domain.LyricParser
 import com.music.android.lin.player.service.MediaService
 import com.music.android.lin.player.service.controller.MediaController
 import kotlinx.coroutines.CoroutineScope

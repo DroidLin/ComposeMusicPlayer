@@ -1,5 +1,6 @@
 package com.music.android.lin.application.common.ui.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +73,52 @@ fun NiaImage(
         placeholder = placeholder,
         error = error,
         fallback = fallback,
+        onLoading = onLoading,
+        onSuccess = onSuccess,
+        onError = onError,
+        alignment = alignment,
+        contentScale = contentScale,
+        alpha = alpha,
+        colorFilter = colorFilter,
+        filterQuality = filterQuality,
+        clipToBounds = clipToBounds,
+    )
+}
+
+@Composable
+fun NiaSubComposeImage(
+    url: String?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    placeholder: Painter? = null,
+    error: Painter? = null,
+    fallback: Painter? = error,
+    transform: (State) -> State = DefaultTransform,
+    onLoading: ((State.Loading) -> Unit)? = null,
+    onSuccess: ((State.Success) -> Unit)? = null,
+    onError: ((State.Error) -> Unit)? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+    colorFilter: ColorFilter? = null,
+    filterQuality: FilterQuality = DefaultFilterQuality,
+    clipToBounds: Boolean = true,
+) {
+    SubcomposeAsyncImage(
+        model = url,
+        contentDescription = contentDescription,
+        modifier = modifier,
+        transform = transform,
+        loading = placeholder?.let { painter ->
+            {
+                Image(painter = painter, contentDescription = contentDescription)
+            }
+        },
+        error = error?.let { painter ->
+            {
+                Image(painter = painter, contentDescription = contentDescription)
+            }
+        },
         onLoading = onLoading,
         onSuccess = onSuccess,
         onError = onError,

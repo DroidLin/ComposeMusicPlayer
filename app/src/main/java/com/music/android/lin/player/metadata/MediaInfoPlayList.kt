@@ -34,7 +34,7 @@ fun MediaInfoPlayList(
     mediaInfoList: List<MediaInfo>,
     extensions: ExtensionMap,
     updateTimeStamp: Long,
-    countOfPlayable: Int
+    countOfPlayable: Int = mediaInfoList.size
 ): MediaInfoPlayList {
     return MediaInfoPlayListImpl(
         id = id,

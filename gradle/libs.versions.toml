@@ -37,6 +37,7 @@ airbnbLottie = "6.6.1"
 glance = "1.1.0"
 
 glide = "1.0.0-beta01"
+composeConstraintLayout = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -103,6 +104,8 @@ glance-material3 = { group = "androidx.glance", name = "glance-material3", versi
 
 bumptech-glide = { group = "com.github.bumptech.glide", name = "compose", version.ref = "glide" }
 bumptech-glide-extensions = { group = "jp.wasabeef", name = "glide-transformations", version = "4.3.0" }
+
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "composeConstraintLayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

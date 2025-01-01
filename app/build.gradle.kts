@@ -4,9 +4,9 @@ plugins {
     alias(libs.plugins.google.dev.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
-//    alias(libs.plugins.google.gms.service)
-//    alias(libs.plugins.google.firebase.cashlytics)
-//    alias(libs.plugins.google.firebase.performance)
+    alias(libs.plugins.google.gms.service)
+    alias(libs.plugins.google.firebase.cashlytics)
+    alias(libs.plugins.google.firebase.performance)
 }
 
 android {
@@ -148,10 +148,10 @@ dependencies {
     implementation(libs.palette)
 
     // google
-//    implementation(platform(libs.google.firebase.bom))
-//    implementation(libs.google.firebase.crashlytics)
-//    implementation(libs.google.firebase.analytics)
-//    implementation(libs.google.firebase.performance)
+    implementation(platform(libs.google.firebase.bom))
+    implementation(libs.google.firebase.crashlytics)
+    implementation(libs.google.firebase.analytics)
+    implementation(libs.google.firebase.performance)
 
     // lottie
     implementation(libs.airbnb.lottie)
@@ -159,4 +159,7 @@ dependencies {
     // glance
     implementation(libs.glance.widget)
     implementation(libs.glance.material3)
+
+    // constraintLayout
+    implementation(libs.constraintlayout)
 }

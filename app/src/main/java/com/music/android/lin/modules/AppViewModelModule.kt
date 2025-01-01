@@ -11,21 +11,18 @@ import com.music.android.lin.application.common.usecase.FetchMyPlayListUseCase
 import com.music.android.lin.application.common.usecase.FetchPlayListUseCase
 import com.music.android.lin.application.common.usecase.MediaResourceGeneratorUseCase
 import com.music.android.lin.application.common.usecase.PrepareMusicInfoUseCase
-import com.music.android.lin.application.framework.vm.AppFrameworkViewModel
-import com.music.android.lin.application.framework.vm.AppMusicFrameworkViewModel
-import com.music.android.lin.application.framework.vm.AppNavigationViewModel
-import com.music.android.lin.application.guide.ui.vm.MediaInformationScannerViewModel
-import com.music.android.lin.application.minibar.ui.vm.MinibarViewModel
-import com.music.android.lin.application.music.component.vm.SelectMediaInfoViewModel
-import com.music.android.lin.application.music.play.domain.LyricParser
-import com.music.android.lin.application.music.play.ui.vm.PlayerListViewModel
-import com.music.android.lin.application.music.play.ui.vm.PlayerLyricViewModel
-import com.music.android.lin.application.music.play.ui.vm.PlayerPageViewModel
-import com.music.android.lin.application.music.playlist.ui.vm.PlayListDetailViewModel
-import com.music.android.lin.application.music.single.ui.vm.SingleMusicViewModel
-import com.music.android.lin.application.settings.ui.vm.AppSettingsViewModel
-import com.music.android.lin.application.settings.usecase.SaveMediaInfoUseCase
-import com.music.android.lin.application.settings.usecase.ScanAndroidContentUseCase
+import com.music.android.lin.application.pages.guide.ui.vm.MediaInformationScannerViewModel
+import com.music.android.lin.application.pages.minibar.ui.vm.MinibarViewModel
+import com.music.android.lin.application.pages.music.component.vm.SelectMediaInfoViewModel
+import com.music.android.lin.application.pages.music.play.domain.LyricParser
+import com.music.android.lin.application.pages.music.play.ui.vm.PlayerListViewModel
+import com.music.android.lin.application.pages.music.play.ui.vm.PlayerLyricViewModel
+import com.music.android.lin.application.pages.music.play.ui.vm.PlayerPageViewModel
+import com.music.android.lin.application.pages.music.playlist.ui.vm.PlayListDetailViewModel
+import com.music.android.lin.application.pages.music.single.ui.vm.SingleMusicViewModel
+import com.music.android.lin.application.pages.settings.ui.vm.AppSettingsViewModel
+import com.music.android.lin.application.pages.settings.usecase.SaveMediaInfoUseCase
+import com.music.android.lin.application.pages.settings.usecase.ScanAndroidContentUseCase
 import com.music.android.lin.player.service.MediaService
 import com.music.android.lin.player.service.controller.MediaController
 import com.music.android.lin.widget.ui.vm.GlancePlayerViewModel
@@ -50,24 +47,6 @@ internal class AppViewModelModule {
             savedStateHandle = savedStateHandle
         )
     }
-
-    @Factory
-    internal fun appFrameworkViewModel(
-        @Qualifier(name = AppIdentifier.applicationContext)
-        context: Context
-    ): AppFrameworkViewModel = AppFrameworkViewModel(context)
-
-    @Factory
-    internal fun appNavigationViewModel(
-        @Qualifier(name = AppIdentifier.applicationContext)
-        context: Context
-    ): AppNavigationViewModel = AppNavigationViewModel(context)
-
-    @Factory
-    internal fun appMusicFrameworkViewModel(
-        @Qualifier(name = AppIdentifier.applicationContext)
-        context: Context
-    ): AppMusicFrameworkViewModel = AppMusicFrameworkViewModel(context)
 
     @Factory
     internal fun singleMusicViewModel(

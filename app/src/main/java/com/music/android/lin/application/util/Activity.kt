@@ -19,10 +19,15 @@ fun ComponentActivity.ActivityProvider(content: @Composable () -> Unit) {
 
 @Composable
 fun OnNewIntent(
+    vararg keys: Any?,
     onNewIntent: (Intent) -> Unit,
 ) {
     val activity = LocalActivity.current
-    DisposableEffect(onNewIntent) {
+    DisposableEffect(*keys, onNewIntent) {
+        val intent = activity.intent
+        if (intent != null) {
+            onNewIntent(intent)
+        }
         activity.addOnNewIntentListener(onNewIntent)
         onDispose { activity.removeOnNewIntentListener(onNewIntent) }
     }

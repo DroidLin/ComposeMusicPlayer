@@ -9,5 +9,12 @@
     <string name="string_about_app">关于App</string>
 
     <string name="string_sure_to_reset_all_title">确定重置吗？</string>
+    <string name="string_sure_to_reset_all_title_description">删除所有用户数据，请谨慎！</string>
     <string name="string_sure_to_reset_all_description">强烈建议您在重置前备份数据，您确定要重置吗？</string>
+
+    <string name="string_scan_local_media_title">本地扫描</string>
+    <string name="string_scan_local_media_description">扫描媒体库读取设备上的媒体文件</string>
+
+    <string name="string_app_media_library">媒体资源库</string>
+    <string name="string_app_media_library_description">设备的媒体资源总览</string>
 </resources>

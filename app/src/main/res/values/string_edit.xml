@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="string_edit_view_title">编辑媒体文件</string>
+
+    <string name="string_save_modifications">保存</string>
+
+    <string name="string_data_may_lost_title">确定要退出吗？</string>
+    <string name="string_data_may_lost_content">已编辑的数据会丢失，确定要退出吗？</string>
 </resources>

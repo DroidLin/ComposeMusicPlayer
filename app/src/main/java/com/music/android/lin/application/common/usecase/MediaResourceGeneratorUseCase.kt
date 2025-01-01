@@ -5,6 +5,7 @@ import com.music.android.lin.player.metadata.CommonPlayMediaResource
 import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.metadata.MediaInfoPlayList
 import com.music.android.lin.player.metadata.MediaResource
+import com.music.android.lin.player.metadata.PlayList
 import com.music.android.lin.player.metadata.PlayListType
 import com.music.android.lin.player.metadata.PositionalPlayMediaResource
 import com.music.android.lin.player.service.MediaService
@@ -14,6 +15,27 @@ class MediaResourceGeneratorUseCase(
     private val mediaService: MediaService,
     private val mediaRepository: MediaRepository,
 ) {
+
+    fun startPlayResource(playList: MediaInfoPlayList, index: Int): MediaResource? {
+        val currentPlayList = this.mediaService.information.value.mediaInfoPlayList
+        val mediaInfoId = playList.mediaInfoList.getOrNull(index)?.id
+        return if (
+            currentPlayList != null &&
+            currentPlayList.id == playList.id &&
+            currentPlayList.mediaInfoList.indexOfFirst { it.id == mediaInfoId } >= 0
+        ) {
+            PositionalPlayMediaResource(
+                startPosition = currentPlayList.mediaInfoList.indexOfFirst { mediaInfoId == it.id }
+                    .coerceIn(0, currentPlayList.mediaInfoList.size - 1)
+            )
+        } else {
+            CommonPlayMediaResource(
+                mediaInfoPlayList = playList,
+                startPosition = playList.mediaInfoList.indexOfFirst { mediaInfoId == it.id }
+                    .coerceIn(0, playList.mediaInfoList.size - 1)
+            )
+        }
+    }
 
     suspend fun startPlayResource(playListId: String, mediaInfoId: String): MediaResource? {
         val currentPlayList = this.mediaService.information.value.mediaInfoPlayList

@@ -27,6 +27,5 @@ class RedirectIntentActivity : Activity() {
 private fun takeIntentAndGo(activity: Activity, intent: Intent) {
     val newIntent = Intent(activity, MainActivity::class.java)
     newIntent.data = intent.data
-    newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
     activity.startActivity(newIntent)
 }

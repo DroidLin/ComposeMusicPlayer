@@ -22,8 +22,8 @@ internal class PrepareMusicInfoUseCase(
                 mediaInfo.toMusicItem(languageContext)
             }
             MusicItemSnapshot(
-                musicItemList = musicItemList.toImmutableList(),
-                mediaInfoList = musicInfoList
+                    musicItemList = musicItemList.toImmutableList(),
+            mediaInfoList = musicInfoList
             )
         }
 }

@@ -156,7 +156,7 @@ private class MediaRepositoryImpl constructor(
         return this.musicInfoDao.fetchMusicInfoFlow()
             .map { itemList ->
                 itemList.map { item -> item.toMediaInfo() }
-                    .sortedBy { it.updateTimeStamp }
+                    .sortedBy { it.mediaTitle }
             }
     }
 

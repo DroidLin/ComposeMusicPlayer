@@ -1,17 +1,16 @@
 package com.music.android.lin.player
 
 import android.app.Service
+import android.net.Uri
 import com.music.android.lin.player.service.PlayService
 import com.music.android.lin.player.service.player.datasource.DataSource
-import com.music.android.lin.player.service.player.datasource.LocalFileDataSource
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Property
 import org.koin.core.annotation.Qualifier
 import org.koin.core.annotation.Singleton
+import java.io.File
 
 /**
  * @author liuzhongao
@@ -23,7 +22,21 @@ internal class PlayServiceModule {
     @Singleton
     fun dataSourceFactory(): DataSource.Factory {
         return DataSource.Factory {
-            LocalFileDataSource(it)
+            val sourceUri = it.sourceUri
+            if (sourceUri.isNullOrEmpty()) {
+                return@Factory null
+            }
+            if (sourceUri.startsWith("content")) {
+                return@Factory DataSource { Uri.parse(sourceUri) }
+            }
+            if (sourceUri.startsWith("file:///")) {
+                return@Factory DataSource { Uri.parse(sourceUri) }
+            }
+            if (sourceUri.startsWith("/")) {
+                val file = File(sourceUri)
+                return@Factory DataSource { Uri.fromFile(file) }
+            }
+            return@Factory null
         }
     }
 
