@@ -71,7 +71,7 @@ fun PlayerCoverContentView(
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(24.dp)
+                .weight(1f)
         )
         PlayerInformationView(
             modifier = Modifier
@@ -98,7 +98,7 @@ fun PlayerCoverContentView(
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(16.dp)
+                .weight(1f)
         )
         PlayControlPanel(
             modifier = Modifier
@@ -114,7 +114,7 @@ fun PlayerCoverContentView(
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(32.dp)
+                .weight(3f)
         )
     }
 }
@@ -158,11 +158,6 @@ private fun PlayerInformationView(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.Bold
-        )
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(12.dp)
         )
         Text(
             text = subTitle,

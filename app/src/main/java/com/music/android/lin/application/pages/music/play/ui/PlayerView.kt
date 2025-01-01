@@ -36,6 +36,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
@@ -272,44 +274,18 @@ private fun PlayerBackground(
     backgroundColorState: PlayerColorScheme,
     modifier: Modifier = Modifier,
 ) {
+    val backgroundColor = MaterialTheme.colorScheme.background
     val backgroundMaskColor = animateColorAsState(
-        targetValue = backgroundColorState.backgroundMaskColor,
+        targetValue = backgroundColorState.backgroundMaskColor ?: backgroundColor,
         label = "background_mask_animation",
         animationSpec = backgroundColorAnimation
     )
     Box(
         modifier = modifier.drawWithContent {
-            this.drawRect(color = Color.Black)
-            this.drawContent()
             this.drawRect(color = backgroundMaskColor.value)
+            this.drawContent()
         }
-    ) {
-        AnimatedContent(
-            modifier = Modifier.matchParentSize(),
-            targetState = playCover,
-            label = "player_background_animation",
-            transitionSpec = {
-                fadeIn(backgroundFloatAnimation) togetherWith
-                        fadeOut(backgroundFloatAnimation)
-            }
-        ) { playCoverPainter ->
-            if (playCoverPainter != null) {
-                Image(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    painter = playCoverPainter,
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Transparent)
-                )
-            }
-        }
-    }
+    )
 }
 
 private val HeaderHorizontalPadding = 16.dp

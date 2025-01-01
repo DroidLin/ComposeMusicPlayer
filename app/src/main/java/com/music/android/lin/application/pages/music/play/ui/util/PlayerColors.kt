@@ -27,10 +27,7 @@ suspend fun pickColorAndTransformToScheme(bitmap: Bitmap?): PlayerColorScheme {
         ColorUtils.HSLToColor(
             hslColor.copyOf().also { it[2] = 0.75f }), 0x7f
     )
-    val backgroundMaskColor = ColorUtils.setAlphaComponent(
-        ColorUtils.HSLToColor(
-            hslColor.copyOf().also { it[2] = 0.25f }), 0x7f
-    )
+    val backgroundMaskColor = ColorUtils.HSLToColor(hslColor.copyOf().also { it[2] = 0.15f })
 
     return PlayerColorScheme(
         textColor = androidx.compose.ui.graphics.Color(textColor),
