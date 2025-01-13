@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,9 +16,11 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -75,49 +76,44 @@ fun PlayListView(
     modifier: Modifier = Modifier,
 ) {
     val mediaRepositoryViewModel = koinViewModel<MediaRepositoryViewModel>()
-    val playList = mediaRepositoryViewModel.playList.collectAsStateWithLifecycle()
-    val showCreatePlayListBottomSheet = remember {
-        mutableStateOf(false)
-    }
+
+    val loadState by mediaRepositoryViewModel.playList.collectAsStateWithLifecycle()
+    var showCreatePlayListBottomSheet by remember { mutableStateOf(false) }
+
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = modifier,
     ) {
-        DataLoadingView(
-            state = playList,
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-        ) { data ->
-            Column(
-                modifier = Modifier.matchParentSize(),
-            ) {
-                val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-                TopHeader(
-                    modifier = Modifier.fillMaxWidth(),
-                    backPressed = backPressed,
-                    showBackButton = showBackButton,
-                    goToCreatePlayList = { showCreatePlayListBottomSheet.value = true },
-                    scrollBehavior = scrollBehavior,
-                )
-                CommonPlayListItemView(
-                    playList = data.data,
-                    modifier = Modifier
-                        .weight(1f)
-                        .nestedScroll(scrollBehavior.nestedScrollConnection),
-                    goToCreatePlayList = { showCreatePlayListBottomSheet.value = true },
-                    onPlayListPressed = { goToPlayListDetail(it.id) }
-                )
-            }
+        ) {
+            val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+            TopHeader(
+                modifier = Modifier.fillMaxWidth(),
+                backPressed = backPressed,
+                showBackButton = showBackButton,
+                goToCreatePlayList = { showCreatePlayListBottomSheet = true },
+                scrollBehavior = scrollBehavior,
+            )
+            CommonPlayListItemView(
+                loadState = loadState,
+                modifier = Modifier
+                    .weight(1f)
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                goToCreatePlayList = { showCreatePlayListBottomSheet = true },
+                onPlayListPressed = { goToPlayListDetail(it.id) }
+            )
         }
     }
     CreatePlayListBottomSheet(
         modifier = Modifier,
         sheetState = sheetState,
         showBottomSheet = showCreatePlayListBottomSheet,
-        dismissRequest = { showCreatePlayListBottomSheet.value = false },
+        dismissRequest = { showCreatePlayListBottomSheet = false },
         doCreatePlayList = { createPlayListParameter, onComplete ->
             coroutineScope.launch {
                 mediaRepositoryViewModel.createPlayList(createPlayListParameter)

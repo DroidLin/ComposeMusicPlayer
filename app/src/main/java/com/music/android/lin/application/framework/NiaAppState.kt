@@ -9,9 +9,11 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -82,8 +84,19 @@ class NiaAppState(
         @Composable
         get() = !currentDestination.isRouteInHierarchy(WelcomeGuide::class)
 
+    var audioPlayerScreenOn by mutableStateOf(false)
+        private set
+
+    fun openAudioPlayerScreen() {
+        audioPlayerScreenOn = true
+    }
+
+    fun closeAudioPlayerScreen() {
+        audioPlayerScreenOn = false
+    }
+
     fun handleNewIntent(intent: Intent) {
-        coroutineScope.launch { Router.handleIntent(intent) }
+        coroutineScope.launch { Router.handleIntent(intent, this@NiaAppState) }
             .invokeOnCompletion { navController.handleDeepLink(intent) }
     }
 

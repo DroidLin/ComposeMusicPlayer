@@ -17,6 +17,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +44,7 @@ fun AddToPlayListBottomSheet(
 ) {
     val musicItem = musicItemState.value ?: return
     val mediaRepositoryViewModel = koinViewModel<MediaRepositoryViewModel>()
-    val playListState = mediaRepositoryViewModel.playList.collectAsStateWithLifecycle()
+    val loadState by mediaRepositoryViewModel.playList.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     ModalBottomSheet(
         onDismissRequest = dismissRequest,
@@ -52,47 +53,42 @@ fun AddToPlayListBottomSheet(
         dragHandle = null,
         properties = ModalBottomSheetProperties(),
     ) {
-        DataLoadingView(
-            state = playListState,
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.75f)
-        ) { data ->
-            Column(
-                modifier = Modifier.matchParentSize()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = stringResource(R.string.string_more_options_add_to_playlist),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    IconButton(
-                        modifier = Modifier,
-                        onClick = openCreatePlayListBottomSheet
-                    ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = "")
-                    }
-                }
-                CommonPlayListItemView(
+                Text(
                     modifier = Modifier.weight(1f),
-                    playList = data.data,
-                    onPlayListPressed = { playListItem ->
-                        doAddToPlayList(playListItem, musicItem) {
-                            coroutineScope.launch {
-                                sheetState.hide()
-                                dismissRequest()
-                            }
-                        }
-                    },
-                    goToCreatePlayList = openCreatePlayListBottomSheet
+                    text = stringResource(R.string.string_more_options_add_to_playlist),
+                    style = MaterialTheme.typography.titleMedium
                 )
+                IconButton(
+                    modifier = Modifier,
+                    onClick = openCreatePlayListBottomSheet
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "")
+                }
             }
+            CommonPlayListItemView(
+                modifier = Modifier.weight(1f),
+                loadState = loadState,
+                onPlayListPressed = { playListItem ->
+                    doAddToPlayList(playListItem, musicItem) {
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            dismissRequest()
+                        }
+                    }
+                },
+                goToCreatePlayList = openCreatePlayListBottomSheet
+            )
         }
     }
 }

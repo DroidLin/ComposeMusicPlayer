@@ -46,6 +46,7 @@ import com.music.android.lin.application.pages.guide.ui.navigateToPermissionTest
 import com.music.android.lin.application.pages.guide.ui.permissionTestAndAcquireView
 import com.music.android.lin.application.pages.guide.ui.welcomeGuideView
 import com.music.android.lin.application.pages.minibar.ui.Minibar
+import com.music.android.lin.application.pages.minibar.ui.MinibarSizeContainer
 import com.music.android.lin.application.pages.minibar.ui.TabletMinibar
 import com.music.android.lin.application.pages.music.album.ui.albumView
 import com.music.android.lin.application.pages.music.edit.ui.editMediaInfoView
@@ -84,8 +85,6 @@ internal fun calculateNavigationDrawerType(windowAdaptiveInfo: WindowAdaptiveInf
     }
 }
 
-private val WindowInsetsNone = WindowInsets(0, 0, 0, 0)
-
 @Composable
 fun NiaApp(
     appState: NiaAppState,
@@ -94,7 +93,7 @@ fun NiaApp(
 ) {
     KoinAndroidContext {
         AppMaterialTheme {
-            GlobalPopupScaffold(modifier = modifier) {
+            GlobalPopupScaffold(appState = appState, modifier = modifier) {
                 Box(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -103,7 +102,7 @@ fun NiaApp(
                             .matchParentSize(),
                         appState = appState,
                         windowAdaptiveInfo = windowAdaptiveInfo,
-                        openMusicPlayerScreen = this@GlobalPopupScaffold::openAudioPlayerScreen,
+                        openMusicPlayerScreen = appState::openAudioPlayerScreen,
                         showAppGuideMessage = appState::showAppGuideMessage
                     )
                     SnackbarHost(
@@ -118,49 +117,19 @@ fun NiaApp(
     }
 }
 
-class GlobalPopupScope(audioPlayerScreenOn: Boolean) {
-
-    var audioPlayerScreenOn by mutableStateOf(audioPlayerScreenOn)
-        private set
-
-    fun openAudioPlayerScreen() {
-        audioPlayerScreenOn = true
-    }
-
-    fun closeAudioPlayerScreen() {
-        audioPlayerScreenOn = false
-    }
-}
-
-@Composable
-fun rememberGlobalPopupScope(): GlobalPopupScope {
-    return rememberSaveable(
-        saver = Saver(
-            {
-                listOf(it.audioPlayerScreenOn)
-            },
-            {
-                GlobalPopupScope(audioPlayerScreenOn = it[0])
-            }
-        )
-    ) {
-        GlobalPopupScope(false)
-    }
-}
-
 @Composable
 fun GlobalPopupScaffold(
+    appState: NiaAppState,
     modifier: Modifier = Modifier,
-    content: @Composable GlobalPopupScope.() -> Unit,
+    content: @Composable () -> Unit,
 ) {
     Box(
         modifier = modifier
     ) {
-        val globalPopupScope = rememberGlobalPopupScope()
-        globalPopupScope.content()
+        content()
         PlayerView(
-            show = globalPopupScope.audioPlayerScreenOn,
-            backPressed = globalPopupScope::closeAudioPlayerScreen,
+            show = appState.audioPlayerScreenOn,
+            backPressed = appState::closeAudioPlayerScreen,
             modifier = Modifier.matchParentSize()
         )
     }
@@ -204,73 +173,75 @@ private fun NiaApp(
         }
     ) {
         val navController = appState.navController
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            NavHost(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer { clip = true },
-                navController = navController,
-                startDestination = SimpleMusicView,
-                enterTransition = { enterTransition },
-                exitTransition = { exitTransition },
-                popEnterTransition = { popEnterTransition },
-                popExitTransition = { popExitTransition },
+        MinibarSizeContainer {
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
-                welcomeGuideView(
-                    goNext = navController::navigateToPermissionTestAndAcquire
+                NavHost(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer { clip = true },
+                    navController = navController,
+                    startDestination = SimpleMusicView,
+                    enterTransition = { enterTransition },
+                    exitTransition = { exitTransition },
+                    popEnterTransition = { popEnterTransition },
+                    popExitTransition = { popExitTransition },
                 ) {
-                    permissionTestAndAcquireView(
-                        goNext = navController::navigateToMediaInformationScanner,
+                    welcomeGuideView(
+                        goNext = navController::navigateToPermissionTestAndAcquire
+                    ) {
+                        permissionTestAndAcquireView(
+                            goNext = navController::navigateToMediaInformationScanner,
+                            backPress = navController::navigateUp
+                        )
+                        mediaInformationScannerView(
+                            backPress = navController::navigateUp,
+                            onComplete = appState::onAppSetupComplete
+                        )
+                    }
+                    simpleMusicScreen(
+                        backPressed = navController::navigateUp,
+                        editMediaInfo = navController::navigateToEditMediaInfo
+                    )
+                    albumView()
+                    aboutScreen(
+                        backPressed = navController::navigateUp,
+                        showBackButton = true,
+                    )
+                    settingsView(
+                        navigateToAbout = navController::navigateToAboutScreen,
+                        backPressed = navController::navigateUp,
+                        navigateToMediaScanner = navController::navigateToMediaStore
+                    )
+                    playListView(
+                        backPressed = navController::navigateUp,
+                        goToPlayListDetail = navController::navigateToPlayListDetail
+                    )
+                    playListDetail(
+                        backPressed = navController::navigateUp,
+                        editMediaInfo = navController::navigateToEditMediaInfo
+                    )
+                    scanMediaContentView(
+                        backPressed = navController::navigateUp
+                    )
+                    mediaStoreScreen(
+                        showBackButton = true,
+                        backPressed = navController::navigateUp
+                    )
+                    editMediaInfoView(
                         backPress = navController::navigateUp
                     )
-                    mediaInformationScannerView(
-                        backPress = navController::navigateUp,
-                        onComplete = appState::onAppSetupComplete
-                    )
                 }
-                simpleMusicScreen(
-                    backPressed = navController::navigateUp,
-                    editMediaInfo = navController::navigateToEditMediaInfo
-                )
-                albumView()
-                aboutScreen(
-                    backPressed = navController::navigateUp,
-                    showBackButton = true,
-                )
-                settingsView(
-                    navigateToAbout = navController::navigateToAboutScreen,
-                    backPressed = navController::navigateUp,
-                    navigateToMediaScanner = navController::navigateToMediaStore
-                )
-                playListView(
-                    backPressed = navController::navigateUp,
-                    goToPlayListDetail = navController::navigateToPlayListDetail
-                )
-                playListDetail(
-                    backPressed = navController::navigateUp,
-                    editMediaInfo = navController::navigateToEditMediaInfo
-                )
-                scanMediaContentView(
-                    backPressed = navController::navigateUp
-                )
-                mediaStoreScreen(
-                    showBackButton = true,
-                    backPressed = navController::navigateUp
-                )
-                editMediaInfoView(
-                    backPress = navController::navigateUp
+                Minibar(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .navigationBarsPadding(),
+                    shouldShowMinibar = drawerType == NavigationDrawerType.PhoneDrawer && appState.shouldShowMinibar,
+                    navigateToPlayView = openMusicPlayerScreen,
                 )
             }
-            Minibar(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .navigationBarsPadding(),
-                shouldShowMinibar = drawerType == NavigationDrawerType.PhoneDrawer && appState.shouldShowMinibar,
-                navigateToPlayView = openMusicPlayerScreen,
-            )
         }
     }
 }

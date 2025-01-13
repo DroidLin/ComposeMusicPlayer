@@ -22,30 +22,21 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MusicPlayer">
+        android:theme="@style/ApplicationSplashScreen"
+        tools:targetApi="tiramisu">
         <activity
             android:name=".application.MainActivity"
             android:configChanges="colorMode|density|fontScale|fontWeightAdjustment|grammaticalGender|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
             android:enableOnBackInvokedCallback="true"
             android:exported="true"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.MusicPlayer"
+            android:theme="@style/ApplicationSplashScreen"
             android:windowSoftInputMode="adjustNothing">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".application.activity.RedirectIntentActivity"
-            android:configChanges="colorMode|density|fontScale|fontWeightAdjustment|grammaticalGender|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
-            android:enableOnBackInvokedCallback="true"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:theme="@style/RedirectIntentTransparentStyle"
-            android:windowSoftInputMode="adjustNothing">
 
             <intent-filter>
                 <data

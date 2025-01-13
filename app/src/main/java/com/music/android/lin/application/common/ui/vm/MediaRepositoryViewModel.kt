@@ -10,6 +10,7 @@ import com.music.android.lin.R
 import com.music.android.lin.application.common.model.PlayListItem
 import com.music.android.lin.application.common.ui.state.DataLoadState
 import com.music.android.lin.application.common.ui.state.withDataLoadState
+import com.music.android.lin.application.common.ui.state.withLoadState
 import com.music.android.lin.application.common.usecase.AddMediaItemToPlayListUseCase
 import com.music.android.lin.application.common.usecase.CreatePlayListUseCase
 import com.music.android.lin.application.common.usecase.DeleteMediaInfoUseCase
@@ -19,6 +20,7 @@ import com.music.android.lin.application.pages.music.component.CreatePlayListPar
 import com.music.android.lin.player.metadata.MediaInfo
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 @Stable
@@ -32,7 +34,7 @@ class MediaRepositoryViewModel(
 ) : ViewModel() {
 
     val playList = this.fetchMyPlayListUseCase.mediaInfoPlayListFlow
-        .withDataLoadState { list ->
+        .map { list ->
             val languageContext = ContextCompat.getContextForLanguage(this.context)
             list.map { playList ->
                 PlayListItem(
@@ -46,7 +48,7 @@ class MediaRepositoryViewModel(
                 )
             }.toImmutableList()
         }
-        .stateIn(this.ioViewModelScope, SharingStarted.Lazily, DataLoadState.Loading)
+        .withLoadState(this.ioViewModelScope)
 
     suspend fun deleteMediaInfo(mediaInfoId: String): Boolean {
         return this.deleteMediaInfoUseCase.deleteMediaInfo(mediaInfoId)

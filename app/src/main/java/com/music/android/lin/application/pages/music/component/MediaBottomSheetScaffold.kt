@@ -103,7 +103,7 @@ internal fun MediaBottomSheetScaffold(
     )
     CreatePlayListBottomSheet(
         sheetState = sheetState.createPlayListSheetState,
-        showBottomSheet = sheetState.showCreatePlayListBottomSheet,
+        showBottomSheet = sheetState.showCreatePlayListBottomSheet.value,
         dismissRequest = sheetState::dismissCreatePlayListBottomSheet,
         modifier = Modifier,
         doCreatePlayList = { createPlayListParameter, onComplete ->

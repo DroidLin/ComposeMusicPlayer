@@ -29,7 +29,10 @@ internal interface PlayListDao {
     suspend fun getAllPlaylist(limit: Int): List<@JvmWildcard LocalPlayList>
 
     @Query(value = "select * from table_local_playlist order by playlist_update_timestamp desc limit :limit ")
-    fun fetchAllPlayList(limit: Int): Flow<List<@JvmWildcard LocalPlayList>>
+    fun observeAllPlayList(limit: Int): Flow<List<@JvmWildcard LocalPlayList>>
+
+    @Query(value = "select * from table_local_playlist order by playlist_update_timestamp desc limit :limit ")
+    suspend fun fetchAllPlayList(limit: Int): List<@JvmWildcard LocalPlayList>
 
     @Query(value = "select * from table_local_playlist where playlist_id = :playListId")
     suspend fun getPlayList(playListId: String): LocalPlayList?

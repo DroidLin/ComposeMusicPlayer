@@ -21,6 +21,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
 import com.music.android.lin.R
+import com.music.android.lin.application.PageDeepLinks
+import com.music.android.lin.application.util.isPermissionGranted
 import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.service.controller.MediaController
 import com.music.android.lin.player.service.controller.PlayInfo
@@ -32,6 +34,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * @author liuzhongao
@@ -52,11 +55,9 @@ internal class PlayNotificationManager constructor(
             val intent = Intent().also {
                 it.component = ComponentName(
                     this.context.packageName,
-                    "com.music.android.lin.application.activity.RedirectIntentActivity"
+                    "com.music.android.lin.application.MainActivity"
                 )
-                it.data = Uri.parse("coco://app-deeplink.cn/player")
-                it.setAction(Intent.ACTION_MAIN)
-                it.addCategory(Intent.CATEGORY_LAUNCHER)
+                it.data = Uri.parse(PageDeepLinks.PATH_PLAYER)
             }
             return intent
         }
@@ -122,6 +123,8 @@ internal class PlayNotificationManager constructor(
         }
     }
 
+    private val foregroundAtomicBoolean = AtomicBoolean(false)
+
     private var mediaSessionToken: MediaSession.Token? = null
 
     init {
@@ -169,16 +172,6 @@ internal class PlayNotificationManager constructor(
                 intentFilter
             )
         }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            service.startForeground(
-                MEDIA_NOTIFICATION_ID,
-                buildEmptyNotification(),
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
-            )
-        } else {
-            service.startForeground(MEDIA_NOTIFICATION_ID, buildEmptyNotification())
-        }
     }
 
     fun release() {
@@ -191,27 +184,31 @@ internal class PlayNotificationManager constructor(
 
     @SuppressLint("MissingPermission")
     private suspend fun updateMediaNotification(metadata: NotificationMetadata) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ActivityCompat.checkSelfPermission(
-                this@PlayNotificationManager.context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !this.context.isPermissionGranted(Manifest.permission.POST_NOTIFICATIONS)) {
             return
         }
         val musicInfo = metadata.mediaInfo
-        if (musicInfo != null) {
-            val notification = buildMediaNotification(
-                mediaInfo = musicInfo,
-                isPlaying = metadata.isPlaying
-            )
-            withContext(Dispatchers.Main) {
-                notificationManagerCompat.notify(MEDIA_NOTIFICATION_ID, notification)
+        if (musicInfo == null || !metadata.isPlaying) {
+            if (foregroundAtomicBoolean.compareAndSet(true, false)) {
+                service.stopForeground(Service.STOP_FOREGROUND_DETACH)
+            }
+        }
+        if (musicInfo == null) {
+            notificationManagerCompat.notify(MEDIA_NOTIFICATION_ID, buildEmptyNotification())
+            return
+        }
+        val notification = buildMediaNotification(
+            mediaInfo = musicInfo,
+            isPlaying = metadata.isPlaying
+        )
+        if (metadata.isPlaying && foregroundAtomicBoolean.compareAndSet(false, true)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                service.startForeground(MEDIA_NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+            } else {
+                service.startForeground(MEDIA_NOTIFICATION_ID, notification)
             }
         } else {
-            withContext(Dispatchers.Main) {
-                notificationManagerCompat.notify(MEDIA_NOTIFICATION_ID, buildEmptyNotification())
-            }
+            notificationManagerCompat.notify(MEDIA_NOTIFICATION_ID, notification)
         }
     }
 

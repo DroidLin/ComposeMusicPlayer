@@ -1,5 +1,6 @@
 package com.music.android.lin.player.database
 
+import android.annotation.SuppressLint
 import androidx.room.withTransaction
 import com.music.android.lin.player.MediaDatabase
 import com.music.android.lin.player.database.dao.AlbumDao
@@ -142,22 +143,55 @@ private class MediaRepositoryImpl constructor(
     private val playRecordDao: PlayRecordDao get() = this.mediaDatabase.playRecordDao
     private val playlistMediaInfoDao: PlayListMediaInfoDao get() = this.mediaDatabase.playlistMediaInfoDao
 
+    @SuppressLint("RestrictedApi")
     override fun observablePlayList(limit: Int): Flow<List<PlayList>> {
-        return this.playListDao.fetchAllPlayList(limit)
-            .map { list -> list.map { it.toPlayList() } }
+        return CoroutineDatabase.createFlow(
+            db = mediaDatabase,
+            inTransaction = false,
+            tableNames = arrayOf(
+                MediaDatabase.Table.PlayList.NAME,
+                MediaDatabase.Table.MusicInfo.NAME,
+                MediaDatabase.Table.Artist.NAME,
+                MediaDatabase.Table.Album.NAME,
+                MediaDatabase.Table.PlayListMediaInfo.NAME
+            ),
+        ) {
+            this.playListDao.fetchAllPlayList(limit = limit)
+                .map { it.toPlayList() }
+        }
     }
 
     override fun observableMediaInfoPlayList(limit: Int): Flow<List<MediaInfoPlayList>> {
-        return this.playListDao.fetchAllPlayList(limit)
-            .map { itemList -> itemList.map { item -> item.toMediaInfoPlayList() } }
+        return CoroutineDatabase.createFlow(
+            db = mediaDatabase,
+            inTransaction = false,
+            tableNames = arrayOf(
+                MediaDatabase.Table.PlayList.NAME,
+                MediaDatabase.Table.MusicInfo.NAME,
+                MediaDatabase.Table.Artist.NAME,
+                MediaDatabase.Table.Album.NAME,
+                MediaDatabase.Table.PlayListMediaInfo.NAME
+            ),
+        ) {
+            this.playListDao.fetchAllPlayList(limit = limit)
+                .map { item -> item.toMediaInfoPlayList() }
+        }
     }
 
     override fun observableMusicInfoList(): Flow<List<MediaInfo>> {
-        return this.musicInfoDao.fetchMusicInfoFlow()
-            .map { itemList ->
-                itemList.map { item -> item.toMediaInfo() }
-                    .sortedBy { it.mediaTitle }
-            }
+        return CoroutineDatabase.createFlow(
+            db = mediaDatabase,
+            inTransaction = false,
+            tableNames = arrayOf(
+                MediaDatabase.Table.MusicInfo.NAME,
+                MediaDatabase.Table.Artist.NAME,
+                MediaDatabase.Table.Album.NAME,
+            ),
+        ) {
+            this.musicInfoDao.getAllMusicInfo()
+                .map { item -> item.toMediaInfo() }
+                .sortedBy { it.mediaTitle }
+        }
     }
 
     override fun observableVideoInfoList(): Flow<List<MediaInfo>> {
@@ -165,12 +199,19 @@ private class MediaRepositoryImpl constructor(
     }
 
     override fun observablePlayListMediaInfo(playListId: String): Flow<List<MediaInfo>> {
-        return this.playlistMediaInfoDao.observableRecordAboutPlayList(playListId)
-            .map { recordList ->
-                recordList.mapNotNull { record ->
-                    musicInfoDao.getMusicInfo(record.mediaInfoId)?.toMediaInfo()
-                }
-            }
+        return CoroutineDatabase.createFlow(
+            db = mediaDatabase,
+            inTransaction = false,
+            tableNames = arrayOf(
+                MediaDatabase.Table.PlayListMediaInfo.NAME,
+                MediaDatabase.Table.MusicInfo.NAME,
+                MediaDatabase.Table.Artist.NAME,
+                MediaDatabase.Table.Album.NAME,
+            ),
+        ) {
+            this.playlistMediaInfoDao.fetchMediaInfoAboutPlayList(playListId)
+                .mapNotNull { musicInfoDao.getMusicInfo(it.mediaInfoId)?.toMediaInfo() }
+        }
     }
 
     override suspend fun fetchUserPlaylist(limit: Int): List<MediaInfoPlayList> {
@@ -189,9 +230,19 @@ private class MediaRepositoryImpl constructor(
     }
 
     override fun observableMediaInfo(mediaInfoId: String): Flow<MediaInfo?> {
-        return this.musicInfoDao.fetchMediaInfoListFlow(listOf(mediaInfoId))
-            .map { itemList -> itemList.firstOrNull() }
-            .map { item -> item?.toMediaInfo() }
+        return CoroutineDatabase.createFlow(
+            db = mediaDatabase,
+            inTransaction = false,
+            tableNames = arrayOf(
+                MediaDatabase.Table.MusicInfo.NAME,
+                MediaDatabase.Table.Artist.NAME,
+                MediaDatabase.Table.Album.NAME,
+            ),
+        ) {
+            this.musicInfoDao.getMediaInfoList(listOf(mediaInfoId))
+                .firstOrNull()
+                ?.toMediaInfo()
+        }
     }
 
     override suspend fun fetchLatestUpdatedMediaInfoList(limit: Int): List<MediaInfo> {
@@ -200,8 +251,18 @@ private class MediaRepositoryImpl constructor(
     }
 
     override fun observableLatestUpdatedMediaInfoList(limit: Int): Flow<List<MediaInfo>> {
-        return this.musicInfoDao.fetchLatestUpdatedMediaInfoListFlow(limit)
-            .map { itemList -> itemList.map { item -> item.toMediaInfo() } }
+        return CoroutineDatabase.createFlow(
+            db = mediaDatabase,
+            inTransaction = false,
+            tableNames = arrayOf(
+                MediaDatabase.Table.MusicInfo.NAME,
+                MediaDatabase.Table.Artist.NAME,
+                MediaDatabase.Table.Album.NAME,
+            ),
+        ) {
+            this.musicInfoDao.fetchLatestUpdatedMediaInfoList(limit)
+                .map { item -> item.toMediaInfo() }
+        }
     }
 
     override suspend fun fetchVideoInfoList(): List<MediaInfo> {
@@ -325,8 +386,20 @@ private class MediaRepositoryImpl constructor(
     }
 
     override fun observableMediaInfoPlayList(playListId: String): Flow<MediaInfoPlayList?> {
-        return this.playListDao.getPlayListFlow(playListId)
-            .map { localPlayList -> localPlayList?.toMediaInfoPlayList() }
+        return CoroutineDatabase.createFlow(
+            db = mediaDatabase,
+            inTransaction = false,
+            tableNames = arrayOf(
+                MediaDatabase.Table.PlayList.NAME,
+                MediaDatabase.Table.PlayListMediaInfo.NAME,
+                MediaDatabase.Table.MusicInfo.NAME,
+                MediaDatabase.Table.Artist.NAME,
+                MediaDatabase.Table.Album.NAME,
+            ),
+        ) {
+            this.playListDao.getPlayList(playListId)
+                ?.toMediaInfoPlayList()
+        }
     }
 
     private suspend fun MediaInfoPlayList.toLocalPlayList(): LocalPlayList {
@@ -519,9 +592,19 @@ private class MediaRepositoryImpl constructor(
     }
 
     override fun observableRecentPlayItems(limit: Int): Flow<List<RecentPlayItem>> {
-        return this.playRecordDao.fetchAllPlayRecordFlow(limit = 10)
-            .map { itemList -> itemList.map { item -> item.toPlayRecord() } }
-            .map { itemList -> this.fetchRecentPlayItems(itemList) }
+        return CoroutineDatabase.createFlow(
+            db = mediaDatabase,
+            inTransaction = false,
+            tableNames = arrayOf(
+                MediaDatabase.Table.MusicInfo.NAME,
+                MediaDatabase.Table.Artist.NAME,
+                MediaDatabase.Table.Album.NAME,
+            ),
+        ) {
+            this.playRecordDao.getAllPlayRecord(limit = limit)
+                .map { item -> item.toPlayRecord() }
+                .let { this.fetchRecentPlayItems(it) }
+        }
     }
 
     private fun LocalPlayRecord.toPlayRecord(): PlayRecord {

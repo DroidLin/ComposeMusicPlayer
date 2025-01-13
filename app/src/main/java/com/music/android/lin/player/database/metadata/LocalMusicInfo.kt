@@ -4,31 +4,32 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.music.android.lin.player.MediaDatabase
 
 /**
  * @author liuzhongao
  * @since 2023/10/5 23:00
  */
-
 @Entity(
-    tableName = "table_local_music_info",
+    tableName = MediaDatabase.Table.MusicInfo.NAME,
     foreignKeys = [
         ForeignKey(
             entity = LocalAlbum::class,
-            parentColumns = ["album_id"],
-            childColumns = ["music_info_album_id"]
+            parentColumns = [MediaDatabase.Table.Album.Columns.ID],
+            childColumns = [MediaDatabase.Table.MusicInfo.Columns.ALBUM_ID]
         )
     ]
 )
 internal class LocalMusicInfo(
-    @PrimaryKey @ColumnInfo(name = "music_info_id", index = true) val id: String,
-    @ColumnInfo(name = "music_info_title") val songTitle: String,
-    @ColumnInfo(name = "music_info_description") val songDescription: String,
-    @ColumnInfo(name = "music_info_cover", defaultValue = "") val cover: String?,
-    @ColumnInfo(name = "music_info_song_source", defaultValue = "") val songSource: String?,
-    @ColumnInfo(name = "music_info_artists_ids") val artistIds: String,
-    @ColumnInfo(name = "music_info_album_id", index = true) val albumId: String,
-    @ColumnInfo(name = "music_info_update_timestamp") val updateTimeStamp: Long,
-    @ColumnInfo(name = "music_info_media_type") val mediaType: Int,
-    @ColumnInfo(name = "music_info_media_extras", defaultValue = "") val mediaExtras: String
+    @PrimaryKey
+    @ColumnInfo(name = MediaDatabase.Table.MusicInfo.Columns.ID, index = true) val id: String,
+    @ColumnInfo(name = MediaDatabase.Table.MusicInfo.Columns.TITLE) val songTitle: String,
+    @ColumnInfo(name = MediaDatabase.Table.MusicInfo.Columns.DESCRIPTION) val songDescription: String,
+    @ColumnInfo(name = MediaDatabase.Table.MusicInfo.Columns.COVER, defaultValue = "") val cover: String?,
+    @ColumnInfo(name = MediaDatabase.Table.MusicInfo.Columns.SONG_SOURCE, defaultValue = "") val songSource: String?,
+    @ColumnInfo(name = MediaDatabase.Table.MusicInfo.Columns.ARTISTS_IDS) val artistIds: String,
+    @ColumnInfo(name = MediaDatabase.Table.MusicInfo.Columns.ALBUM_ID, index = true) val albumId: String,
+    @ColumnInfo(name = MediaDatabase.Table.MusicInfo.Columns.UPDATE_TIMESTAMP) val updateTimeStamp: Long,
+    @ColumnInfo(name = MediaDatabase.Table.MusicInfo.Columns.MEDIA_TYPE) val mediaType: Int,
+    @ColumnInfo(name = MediaDatabase.Table.MusicInfo.Columns.MEDIA_EXTRAS, defaultValue = "") val mediaExtras: String
 )

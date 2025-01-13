@@ -3,18 +3,19 @@ package com.music.android.lin.player.database.metadata
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.music.android.lin.player.MediaDatabase
 
 /**
  * @author liuzhongao
  * @since 2023/10/5 23:13
  */
 @Entity(
-    tableName = "table_local_artist"
+    tableName = MediaDatabase.Table.Artist.NAME
 )
 internal class LocalArtist(
     @PrimaryKey
-    @ColumnInfo(name = "local_artist_id") val id: String,
-    @ColumnInfo(name = "local_artist_name") val name: String,
-    @ColumnInfo(name = "local_artist_description") val description: String,
-    @ColumnInfo(name = "local_artist_number_of_album", defaultValue = "0") val numberOfAlbum: Int
+    @ColumnInfo(name = MediaDatabase.Table.Artist.Columns.ID) val id: String,
+    @ColumnInfo(name = MediaDatabase.Table.Artist.Columns.NAME) val name: String,
+    @ColumnInfo(name = MediaDatabase.Table.Artist.Columns.DESCRIPTION) val description: String,
+    @ColumnInfo(name = MediaDatabase.Table.Artist.Columns.NUMBER_OF_ALBUM, defaultValue = "0") val numberOfAlbum: Int
 )

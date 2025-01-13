@@ -37,4 +37,7 @@ interface PlayListMediaInfoDao {
 
     @Query("select * from table_local_playlist_media_info where playlist_id = :playListId order by insertTimestamp desc")
     fun observableRecordAboutPlayList(playListId: String): Flow<List<LocalPlayListMediaInfoRecord>>
+
+    @Query("select * from table_local_playlist_media_info where playlist_id = :playListId order by insertTimestamp desc")
+    suspend fun fetchRecordAboutPlayList(playListId: String): List<LocalPlayListMediaInfoRecord>
 }

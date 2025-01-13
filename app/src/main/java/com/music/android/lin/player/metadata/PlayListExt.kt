@@ -13,9 +13,9 @@ fun MediaInfoPlayList.sortBySortType(sortType: PlayList.SortType): MediaInfoPlay
     when (sortType) {
         PlayList.SortType.Title -> mediaInfoList.sortBy { it.mediaTitle }
         PlayList.SortType.Artist -> mediaInfoList.sortBy { it.artists.getOrNull(0)?.name }
-        PlayList.SortType.AddOrder -> mediaInfoList.sortBy { it.updateTimeStamp }
+        PlayList.SortType.AddOrder -> mediaInfoList.sortByDescending { it.updateTimeStamp }
         PlayList.SortType.AddOrderDesc -> mediaInfoList.sortByDescending { it.updateTimeStamp }
-        else -> mediaInfoList.sortBy { it.updateTimeStamp }
+        else -> mediaInfoList.sortByDescending { it.updateTimeStamp }
     }
     return MediaInfoPlayList(
         id = id,

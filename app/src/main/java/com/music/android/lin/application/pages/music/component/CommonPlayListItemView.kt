@@ -17,13 +17,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.music.android.lin.R
 import com.music.android.lin.application.common.model.PlayListItem
+import com.music.android.lin.application.common.ui.component.loadingOrFailure
+import com.music.android.lin.application.common.ui.state.LoadState
 import com.music.android.lin.application.framework.AppMaterialTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun CommonPlayListItemView(
-    playList: ImmutableList<PlayListItem>,
+    loadState: LoadState<ImmutableList<PlayListItem>>,
     modifier: Modifier = Modifier,
     onPlayListPressed: (PlayListItem) -> Unit,
     goToCreatePlayList: () -> Unit,
@@ -31,47 +33,50 @@ fun CommonPlayListItemView(
     LazyColumn(
         modifier = modifier
     ) {
-        if (playList.isEmpty()) {
-            item(
-                key = "empty_screen",
-                contentType = "empty_screen"
-            ) {
-                Box(
-                    modifier = Modifier.fillParentMaxSize(),
-                    contentAlignment = Alignment.Center
+        loadingOrFailure(loadState = loadState) { playList ->
+            if (playList.isEmpty()) {
+                item(
+                    key = "empty_screen",
+                    contentType = "empty_screen"
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Box(
+                        modifier = Modifier.fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = stringResource(R.string.string_no_play_list_exist),
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        OutlinedButton(
-                            onClick = goToCreatePlayList
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = stringResource(R.string.string_create_playlist),
-                                style = MaterialTheme.typography.bodyLarge
+                                text = stringResource(R.string.string_no_play_list_exist),
+                                style = MaterialTheme.typography.titleLarge
                             )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            OutlinedButton(
+                                onClick = goToCreatePlayList
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.string_create_playlist),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
                         }
                     }
                 }
+            } else {
+                items(
+                    items = playList,
+                    key = { it.id },
+                    contentType = { it::class.qualifiedName }
+                ) { itemList ->
+                    PlayListItemView(
+                        playList = itemList,
+                        modifier = Modifier.fillParentMaxWidth(),
+                        onClick = { onPlayListPressed(itemList) },
+                    )
+                }
             }
-            return@LazyColumn
         }
-        items(
-            items = playList,
-            key = { it.id },
-            contentType = { it::class.qualifiedName }
-        ) { itemList ->
-            PlayListItemView(
-                playList = itemList,
-                modifier = Modifier.fillParentMaxWidth(),
-                onClick = { onPlayListPressed(itemList) },
-            )
-        }
+
     }
 }
 
@@ -80,7 +85,7 @@ fun CommonPlayListItemView(
 private fun PlayListItemViewPreview(modifier: Modifier = Modifier) {
     AppMaterialTheme {
         CommonPlayListItemView(
-            playList = persistentListOf(),
+            loadState = LoadState.Loading as LoadState<ImmutableList<PlayListItem>>,
             onPlayListPressed = {},
             goToCreatePlayList = {},
             modifier = modifier,

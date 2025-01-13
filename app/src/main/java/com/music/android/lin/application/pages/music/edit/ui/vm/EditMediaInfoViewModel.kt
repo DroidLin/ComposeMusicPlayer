@@ -17,8 +17,10 @@ import com.music.android.lin.player.database.MediaRepository
 import com.music.android.lin.player.metadata.MediaInfo
 import com.music.android.lin.player.metadata.immutable
 import com.music.android.lin.player.metadata.mutable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Factory
 
 @Factory
@@ -46,7 +48,8 @@ internal class EditMediaInfoViewModel(
                 it.coverUri = editState.coverUri
             }.immutable()
             mediaRepository.updateMediaInfo(newMediaInfo)
-        }.invokeOnCompletion { onComplete() }
+            withContext(Dispatchers.Main) { onComplete() }
+        }
     }
 }
 

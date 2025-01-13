@@ -39,12 +39,12 @@ data class CreatePlayListParameter(
 @Composable
 fun CreatePlayListBottomSheet(
     sheetState: SheetState,
-    showBottomSheet: State<Boolean>,
+    showBottomSheet: Boolean,
     dismissRequest: () -> Unit,
     doCreatePlayList: (CreatePlayListParameter, onComplete: () -> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (!showBottomSheet.value) return
+    if (!showBottomSheet) return
     val coroutineScope = rememberCoroutineScope()
     ModalBottomSheet(
         modifier = modifier,
