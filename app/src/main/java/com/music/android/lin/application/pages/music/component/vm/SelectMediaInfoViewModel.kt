@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.music.android.lin.application.common.ui.state.DataLoadState
 import com.music.android.lin.application.common.ui.state.withDataLoadState
+import com.music.android.lin.application.common.ui.state.withLoadState
 import com.music.android.lin.application.common.ui.vm.ioViewModelScope
 import com.music.android.lin.application.common.usecase.MusicItem
 import com.music.android.lin.application.common.usecase.MusicItemSnapshot
@@ -111,12 +112,7 @@ internal class SelectMediaInfoViewModel(
             }
         }
     }
-        .withDataLoadState { it }
-        .stateIn(
-            scope = ioViewModelScope,
-            started = SharingStarted.Lazily,
-            initialValue = DataLoadState.Loading
-        )
+        .withLoadState(ioViewModelScope)
 
     fun onSearchInputValueChange(value: String) {
         var success: Boolean

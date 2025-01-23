@@ -11,9 +11,7 @@ fun PlayerColorTheme(
     content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
-        values = arrayOf(
-            LocalContentColor provides playerColorScheme.textColor,
-        ),
+        value = LocalContentColor provides (playerColorScheme.textColor ?: LocalContentColor.current),
         content = content
     )
 }

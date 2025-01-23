@@ -56,7 +56,10 @@ import com.music.android.lin.R
 import com.music.android.lin.application.common.ui.BackButton
 import com.music.android.lin.application.common.ui.component.DataLoadingView
 import com.music.android.lin.application.common.ui.component.ViewModelStoreProvider
+import com.music.android.lin.application.common.ui.component.loadingOrFailure
 import com.music.android.lin.application.common.ui.state.DataLoadState
+import com.music.android.lin.application.common.ui.state.LoadState
+import com.music.android.lin.application.common.ui.state.dataOrNull
 import com.music.android.lin.application.pages.music.component.vm.SelectMediaInfoViewModel
 import com.music.android.lin.application.pages.music.component.vm.SelectableMusicItem
 import kotlinx.collections.immutable.ImmutableList
@@ -96,9 +99,7 @@ fun SelectMediaInfoBottomSheet(
                 val launchLoading = remember { mutableStateOf(false) }
                 val completeButtonEnabled = remember {
                     derivedStateOf {
-                        val data =
-                            (uiState.value as? DataLoadState.Data<*>)?.data as? ImmutableList<SelectableMusicItem>
-                        data != null && data.any { it.isSelected }
+                        uiState.value.dataOrNull?.any { it.isSelected } ?: false
                     }
                 }
                 SelectHeader(
@@ -132,17 +133,13 @@ fun SelectMediaInfoBottomSheet(
                         }
                     }
                 )
-                DataLoadingView(
-                    modifier = Modifier.weight(1f),
-                    state = uiState
-                ) { data ->
-                    SelectList(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        selectableItemList = data.data,
-                        onMusicItemClick = viewModel::onMusicItemPressed,
-                    )
-                }
+                SelectList(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    loadState = uiState.value,
+                    onMusicItemClick = viewModel::onMusicItemPressed,
+                )
             }
         }
     }
@@ -247,7 +244,7 @@ fun SelectHeader(
 
 @Composable
 private fun SelectList(
-    selectableItemList: ImmutableList<SelectableMusicItem>,
+    loadState: LoadState<ImmutableList<SelectableMusicItem>>,
     onMusicItemClick: (SelectableMusicItem) -> Unit,
     listState: LazyListState = rememberLazyListState(),
     modifier: Modifier = Modifier,
@@ -256,17 +253,19 @@ private fun SelectList(
         modifier = modifier,
         state = listState
     ) {
-        items(
-            items = selectableItemList,
-            key = { it.musicItem.mediaId },
-            contentType = { it.musicItem.javaClass.name }
-        ) { selectableMusicItem ->
-            MusicItemView(
-                modifier = Modifier.fillParentMaxWidth(),
-                musicItem = selectableMusicItem.musicItem,
-                onClick = { onMusicItemClick(selectableMusicItem) },
-                isSelected = selectableMusicItem.isSelected
-            )
+        loadingOrFailure(loadState) { itemList ->
+            items(
+                items = itemList,
+                key = { it.musicItem.mediaId },
+                contentType = { it.musicItem.javaClass.name }
+            ) { selectableMusicItem ->
+                MusicItemView(
+                    modifier = Modifier.fillParentMaxWidth(),
+                    musicItem = selectableMusicItem.musicItem,
+                    onClick = { onMusicItemClick(selectableMusicItem) },
+                    isSelected = selectableMusicItem.isSelected
+                )
+            }
         }
     }
 }

@@ -182,17 +182,20 @@ fun PlayerProgressView(
     Column(
         modifier = modifier
     ) {
+        val slideBarActiveColor = playerColorScheme.slideBarActiveColor ?: LocalContentColor.current
+        val slideBarInactiveColor =
+            playerColorScheme.slideBarInactiveColor ?: LocalContentColor.current.copy(alpha = 0.5f)
         val colors = SliderDefaults.colors(
-            thumbColor = playerColorScheme.slideBarActiveColor,
-            activeTrackColor = playerColorScheme.slideBarActiveColor,
-            activeTickColor = playerColorScheme.slideBarActiveColor,
-            inactiveTrackColor = playerColorScheme.slideBarInactiveColor,
-            inactiveTickColor = playerColorScheme.slideBarInactiveColor,
-            disabledThumbColor = playerColorScheme.slideBarInactiveColor,
-            disabledActiveTrackColor = playerColorScheme.slideBarInactiveColor,
-            disabledActiveTickColor = playerColorScheme.slideBarInactiveColor,
-            disabledInactiveTrackColor = playerColorScheme.slideBarInactiveColor,
-            disabledInactiveTickColor = playerColorScheme.slideBarInactiveColor,
+            thumbColor = slideBarActiveColor,
+            activeTrackColor = slideBarActiveColor,
+            activeTickColor = slideBarActiveColor,
+            inactiveTrackColor = slideBarInactiveColor,
+            inactiveTickColor = slideBarInactiveColor,
+            disabledThumbColor = slideBarInactiveColor,
+            disabledActiveTrackColor = slideBarInactiveColor,
+            disabledActiveTickColor = slideBarInactiveColor,
+            disabledInactiveTrackColor = slideBarInactiveColor,
+            disabledInactiveTickColor = slideBarInactiveColor,
         )
         val interactionSource = remember { MutableInteractionSource() }
         val inTouchMode = remember { mutableStateOf(false) }

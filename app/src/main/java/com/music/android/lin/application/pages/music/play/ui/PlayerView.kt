@@ -52,12 +52,14 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.music.android.lin.application.common.ui.component.ViewModelStoreProvider
 import com.music.android.lin.application.common.ui.vm.PlayViewModel
 import com.music.android.lin.application.pages.music.play.ui.component.PlayerColorTheme
 import com.music.android.lin.application.pages.music.play.ui.component.PlayerPageColumn
 import com.music.android.lin.application.pages.music.play.ui.component.PlayerPageViewType
 import com.music.android.lin.application.pages.music.play.ui.component.calculatePlayerPageViewType
 import com.music.android.lin.application.pages.music.play.ui.state.PlayerColorScheme
+import com.music.android.lin.application.pages.music.play.ui.state.isLightBgColor
 import com.music.android.lin.application.pages.music.play.ui.vm.PlayerLyricViewModel
 import com.music.android.lin.application.pages.music.play.ui.vm.PlayerPageViewModel
 import com.music.android.lin.application.util.SystemBarStyleComponent
@@ -81,10 +83,12 @@ fun PlayerView(
         label = "player_view_enter_exit_animation",
         modifier = modifier,
     ) {
-        PlayerView(
-            backPressed = backPressed,
-            modifier = Modifier.fillMaxSize(),
-        )
+        ViewModelStoreProvider {
+            PlayerView(
+                backPressed = backPressed,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
 }
 
@@ -101,7 +105,6 @@ internal fun PlayerView(
     val playerState by playerPageViewModel.playerState.collectAsStateWithLifecycle()
     val lyricOutputState by lyricViewModel.lyricOutput.collectAsStateWithLifecycle()
 
-    SystemBarStyleComponent(isLightMode = false)
     PlayerBackgroundScaffold(
         modifier = modifier,
         colorScheme = playerState.colorScheme,
@@ -275,14 +278,18 @@ private fun PlayerBackground(
     modifier: Modifier = Modifier,
 ) {
     val backgroundColor = MaterialTheme.colorScheme.background
-    val backgroundMaskColor = animateColorAsState(
+    val backgroundMaskColor by animateColorAsState(
         targetValue = backgroundColorState.backgroundMaskColor ?: backgroundColor,
         label = "background_mask_animation",
         animationSpec = backgroundColorAnimation
     )
+    val isLightColor by remember {
+        derivedStateOf { backgroundMaskColor.isLightBgColor }
+    }
+    SystemBarStyleComponent(isLightMode = isLightColor)
     Box(
         modifier = modifier.drawWithContent {
-            this.drawRect(color = backgroundMaskColor.value)
+            this.drawRect(color = backgroundMaskColor)
             this.drawContent()
         }
     )

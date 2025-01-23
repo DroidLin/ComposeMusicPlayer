@@ -40,11 +40,7 @@ class PlayMessage : Parcelable {
 
     fun readFromParcel(parcel: Parcel) {
         val hashMap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            parcel.readHashMap(
-                PlayMessage::class.java.classLoader,
-                String::class.java,
-                Any::class.java
-            ) as Map<String, Any?>
+            parcel.readHashMap(PlayMessage::class.java.classLoader, String::class.java, Any::class.java) as Map<String, Any?>
         } else {
             parcel.readHashMap(PlayMessage::class.java.classLoader) as Map<String, Any?>
         }
